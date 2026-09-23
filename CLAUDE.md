@@ -247,8 +247,8 @@ How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disa
 
 **One scrolling page.** No tabs, routes or links to other pages. The most important information goes at the top. Every section is compact, and any empty section is hidden.
 
-1. **Header:** Area 501 · C Division · Week 7 · Wed Sep 23
-2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line. Put a **Directions** link on the venue: on iOS, `https://maps.apple.com/?q=<maps>`; everywhere else, `https://www.google.com/maps/search/?api=1&query=<maps>` (URL-encode the query). Use the `maps` value from `venues`, or the venue name plus ", Raleigh, NC" if the venue isn't listed. The Fixtures list also links each upcoming venue the same way.
+1. **Header:** AREA 501, then labeled lines: "Division: C Division", "Current week: Week 7", "Date: Wed, Sep 23".
+2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line. Below the venue, show two buttons: **Apple Maps** (`https://maps.apple.com/?q=<maps>`) and **Google Maps** (`https://www.google.com/maps/search/?api=1&query=<maps>`), with the query URL-encoded. Style each after its app's own buttons but don't use their logos. Use the `maps` value from `venues`, or the venue name plus ", Raleigh, NC" if the venue isn't listed. In the Fixtures list, each upcoming venue gets one link: Apple Maps on iOS, Google Maps everywhere else.
 3. **Last result:** W/L, score, opponent's full name, home or away, and games won per category out of 6.
 4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
 5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section.

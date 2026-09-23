@@ -4,7 +4,7 @@ import type { MatchResult, Player, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { current, history, schedule } from "./data";
 import {
-  buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, pct, shortDate, todayIso, type FixtureRow,
+  buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, todayIso, type FixtureRow,
 } from "./model";
 
 const NEWSLETTER_URL = "https://raleighdartleague.org/newsletter/";
@@ -26,9 +26,13 @@ function Page({ week }: { week: TeamWeek }) {
       <header className="brand">
         <img className="art" src={`${import.meta.env.BASE_URL}area501-art.webp`} alt="" width={360} height={287} />
         <h1>{week.team.name}</h1>
-        <p>{week.team.division} Division · Week {week.week}<br />{shortDate(week.issueDate)}</p>
+        <dl className="meta">
+          <div><dt>Division:</dt> <dd>{week.team.division} Division</dd></div>
+          <div><dt>Current week:</dt> <dd>Week {week.week}</dd></div>
+          <div><dt>Date:</dt> <dd>{shortDate(week.issueDate)}</dd></div>
+        </dl>
       </header>
-      <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} maps={maps} today={today} />
+      <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} today={today} />
       <LastResult week={week} />
       <Standings week={week} />
       <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} />
@@ -44,9 +48,7 @@ function Page({ week }: { week: TeamWeek }) {
   );
 }
 
-function Tonight({ week, fixture, maps, today }: {
-  week: TeamWeek; fixture: FixtureRow | undefined; maps: (v: string) => string; today: string;
-}) {
+function Tonight({ week, fixture, today }: { week: TeamWeek; fixture: FixtureRow | undefined; today: string }) {
   if (!fixture) return null;
   const heading = fixture.date === today ? "Tonight" : fixture.date > today ? "Next match" : "This week";
   if (fixture.bye) {
@@ -58,10 +60,8 @@ function Tonight({ week, fixture, maps, today }: {
       <h2 id="tonight">{heading} <span className="muted">· {shortDate(fixture.date)}</span></h2>
       <p className="big">{fixture.home ? "vs" : "@"} {fixture.opponent}</p>
       {opp && <p className="muted">{ordinal(opp.rank)} in C · {opp.wins}–{opp.losses} · {opp.points} pts</p>}
-      <p>
-        {fixture.home ? "Home" : "Away"} · {fixture.venue}{" "}
-        <a className="btn" href={maps(fixture.venue)} target="_blank" rel="noopener">Directions</a>
-      </p>
+      <p>{fixture.home ? "Home" : "Away"} · {fixture.venue}</p>
+      <Directions venue={fixture.venue} />
       {week.prediction && (
         <blockquote>
           <span className="muted small">Editor's pick</span>
@@ -69,6 +69,27 @@ function Tonight({ week, fixture, maps, today }: {
         </blockquote>
       )}
     </section>
+  );
+}
+
+const Pin = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
+  </svg>
+);
+
+/** Directions buttons styled after each maps app's own buttons (no logos: they're trademarks). */
+function Directions({ venue }: { venue: string }) {
+  const urls = mapsUrls(venue, schedule);
+  return (
+    <div className="maps">
+      <a className="map-btn apple" href={urls.apple} target="_blank" rel="noopener">
+        <Pin /> Apple Maps
+      </a>
+      <a className="map-btn google" href={urls.google} target="_blank" rel="noopener">
+        <span className="gpin"><Pin /></span> Google Maps
+      </a>
+    </div>
   );
 }
 

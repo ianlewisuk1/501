@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import schedule from "../../data/Fa26/schedule.json";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
-import { buildFixtures, findStanding, isIOS, mapsUrl, shortDate, teamTotals, trend, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { buildFixtures, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, teamTotals, trend, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -57,6 +57,7 @@ describe("helpers", () => {
   it("builds maps links per platform", () => {
     expect(mapsUrl("The Flying Saucer", sched, true)).toBe("https://maps.apple.com/?q=The%20Flying%20Saucer%2C%20Raleigh%2C%20NC");
     expect(mapsUrl("Nowhere", sched, false)).toBe("https://www.google.com/maps/search/?api=1&query=Nowhere%2C%20Raleigh%2C%20NC");
+    expect(mapsUrls("Snooker's 1&2", sched).google).toContain("query=Snooker's%2C%20Raleigh%2C%20NC");
     expect(isIOS({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)" })).toBe(true);
     expect(isIOS({ userAgent: "Mozilla/5.0 (Linux; Android 15)" })).toBe(false);
   });

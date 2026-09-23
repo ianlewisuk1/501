@@ -108,10 +108,15 @@ export function isIOS(nav?: { userAgent: string; platform?: string; maxTouchPoin
   return /iPad|iPhone|iPod/.test(nav.userAgent) || (nav.platform === "MacIntel" && (nav.maxTouchPoints ?? 0) > 1);
 }
 
+export function mapsUrls(venue: string, schedule: SeasonSchedule | undefined): { apple: string; google: string } {
+  const q = encodeURIComponent(schedule?.venues[venue]?.maps ?? `${venue}, Raleigh, NC`);
+  return { apple: `https://maps.apple.com/?q=${q}`, google: `https://www.google.com/maps/search/?api=1&query=${q}` };
+}
+
+/** One link per platform, for compact places like the fixtures list. */
 export function mapsUrl(venue: string, schedule: SeasonSchedule | undefined, ios: boolean): string {
-  const query = schedule?.venues[venue]?.maps ?? `${venue}, Raleigh, NC`;
-  const q = encodeURIComponent(query);
-  return ios ? `https://maps.apple.com/?q=${q}` : `https://www.google.com/maps/search/?api=1&query=${q}`;
+  const urls = mapsUrls(venue, schedule);
+  return ios ? urls.apple : urls.google;
 }
 
 /** Sum of every player's stats, for the "Whole team" option. */
