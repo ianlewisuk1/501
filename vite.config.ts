@@ -2,9 +2,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Served from https://ianlewisuk1.github.io/501/
+// Served from the root of https://area501.lol (Vercel).
 export default defineConfig({
-  base: "/501/",
   plugins: [react()],
   test: {
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],

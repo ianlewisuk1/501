@@ -15,7 +15,7 @@ Owner: Ian Lewis (plays on Area 501). Goal: ship v1 today.
 | Front end | Vite + React + TS, built as a static site, mobile first | free |
 | Data store | JSON files committed to the repo. No database. | free |
 | Scheduler | GitHub Actions cron | free on public repos (private: 2,000 min/month) |
-| Hosting | GitHub Pages (public repo). If the repo is private, use Cloudflare Pages or Netlify instead. | free |
+| Hosting | Vercel (Hobby), built from this repo on every push to `main` (`vercel.json`). Domain `area501.lol`, registered at Namecheap, with DNS pointed at Vercel. | free (domain ~$10/yr) |
 | Tests | Vitest | free |
 | Domain | Optional | about $10 to $15 a year |
 
@@ -57,7 +57,7 @@ fixtures/          Fa26wk06.xlsx, Fa26wk07.xlsx
 fixtures/expected/ Fa26wk06.area501.json, Fa26wk07.area501.json   (golden outputs)
 reference/ref_parse.py   working Python reference parser. Port its logic; don't ship it.
 .github/workflows/update.yml   (cron + manual dispatch + on push to inbox/)
-.github/workflows/deploy.yml   (build + deploy to Pages)
+vercel.json                    (Vercel build settings; Vercel deploys on push)
 ```
 
 ### Team config
@@ -295,7 +295,7 @@ Spot checks worth their own tests (they cover the tricky paths):
 ## Weekly routine (as built)
 
 1. Download the new `FaNNwkNN.xlsx` from the newsletter post and put it in `inbox/`.
-2. Commit and push to `main`. **Update data** (`.github/workflows/update.yml`) runs the tests and `npm run update`, which parses only files not in `data/manifest.json`, then commits `data/`. **Deploy site** (`deploy.yml`) runs after that and publishes to GitHub Pages.
+2. Current routine: the owner sends Claude the file each week. Claude puts it in `inbox/`, runs `npm run update` (which parses only files not in `data/manifest.json`), checks the result, commits `inbox/` and `data/`, and pushes after the owner approves. Vercel rebuilds and publishes `area501.lol`. If a file is pushed to `inbox/` without being parsed, the **Update data** workflow (`.github/workflows/update.yml`) parses it and commits `data/`, and Vercel rebuilds again.
 3. Or run it locally with `npm run update && npm run dev`, then push.
 
 There is no cron, because the league site blocks automated downloads (section 3). If fallback C gets us a stable link, add `scripts/fetch.ts` and a `schedule:` trigger to `update.yml`.
