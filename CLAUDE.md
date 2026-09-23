@@ -252,9 +252,14 @@ How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disa
 4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
 5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section.
 6. **Players:** name, W-L, win %, ASP average. Sortable. Tapping a row shows the category breakdown. Label it "through week N-1".
-7. **Bragging rights:** leaderboard ranks, trophy darts, hot darts, perfect throws.
-8. **Key dates:** tournaments and the banquet from `schedule.json`. Hide dates that have passed.
-9. **From the newsletter:** the C Division headline and a link to `https://raleighdartleague.org/newsletter/` (we can't discover the post URL automatically).
+7. **Performance chart:** a single card with a dropdown to pick a player, plus a "Whole team" option (the sum of all players). It has two views:
+   - **Breakdown** (works from a single issue): won and lost bars for singles 301, singles cricket, doubles cricket, doubles 501 and the tiebreaker.
+   - **Season trend** (needs 2 or more issues in `data/`): win % (singles, doubles, total) and ASP average by week, one point per parsed issue, each labeled "through week N-1". It also shows W-L per week, calculated as the difference between consecutive issues' season totals. It is hidden when there is only one issue. Weeks with no issue are gaps, not zeros. To fill weeks 1 to 4, drop the older newsletters into `inbox/`.
+
+   The chart is hand-rolled SVG with no chart library. It must be readable at phone width and have labeled axes. The build step needs a `data/{season}/index.json`, or a glob import, so the UI can load every week.
+8. **Bragging rights:** leaderboard ranks, trophy darts, hot darts, perfect throws.
+9. **Key dates:** tournaments and the banquet from `schedule.json`. Hide dates that have passed.
+10. **From the newsletter:** the C Division headline and a link to `https://raleighdartleague.org/newsletter/` (we can't discover the post URL automatically).
 
 Keep it fast and plain: system fonts, no heavy UI kit, dark mode via `prefers-color-scheme`.
 
@@ -297,7 +302,7 @@ Spot checks worth their own tests (they cover the tricky paths):
 
 ## 9. Later, not v1
 
-- Trends across weeks from `data/` history (win % and ASP average over the season).
+- (Now in v1 as the Performance chart, section 6.)
 - A team switcher, which only means changing the config.
 - A short AI summary of the prose pages. This costs API money, so keep it optional.
 - A match-day reminder (for example, a Wednesday afternoon message with tonight's opponent and venue).
