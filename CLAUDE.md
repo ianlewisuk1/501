@@ -51,7 +51,7 @@ CLAUDE.md
 scripts/fetch.ts  scripts/parse.ts  scripts/update.ts
 src/parser/        one module per newsletter page: page1.ts, page2.ts, page3.ts, page5.ts, leaderboards.ts, page10.ts, names.ts, index.ts
 src/app/           React UI
-data/              generated JSON (committed)
+data/              generated JSON (committed), plus hand-entered data/{season}/schedule.json
 inbox/             downloaded or manually dropped .xlsx files
 fixtures/          Fa26wk06.xlsx, Fa26wk07.xlsx
 fixtures/expected/ Fa26wk06.area501.json, Fa26wk07.area501.json   (golden outputs)
@@ -219,18 +219,43 @@ Decimals in the golden files are rounded to 4 places (`aspAverage`, `pct`, `aver
 
 ---
 
-## 6. What the page shows (top to bottom, one screen on a phone)
+### Season schedule (hand-entered, not parsed)
+
+The newsletter only ever lists weeks N and N+1 (Page 5), so the full season schedule comes from the owner once per season, as `data/{season}/schedule.json`. It is not part of `TeamWeek` and the golden files don't change.
+
+```ts
+interface SeasonSchedule {
+  season: string;            // "Fa26"
+  division: string;          // "C"
+  weeks: ({ week: number; date: string; bye: true }
+         | { week: number; date: string; home: boolean; opponent: string; venue: string })[];
+  keyDates: { date: string; label: string }[];  // tournaments, banquet (from Page 4's calendar)
+}
+```
+
+Known facts for Fa26: C has 8 teams and no byes, and the regular season is 14 weeks (a double round robin), played on Wednesdays (week 1 = 2026-08-12, week 14 = 2026-11-11). Page 4 lists division tournaments on Nov 18 and Dec 2/9, and the banquet on Sat Dec 12.
+
+How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disagree (reschedules). A result for a past week comes from the `lastResult` of the issue for week+1 in `data/`. Weeks with no parsed issue show the opponent only. To backfill, drop older newsletters into `inbox/`.
+
+---
+
+## 6. What the page shows
+
+**One scrolling page.** No tabs, routes or links to other pages. The most important information goes at the top. Every section is compact, and any empty section is hidden.
 
 1. **Header:** Area 501 · C Division · Week 7 · Wed Sep 23
-2. **Tonight:** opponent, home or away, venue, the opponent's rank and record (join with standings), and the editor's pick.
-3. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
-4. **Last week:** W/L, score, opponent's full name, and games won per category out of 6.
-5. **Next week:** opponent and venue.
-6. **Players:** name, W-L, win %, ASP average. Sortable, and tapping a row shows the category breakdown. Label it "through week N-1".
-7. **Bragging rights:** leaderboard ranks, trophy darts, hot darts, perfect throws. Hide any empty section.
-8. **From the newsletter:** the C Division headline and a link to the original post.
+2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line.
+3. **Last result:** W/L, score, opponent's full name, home or away, and games won per category out of 6.
+4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
+5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section.
+6. **Players:** name, W-L, win %, ASP average. Sortable. Tapping a row shows the category breakdown. Label it "through week N-1".
+7. **Bragging rights:** leaderboard ranks, trophy darts, hot darts, perfect throws.
+8. **Key dates:** tournaments and the banquet from `schedule.json`. Hide dates that have passed.
+9. **From the newsletter:** the C Division headline and a link to `https://raleighdartleague.org/newsletter/` (we can't discover the post URL automatically).
 
 Keep it fast and plain: system fonts, no heavy UI kit, dark mode via `prefers-color-scheme`.
+
+**Out of scope for v1:** other divisions and teams, the Page 9 team comparison, venue addresses and maps, and the prose pages apart from our headline and prediction.
 
 ---
 
@@ -264,7 +289,7 @@ Spot checks worth their own tests (they cover the tricky paths):
 2. Scaffold: Vite + React + TS, Vitest, and SheetJS. Copy in the fixtures.
 3. Parser, one page per module, test-first against the golden files: Page 2, then 5, then 10C (enough for the core page), then 6 to 8, then 3, then 1.
 4. `npm run parse -- <file>` writes `data/{season}/week-NN.json` and `data/latest.json`.
-5. UI reading `data/latest.json`, per section 6.
+5. UI reading `data/latest.json`, `data/{season}/schedule.json` and past weeks, per section 6.
 6. Deploy workflow to Pages, then the update workflow (cron, `workflow_dispatch`, and push to `inbox/**`).
 
 ## 9. Later, not v1
