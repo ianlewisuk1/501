@@ -54,7 +54,11 @@ body {
   font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-variant-numeric: tabular-nums;
 }
-main { max-width: 40rem; margin: 0 auto; padding: 16px 16px 48px; }
+main {
+  max-width: 40rem; margin: 0 auto;
+  /* Opened from the home screen, the page runs full screen under the status bar and home indicator. */
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
 header.brand {
   position: relative; overflow: hidden; margin-bottom: 12px; padding: 18px 16px 16px;
   min-height: 132px; border-radius: 14px; background: var(--navy); color: var(--cream);
