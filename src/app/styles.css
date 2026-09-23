@@ -127,12 +127,33 @@ tr.us td { background: var(--accent-soft); font-weight: 650; }
 tbody tr:last-child td { border-bottom: 0; }
 th button { all: unset; cursor: pointer; }
 th button:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.prow { cursor: pointer; }
-button.link { all: unset; cursor: pointer; font-weight: 600; }
-.pdetail td { background: var(--bg); }
-.pdetail dl { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 6px 12px; }
-.pdetail dt { font-size: 0.75rem; color: var(--text-2); }
-.pdetail dd { margin: 0; font-weight: 600; }
+
+/* Player stats: wide table that scrolls sideways under a pinned name column. */
+.scroll-x {
+  overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -14px;
+  background:
+    linear-gradient(to left, var(--surface) 30%, transparent) right / 24px 100% no-repeat local,
+    radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 0.18), transparent) right / 10px 100% no-repeat scroll;
+}
+.scroll-x:focus-visible { outline: 2px solid var(--accent); }
+table.wide { width: max-content; min-width: 100%; font-size: 0.9rem; }
+table.wide th, table.wide td { padding: 6px 8px; }
+table.wide .sticky {
+  position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; white-space: nowrap;
+  font-weight: 600; box-shadow: 1px 0 0 var(--line);
+}
+table.wide thead .sticky { z-index: 2; vertical-align: bottom; }
+table.wide .sticky { padding-left: 14px; }
+table.wide tr > :last-child { padding-right: 14px; }
+table.wide tr.groups th { border-bottom: 0; padding-bottom: 0; }
+table.wide th.group {
+  text-align: center; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent);
+  border-left: 1px solid var(--line);
+}
+table.wide .gstart { border-left: 1px solid var(--line); }
+table.wide td.sorted { font-weight: 700; }
+table.wide tfoot th, table.wide tfoot td { border-top: 2px solid var(--line); border-bottom: 0; font-weight: 700; }
+table.wide tbody tr:last-child td, table.wide tbody tr:last-child th { border-bottom: 0; }
 
 .fixtures { list-style: none; padding: 0; margin: 0; }
 .fixtures li {

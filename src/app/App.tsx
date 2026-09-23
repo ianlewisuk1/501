@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
-import type { MatchResult, Player, TeamWeek } from "../parser/types";
+import type { MatchResult, Player, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { current, history, schedule } from "./data";
 import {
-  buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, todayIso, type FixtureRow,
+  buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, teamTotals, todayIso, type FixtureRow,
 } from "./model";
 
-const NEWSLETTER_URL = "https://raleighdartleague.org/newsletter/";
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
 
 export function App() {
@@ -38,9 +37,7 @@ function Page({ week }: { week: TeamWeek }) {
       <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} />
       <Players week={week} />
       <PerformanceChart current={week} history={history} />
-      <Bragging week={week} />
       <KeyDates today={today} />
-      <Newsletter week={week} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
       </footer>
@@ -186,114 +183,104 @@ function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string)
   );
 }
 
-type SortKey = "name" | "record" | "pct" | "asp";
+interface Column {
+  key: string;
+  label: string;
+  group: string;
+  /** Sort value; higher is better. */
+  sort: (p: Player) => number;
+  show: (p: Player) => string;
+}
+
+const wlCol = (key: string, label: string, group: string, get: (p: Player) => WL): Column => ({
+  key, label, group,
+  sort: (p) => { const r = get(p); return (pct(r) ?? -1) * 1000 + r.w; },
+  show: (p) => fmtWL(get(p)),
+});
+const pctCol = (key: string, group: string, get: (p: Player) => WL): Column => ({
+  key, label: "Win %", group, sort: (p) => pct(get(p)) ?? -1, show: (p) => fmtPct(pct(get(p))),
+});
+
+export const PLAYER_COLUMNS: Column[] = [
+  wlCol("total", "W–L", "Overall", (p) => p.total),
+  pctCol("totalPct", "Overall", (p) => p.total),
+  wlCol("singles", "W–L", "Singles", (p) => p.singles),
+  pctCol("singlesPct", "Singles", (p) => p.singles),
+  wlCol("s301", "301", "Singles", (p) => p.singles301),
+  wlCol("sCricket", "Cricket", "Singles", (p) => p.singlesCricket),
+  wlCol("doubles", "W–L", "Doubles", (p) => p.doubles),
+  pctCol("doublesPct", "Doubles", (p) => p.doubles),
+  wlCol("d501", "501", "Doubles", (p) => p.doubles501),
+  wlCol("dCricket", "Cricket", "Doubles", (p) => p.doublesCricket),
+  wlCol("tiebreaker", "1001", "Tiebreak", (p) => p.tiebreaker),
+  { key: "asp", label: "Points", group: "All-star", sort: (p) => p.allStarPoints, show: (p) => String(p.allStarPoints) },
+  { key: "aspAvg", label: "Avg", group: "All-star", sort: (p) => p.aspAverage ?? -1, show: (p) => p.aspAverage?.toFixed(2) ?? "–" },
+  { key: "games", label: "Games", group: "Played", sort: (p) => p.gamesPlayed, show: (p) => String(p.gamesPlayed) },
+  { key: "matches", label: "Matches", group: "Played", sort: (p) => p.matchesPlayed, show: (p) => String(p.matchesPlayed) },
+];
+
+/** Consecutive columns sharing a group, for the top header row. */
+const GROUPS = PLAYER_COLUMNS.reduce<{ group: string; span: number }[]>((acc, c) => {
+  const last = acc.at(-1);
+  if (last?.group === c.group) last.span++;
+  else acc.push({ group: c.group, span: 1 });
+  return acc;
+}, []);
 
 function Players({ week }: { week: TeamWeek }) {
-  const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({ key: "pct", desc: true });
-  const [open, setOpen] = useState<number | null>(null);
-  const value = (p: Player): number | string =>
-    sort.key === "name" ? p.name : sort.key === "record" ? p.total.w : sort.key === "pct" ? pct(p.total) ?? -1 : p.aspAverage ?? -1;
+  const [sort, setSort] = useState<{ key: string; desc: boolean }>({ key: "totalPct", desc: true });
+  const col = PLAYER_COLUMNS.find((c) => c.key === sort.key);
   const rows = [...week.players].sort((a, b) => {
-    const [x, y] = [value(a), value(b)];
-    const c = typeof x === "string" ? x.localeCompare(y as string) : (x as number) - (y as number);
+    const c = col ? col.sort(a) - col.sort(b) : a.name.localeCompare(b.name);
     return sort.desc ? -c : c;
   });
-  const head = (key: SortKey, label: string, cls?: string) => (
-    <th className={cls} aria-sort={sort.key === key ? (sort.desc ? "descending" : "ascending") : "none"}>
-      <button onClick={() => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key !== "name" }))}>
-        {label}{sort.key === key ? (sort.desc ? " ▾" : " ▴") : ""}
-      </button>
-    </th>
-  );
+  const toggle = (key: string) => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key !== "name" }));
+  const arrow = (key: string) => (sort.key === key ? (sort.desc ? " ▾" : " ▴") : "");
+  const ariaSort = (key: string) => (sort.key === key ? (sort.desc ? "descending" : "ascending") : "none");
+  const team = teamTotals(week.players);
+  const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
+
   return (
     <section aria-labelledby="players">
       <h2 id="players">Players <span className="muted">· through week {week.week - 1}</span></h2>
-      <table className="players">
-        <thead><tr>{head("name", "Player")}{head("record", "W–L", "num")}{head("pct", "Win %", "num")}{head("asp", "ASP avg", "num")}</tr></thead>
-        <tbody>
-          {rows.map((p) => (
-            <PlayerRow key={p.number} p={p} open={open === p.number} toggle={() => setOpen(open === p.number ? null : p.number)} />
-          ))}
-        </tbody>
-      </table>
-      <p className="muted small">Tap a player for the breakdown.</p>
-    </section>
-  );
-}
-
-export function PlayerRow({ p, open, toggle }: { p: Player; open: boolean; toggle: () => void }) {
-  const detail: [string, string][] = [
-    ["Singles", `${fmtWL(p.singles)} (${fmtPct(pct(p.singles))})`],
-    ["Doubles", `${fmtWL(p.doubles)} (${fmtPct(pct(p.doubles))})`],
-    ["Singles 301", fmtWL(p.singles301)],
-    ["Singles cricket", fmtWL(p.singlesCricket)],
-    ["Doubles cricket", fmtWL(p.doublesCricket)],
-    ["Doubles 501", fmtWL(p.doubles501)],
-    ["1001 tiebreaker", fmtWL(p.tiebreaker)],
-    ["All-star points", `${p.allStarPoints} in ${p.gamesPlayed} games`],
-    ["Matches played", String(p.matchesPlayed)],
-  ];
-  return (
-    <>
-      <tr className="prow" onClick={toggle} aria-expanded={open}>
-        <td><button className="link" onClick={(e) => { e.stopPropagation(); toggle(); }} aria-expanded={open}>{p.name}</button> <span className="muted small">#{p.number}</span></td>
-        <td className="num">{fmtWL(p.total)}</td>
-        <td className="num">{fmtPct(pct(p.total))}</td>
-        <td className="num">{p.aspAverage?.toFixed(2) ?? "–"}</td>
-      </tr>
-      {open && (
-        <tr className="pdetail"><td colSpan={4}>
-          <dl>{detail.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-        </td></tr>
-      )}
-    </>
-  );
-}
-
-function Bragging({ week }: { week: TeamWeek }) {
-  const { singles, singlesPlusDoubles, allStarAverage } = week.leaderboards;
-  const boards = [
-    { title: "Singles win %", rows: singles.map((r) => ({ rank: r.rank, player: r.player, detail: `${r.w}–${r.l} · ${fmtPct(r.pct, 1)}` })) },
-    { title: "Singles + doubles win %", rows: singlesPlusDoubles.map((r) => ({ rank: r.rank, player: r.player, detail: `${r.w}–${r.l} · ${fmtPct(r.pct, 1)}` })) },
-    { title: "All-star point average", rows: allStarAverage.map((r) => ({ rank: r.rank, player: r.player, detail: `${r.average.toFixed(2)} (${r.asp} in ${r.gamesPlayed})` })) },
-  ].filter((b) => b.rows.length);
-  const { trophyDarts, hotDarts, perfectThrows } = week;
-  if (!boards.length && !trophyDarts.length && !hotDarts.length && !perfectThrows.length) return null;
-  return (
-    <section aria-labelledby="brag">
-      <h2 id="brag">Bragging rights</h2>
-      {boards.length > 0 && (
-        <div className="boards">
-          {boards.map((b) => (
-            <div key={b.title}>
-              <h3>{b.title} <span className="muted small">· C Division ranks</span></h3>
-              <ol className="plain">{b.rows.map((r) => <li key={r.player}><span className="rank">{ordinal(r.rank)}</span> {r.player} <span className="muted small">{r.detail}</span></li>)}</ol>
-            </div>
-          ))}
-        </div>
-      )}
-      {trophyDarts.length > 0 && (
-        <>
-          <h3>Trophy darts <span className="muted small">· season leaders</span></h3>
-          <ul className="plain">
-            {trophyDarts.map((t) => (
-              <li key={t.category}><b>{t.category}</b>: {t.value} · {t.players.join(" & ")}{t.date && <span className="muted small"> · {shortDate(t.date, false)}</span>}</li>
+      <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">
+        <table className="players wide">
+          <thead>
+            <tr className="groups">
+              <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
+                <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
+              </th>
+              {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
+            </tr>
+            <tr>
+              {PLAYER_COLUMNS.map((c, i) => (
+                <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
+                  <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((p) => (
+              <tr key={p.number}>
+                <th scope="row" className="sticky">{p.name} <span className="muted small">#{p.number}</span></th>
+                {PLAYER_COLUMNS.map((c, i) => (
+                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sort.key ? " sorted" : ""}`}>{c.show(p)}</td>
+                ))}
+              </tr>
             ))}
-          </ul>
-        </>
-      )}
-      {hotDarts.length > 0 && (
-        <>
-          <h3>Hot darts <span className="muted small">· week {week.week - 1}</span></h3>
-          <ul className="plain">{hotDarts.map((h, i) => <li key={i}>{h.players.join(" & ")} · <b>{h.feat}</b></li>)}</ul>
-        </>
-      )}
-      {perfectThrows.length > 0 && (
-        <>
-          <h3>Perfect throws</h3>
-          <ul className="plain">{perfectThrows.map((p) => <li key={p}>{p}</li>)}</ul>
-        </>
-      )}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" className="sticky">Team total</th>
+              {PLAYER_COLUMNS.map((c, i) => (
+                <td key={c.key} className={`num${start(i) ? " gstart" : ""}`}>{c.key === "matches" ? "" : c.show(team)}</td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p className="muted small">Swipe sideways for every category. Tap a heading to sort.</p>
     </section>
   );
 }
@@ -305,16 +292,6 @@ function KeyDates({ today }: { today: string }) {
     <section aria-labelledby="dates">
       <h2 id="dates">Key dates</h2>
       <ul className="plain">{dates.map((d) => <li key={d.date}><b>{shortDate(d.date)}</b> · {d.label}</li>)}</ul>
-    </section>
-  );
-}
-
-function Newsletter({ week }: { week: TeamWeek }) {
-  return (
-    <section aria-labelledby="news">
-      <h2 id="news">From the newsletter</h2>
-      {week.headline && <blockquote><p>{week.headline}</p></blockquote>}
-      <p><a href={NEWSLETTER_URL} target="_blank" rel="noopener">Read the full newsletter ↗</a></p>
     </section>
   );
 }
