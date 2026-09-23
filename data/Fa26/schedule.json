@@ -1,0 +1,36 @@
+{
+  "season": "Fa26",
+  "division": "C",
+  "weeks": [
+    { "week": 1, "date": "2026-08-12", "home": true, "opponent": "Brutha Ducks", "venue": "The Flying Saucer" },
+    { "week": 2, "date": "2026-08-19", "home": false, "opponent": "Mulligans Mafia", "venue": "Mulligans Arcade" },
+    { "week": 3, "date": "2026-08-26", "home": true, "opponent": "Darty Little Secrets", "venue": "The Flying Saucer" },
+    { "week": 4, "date": "2026-09-02", "home": true, "opponent": "Projectile Dysfunction", "venue": "The Flying Saucer" },
+    { "week": 5, "date": "2026-09-09", "home": false, "opponent": "Still Hump'N", "venue": "Mackey's Pub 3&4" },
+    { "week": 6, "date": "2026-09-16", "home": false, "opponent": "Pints and Points", "venue": "Rally Point" },
+    { "week": 7, "date": "2026-09-23", "home": true, "opponent": "Menace 2 Sobriety", "venue": "The Flying Saucer" },
+    { "week": 8, "date": "2026-09-30", "home": false, "opponent": "Brutha Ducks", "venue": "Snooker's 1&2" },
+    { "week": 9, "date": "2026-10-07", "home": true, "opponent": "Mulligans Mafia", "venue": "The Flying Saucer" },
+    { "week": 10, "date": "2026-10-14", "home": false, "opponent": "Darty Little Secrets", "venue": "Brass Tap 5&6" },
+    { "week": 11, "date": "2026-10-21", "home": false, "opponent": "Projectile Dysfunction", "venue": "Brass Tap 1&2" },
+    { "week": 12, "date": "2026-10-28", "home": true, "opponent": "Still Hump'N", "venue": "The Flying Saucer" },
+    { "week": 13, "date": "2026-11-04", "home": true, "opponent": "Pints and Points", "venue": "The Flying Saucer" },
+    { "week": 14, "date": "2026-11-11", "home": false, "opponent": "Menace 2 Sobriety", "venue": "High Park 1&2" }
+  ],
+  "venues": {
+    "The Flying Saucer": { "maps": "The Flying Saucer, Raleigh, NC" },
+    "Mulligans Arcade": { "maps": "Mulligans Arcade & Tavern, Raleigh, NC" },
+    "Mackey's Pub 3&4": { "maps": "Mackey's Pub, Raleigh, NC" },
+    "Rally Point": { "maps": "Rally Point Sport Grill, Raleigh, NC" },
+    "Snooker's 1&2": { "maps": "Snooker's, Raleigh, NC" },
+    "Brass Tap 5&6": { "maps": "The Brass Tap, Raleigh, NC" },
+    "Brass Tap 1&2": { "maps": "The Brass Tap, Raleigh, NC" },
+    "High Park 1&2": { "maps": "High Park Bar, Raleigh, NC" }
+  },
+  "keyDates": [
+    { "date": "2026-11-18", "label": "RDL division tournaments (night 1)" },
+    { "date": "2026-12-02", "label": "RDL division tournaments (night 2)" },
+    { "date": "2026-12-09", "label": "RDL division tournaments (night 3)" },
+    { "date": "2026-12-12", "label": "Fall 2026 season banquet (location TBD)" }
+  ]
+}

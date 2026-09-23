@@ -229,9 +229,12 @@ interface SeasonSchedule {
   division: string;          // "C"
   weeks: ({ week: number; date: string; bye: true }
          | { week: number; date: string; home: boolean; opponent: string; venue: string })[];
+  venues: Record<string, { maps: string }>;     // keyed by venue name as Page 5 prints it; maps = search query or street address
   keyDates: { date: string; label: string }[];  // tournaments, banquet (from Page 4's calendar)
 }
 ```
+
+Venue names use Page 5's wording (`The Flying Saucer`, `Snooker's 1&2`), so they match what the parser emits. The venue is always the home team's bar. The `maps` queries are best guesses: replace each one with a street address once confirmed. Don't commit the captains' names or phone numbers from the printed schedule, because the repo and site are public.
 
 Known facts for Fa26: C has 8 teams and no byes, and the regular season is 14 weeks (a double round robin), played on Wednesdays (week 1 = 2026-08-12, week 14 = 2026-11-11). Page 4 lists division tournaments on Nov 18 and Dec 2/9, and the banquet on Sat Dec 12.
 
@@ -244,7 +247,7 @@ How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disa
 **One scrolling page.** No tabs, routes or links to other pages. The most important information goes at the top. Every section is compact, and any empty section is hidden.
 
 1. **Header:** Area 501 · C Division · Week 7 · Wed Sep 23
-2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line.
+2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line. Put a **Directions** link on the venue: on iOS, `https://maps.apple.com/?q=<maps>`; everywhere else, `https://www.google.com/maps/search/?api=1&query=<maps>` (URL-encode the query). Use the `maps` value from `venues`, or the venue name plus ", Raleigh, NC" if the venue isn't listed. The Fixtures list also links each upcoming venue the same way.
 3. **Last result:** W/L, score, opponent's full name, home or away, and games won per category out of 6.
 4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
 5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section.
