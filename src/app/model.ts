@@ -4,10 +4,13 @@ import type { MatchResult, Player, Standing, TeamWeek, WL } from "../parser/type
 export interface SeasonSchedule {
   season: string;
   division: string;
-  weeks: ({ week: number; date: string; bye: true } | { week: number; date: string; home: boolean; opponent: string; venue: string })[];
+  weeks: ({ week: number; date: string; bye: true }
+    | { week: number; date: string; home: boolean; opponent: string; venue: string; score?: Score })[];
   venues: Record<string, { maps: string }>;
   keyDates: { date: string; label: string }[];
 }
+
+export type Score = { us: number; them: number };
 
 export interface FixtureRow {
   week: number;
@@ -16,6 +19,9 @@ export interface FixtureRow {
   home: boolean;
   opponent: string;
   venue: string;
+  /** Final score: from a parsed newsletter, or entered by hand in schedule.json for weeks we have no issue for. */
+  score: Score | null;
+  /** Full result detail, only when parsed from a newsletter. */
   result: MatchResult | null;
   status: "past" | "current" | "future";
 }
@@ -66,6 +72,7 @@ export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: 
       home: "bye" in s ? false : s.home,
       opponent: "bye" in s ? "" : s.opponent,
       venue: "bye" in s ? "" : s.venue,
+      score: "bye" in s ? null : s.score ?? null,
       result: null,
       status: status(s.week),
     });
@@ -77,12 +84,15 @@ export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: 
     const prev = rows.get(f.week);
     const date = prev?.date ?? addDays(issueDate, offsetDays);
     rows.set(f.week, "bye" in f
-      ? { week: f.week, date, bye: true, home: false, opponent: "", venue: "", result: null, status: status(f.week) }
-      : { week: f.week, date, bye: false, home: f.home, opponent: fullTeamName(f.opponent, names), venue: f.venue, result: null, status: status(f.week) });
+      ? { week: f.week, date, bye: true, home: false, opponent: "", venue: "", score: null, result: null, status: status(f.week) }
+      : { week: f.week, date, bye: false, home: f.home, opponent: fullTeamName(f.opponent, names), venue: f.venue, score: prev?.score ?? null, result: null, status: status(f.week) });
   }
   for (const [week, r] of results) {
     const row = rows.get(week);
-    if (row) row.result = r;
+    if (row) {
+      row.result = r;
+      row.score = r.score;
+    }
   }
   return [...rows.values()].sort((a, b) => a.week - b.week);
 }

@@ -24,6 +24,19 @@ describe("fixtures", () => {
     expect(rows[3].result).toBeNull();
   });
 
+  it("uses hand-entered scores for weeks with no newsletter", () => {
+    expect(rows.slice(0, 4).map((r) => r.score)).toEqual([
+      { us: 15, them: 9 }, { us: 13, them: 11 }, { us: 13, them: 11 }, { us: 15, them: 9 },
+    ]);
+    expect(rows[5].score).toEqual({ us: 19, them: 5 });
+    expect(rows[7].score).toBeNull();
+  });
+
+  it("hand-entered points agree with the standings", () => {
+    const points = rows.filter((r) => r.status === "past").reduce((a, r) => a + (r.score?.us ?? 0), 0);
+    expect(points).toBe(wk07.standings.find((s) => s.team === "Area 501")?.points);
+  });
+
   it("lets the newsletter override the schedule", () => {
     const moved = { ...wk07, nextWeek: { week: 8, home: true, opponent: "Ducks", venue: "Somewhere Else" } };
     expect(buildFixtures(moved, [moved], sched)[7]).toMatchObject({ home: true, opponent: "Brutha Ducks", venue: "Somewhere Else" });

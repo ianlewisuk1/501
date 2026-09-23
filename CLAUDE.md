@@ -228,7 +228,8 @@ interface SeasonSchedule {
   season: string;            // "Fa26"
   division: string;          // "C"
   weeks: ({ week: number; date: string; bye: true }
-         | { week: number; date: string; home: boolean; opponent: string; venue: string })[];
+         | { week: number; date: string; home: boolean; opponent: string; venue: string;
+             score?: { us: number; them: number } })[];   // hand-entered, for weeks with no parsed issue
   venues: Record<string, { maps: string }>;     // keyed by venue name as Page 5 prints it; maps = search query or street address
   keyDates: { date: string; label: string }[];  // tournaments, banquet (from Page 4's calendar)
 }
@@ -238,7 +239,7 @@ Venue names use Page 5's wording (`The Flying Saucer`, `Snooker's 1&2`), so they
 
 Known facts for Fa26: C has 8 teams and no byes, and the regular season is 14 weeks (a double round robin), played on Wednesdays (week 1 = 2026-08-12, week 14 = 2026-11-11). Page 4 lists division tournaments on Nov 18 and Dec 2/9, and the banquet on Sat Dec 12.
 
-How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disagree (reschedules). A result for a past week comes from the `lastResult` of the issue for week+1 in `data/`. Weeks with no parsed issue show the opponent only. To backfill, drop older newsletters into `inbox/`.
+How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disagree (reschedules). A result for a past week comes from the `lastResult` of the issue for week+1 in `data/`. Weeks with no parsed issue use the hand-entered `score`, if there is one (weeks 1 to 4 of Fa26 came from the owner and add up to the standings' 94 points). A parsed result always wins. To get full detail, drop older newsletters into `inbox/`.
 
 ---
 

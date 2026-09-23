@@ -153,8 +153,8 @@ function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string)
               )}
             </span>
             <span className="fres">
-              {f.result ? (
-                <><span className={`badge ${f.result.score.us > f.result.score.them ? "win" : "loss"}`}>{f.result.score.us > f.result.score.them ? "W" : "L"}</span> {f.result.score.us}–{f.result.score.them}</>
+              {f.score ? (
+                <><span className={`badge ${f.score.us > f.score.them ? "win" : f.score.us < f.score.them ? "loss" : "tie"}`}>{f.score.us > f.score.them ? "W" : f.score.us < f.score.them ? "L" : "T"}</span> {f.score.us}–{f.score.them}</>
               ) : f.status === "current" ? <span className="tag">Next</span> : f.status === "past" ? <span className="muted">–</span> : null}
             </span>
           </li>
