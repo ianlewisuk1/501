@@ -7,6 +7,6 @@ export default defineConfig({
   base: "/501/",
   plugins: [react()],
   test: {
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
   },
 });

@@ -291,6 +291,20 @@ Spot checks worth their own tests (they cover the tricky paths):
 
 ---
 
+## Weekly routine (as built)
+
+1. Download the new `FaNNwkNN.xlsx` from the newsletter post and put it in `inbox/`.
+2. Commit and push to `main`. **Update data** (`.github/workflows/update.yml`) runs the tests and `npm run update`, which parses only files not in `data/manifest.json`, then commits `data/`. **Deploy site** (`deploy.yml`) runs after that and publishes to GitHub Pages.
+3. Or run it locally with `npm run update && npm run dev`, then push.
+
+There is no cron, because the league site blocks automated downloads (section 3). If fallback C gets us a stable link, add `scripts/fetch.ts` and a `schedule:` trigger to `update.yml`.
+
+Commands: `npm test`, `npm run dev`, `npm run build`, `npm run parse -- <file.xlsx>` (re-parse even if already seen), `npm run update`.
+
+Code map: the parser is in `src/parser/` (one module per page, `index.ts` is the entry point). The page is in `src/app/`: `model.ts` holds the pure view logic and is tested, `data.ts` bundles `data/*/week-*.json` and `schedule.json` at build time, `App.tsx` builds the sections, and `Chart.tsx` draws the performance chart as hand-rolled SVG.
+
+---
+
 ## 8. Build order for today
 
 1. **Fetch spike** (section 3). Decide between a cron and a manual inbox. Don't block on it; everything below works from fixtures.
