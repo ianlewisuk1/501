@@ -23,9 +23,10 @@ function Page({ week }: { week: TeamWeek }) {
 
   return (
     <main>
-      <header>
+      <header className="brand">
+        <img className="art" src={`${import.meta.env.BASE_URL}area501-art.webp`} alt="" width={360} height={287} />
         <h1>{week.team.name}</h1>
-        <p className="muted">{week.team.division} Division · Week {week.week} · {shortDate(week.issueDate)}</p>
+        <p>{week.team.division} Division · Week {week.week}<br />{shortDate(week.issueDate)}</p>
       </header>
       <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} maps={maps} today={today} />
       <LastResult week={week} />
