@@ -65,6 +65,10 @@ function Tonight({ week, fixture, today }: { week: TeamWeek; fixture: FixtureRow
           <p>{pickLine(week.prediction)}</p>
         </blockquote>
       )}
+      <blockquote>
+        <span className="muted small">Ian's pick</span>
+        <p>We win 24-0.</p>
+      </blockquote>
     </section>
   );
 }
