@@ -193,6 +193,9 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
           <text className="tick axis" x={PAD.l - 6} y={H - PAD.b + 14} textAnchor="end">Week</text>
           {hover !== null && <line className="crosshair" x1={x(hover)} x2={x(hover)} y1={PAD.t} y2={H - PAD.b} />}
           <path className="trend-season" d={path(team)} />
+          {!shown.length && (
+            <text className="empty-note" x={PAD.l + (W - PAD.l - PAD.r) / 2} y={y(0.25)} dy="-0.4em" textAnchor="middle">Pick players below to compare.</text>
+          )}
           {shown.map((s) => (
             <g key={s.name} className={`pline p${s.color}`}>
               <path d={path(s.pts)} />
@@ -203,7 +206,6 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
             <rect key={w} className="hit" x={x(i) - slot / 2} width={slot} y={0} height={H - PAD.b} onPointerEnter={() => setHover(i)} onPointerDown={() => setHover(i)} />
           ))}
         </svg>
-        {!shown.length && <p className="plot-empty muted small">Pick players below to compare.</p>}
         {hover !== null && (
           <div className="tip" style={{ left: `${Math.min(75, Math.max(25, (x(hover) / W) * 100))}%` }}>
             <b>Week {weeks[hover]}</b>
