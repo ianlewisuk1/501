@@ -119,6 +119,42 @@ export function mapsUrl(venue: string, schedule: SeasonSchedule | undefined, ios
   return ios ? urls.apple : urls.google;
 }
 
+export interface EditorPick {
+  /** Full team name of the predicted winner, or null when the prose doesn't say clearly. */
+  winner: string | null;
+  /** Winner's score first, e.g. "14–10". */
+  score: string;
+  /** The write-up without its "Match #N: (C Div.)" lead, for featured picks. */
+  detail: string | null;
+}
+
+/**
+ * Boils the editor's prediction down to "who wins, by what". Featured write-ups end with the
+ * call ("Area it is, 14-10."); the winner is whichever team the closing clause names.
+ */
+export function editorPick(
+  p: { featured: boolean; text: string },
+  us: { name: string; aliases: string[] },
+  opponent: string,
+): EditorPick | null {
+  if (!p.featured) {
+    const m = p.text.match(/^(.+?)\s+(\d+),\s*(.+?)\s+(\d+)$/);
+    if (!m) return null;
+    const [a, b] = [{ team: m[1], n: +m[2] }, { team: m[3], n: +m[4] }].sort((x, y) => y.n - x.n);
+    return { winner: a.n === b.n ? null : a.team, score: `${a.n}–${b.n}`, detail: null };
+  }
+  const detail = p.text.replace(/^Match(?:es)? #[^:]+:\s*\([A-H] Div\.\)\s*/, "");
+  const m = detail.match(/(\d+)\s*-\s*(\d+)\.?\s*$/);
+  if (!m) return null;
+  const last = detail.split(/(?<=[.!?])\s+/).at(-1) ?? "";
+  const clause = norm(last.split(/,?\s+but\s+/i).at(-1) ?? "");
+  const word = (s: string) => new RegExp(`(^|\\W)${norm(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\W|$)`).test(clause);
+  const ours = us.aliases.some(word);
+  const theirs = opponent.split(/\s+/).filter((w) => w.length > 3).some(word);
+  const winner = ours === theirs ? null : ours ? us.name : opponent;
+  return { winner, score: `${m[1]}–${m[2]}`, detail };
+}
+
 /** Sum of every player's stats, for the "Whole team" option. */
 export function teamTotals(players: Player[]): Player {
   const sum = (k: keyof Player) => players.reduce((a, p) => a + ((p[k] as number) ?? 0), 0);
@@ -152,39 +188,57 @@ export function playerIn(week: TeamWeek, name: string): Player | undefined {
   return name === WHOLE_TEAM ? teamTotals(week.players) : week.players.find((p) => p.name === name);
 }
 
-export interface TrendPoint {
-  /** Stats in this issue run through this week. */
-  throughWeek: number;
-  total: number | null;
-  singles: number | null;
-  doubles: number | null;
-  aspAverage: number | null;
+export interface WeekGames {
+  week: number;
+  /** Games won and lost that week; both null when no newsletter isolates the week (a gap, not zero). */
+  won: number | null;
+  lost: number | null;
+  /** Whole-team view: who we played. */
+  opponent?: string;
 }
 
-export interface WeekRecord {
-  label: string;
-  record: WL;
-}
-
-/** One point per issue in the season, and the W-L between consecutive issues. */
-export function trend(history: TeamWeek[], season: string, name: string): { points: TrendPoint[]; weekly: WeekRecord[] } {
-  const issues = sortWeeks(history.filter((w) => w.season === season));
-  const points: TrendPoint[] = [];
-  const weekly: WeekRecord[] = [];
-  let prev: { week: number; p: Player } | null = null;
-  for (const issue of issues) {
-    const p = playerIn(issue, name);
-    if (!p) continue;
-    const throughWeek = issue.week - 1;
-    points.push({ throughWeek, total: pct(p.total), singles: pct(p.singles), doubles: pct(p.doubles), aspAverage: p.aspAverage });
-    if (prev) {
-      const from = prev.week + 1;
-      weekly.push({
-        label: from === throughWeek ? `Wk ${throughWeek}` : `Wks ${from}–${throughWeek}`,
-        record: { w: p.total.w - prev.p.total.w, l: p.total.l - prev.p.total.l },
-      });
-    }
-    prev = { week: throughWeek, p };
+/**
+ * Games won and lost in each week played so far. The whole team comes from match scores (every
+ * week with a result). A player's week is the difference between consecutive issues' season
+ * totals, so it only exists when issues for that week and the one before are both in data/.
+ */
+export function weeklyGames(current: TeamWeek, history: TeamWeek[], fixtures: FixtureRow[], name: string): WeekGames[] {
+  const weeks = Array.from({ length: Math.max(0, current.week - 1) }, (_, i) => i + 1);
+  if (name === WHOLE_TEAM) {
+    const byWeek = new Map(fixtures.map((f) => [f.week, f]));
+    return weeks.map((week) => {
+      const f = byWeek.get(week);
+      return f?.score
+        ? { week, won: f.score.us, lost: f.score.them, opponent: f.opponent }
+        : { week, won: null, lost: null, opponent: f?.opponent };
+    });
   }
-  return { points, weekly };
+  // Season totals keyed by the week they run through. Before week 1, everyone is 0–0.
+  const totals = new Map<number, WL>([[0, { w: 0, l: 0 }]]);
+  for (const issue of history) {
+    const p = issue.season === current.season ? playerIn(issue, name) : undefined;
+    if (p) totals.set(issue.week - 1, p.total);
+  }
+  return weeks.map((week) => {
+    const [a, b] = [totals.get(week - 1), totals.get(week)];
+    return a && b ? { week, won: b.w - a.w, lost: b.l - a.l } : { week, won: null, lost: null };
+  });
+}
+
+export interface FormPoint extends WeekGames {
+  /** Win % over this week and the two before it (weeks with data only). */
+  recent: number | null;
+  /** Win % for the season so far. */
+  season: number | null;
+}
+
+export const FORM_WEEKS = 3;
+
+/** Smooths noisy weekly records (a player plays only 3 or 4 games a night) into recent and season win %. */
+export function form(weeks: WeekGames[]): FormPoint[] {
+  const sum = (ws: WeekGames[]): WL => ws.reduce((a, w) => ({ w: a.w + (w.won ?? 0), l: a.l + (w.lost ?? 0) }), { w: 0, l: 0 });
+  return weeks.map((w, i) => {
+    if (w.won === null) return { ...w, recent: null, season: null };
+    return { ...w, recent: pct(sum(weeks.slice(Math.max(0, i - FORM_WEEKS + 1), i + 1))), season: pct(sum(weeks.slice(0, i + 1))) };
+  });
 }

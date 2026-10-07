@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
+import { TEAM } from "../parser/team";
 import type { MatchResult, Player, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { current, history, schedule } from "./data";
 import {
-  buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, teamTotals, todayIso, type FixtureRow,
+  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, teamTotals, todayIso, type FixtureRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
@@ -25,18 +26,14 @@ function Page({ week }: { week: TeamWeek }) {
       <header className="brand">
         <img className="art" src={`${import.meta.env.BASE_URL}area501-art.webp`} alt="" width={360} height={287} />
         <h1>{week.team.name}</h1>
-        <dl className="meta">
-          <div><dt>Division:</dt> <dd>{week.team.division} Division</dd></div>
-          <div><dt>Current week:</dt> <dd>Week {week.week}</dd></div>
-          <div><dt>Date:</dt> <dd>{shortDate(week.issueDate)}</dd></div>
-        </dl>
+        <p className="meta">{week.team.division} Division · Week {week.week}</p>
       </header>
       <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} today={today} />
       <LastResult week={week} />
       <Standings week={week} />
       <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} />
       <Players week={week} />
-      <PerformanceChart current={week} history={history} />
+      <PerformanceChart current={week} history={history} fixtures={fixtures} />
       <KeyDates today={today} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
@@ -55,16 +52,11 @@ function Tonight({ week, fixture, today }: { week: TeamWeek; fixture: FixtureRow
   return (
     <section className="card hero" aria-labelledby="tonight">
       <h2 id="tonight">{heading} <span className="muted">· {shortDate(fixture.date)}</span></h2>
-      <p className="big">{fixture.home ? "vs" : "@"} {fixture.opponent}</p>
+      <p className="big">vs {fixture.opponent}</p>
       {opp && <p className="muted">{ordinal(opp.rank)} in C · {opp.wins}–{opp.losses} · {opp.points} pts</p>}
       <p>{fixture.home ? "Home" : "Away"} · {fixture.venue}</p>
       <Directions venue={fixture.venue} />
-      {week.prediction && (
-        <blockquote>
-          <span className="muted small">Editor's pick</span>
-          <p>{pickLine(week.prediction)}</p>
-        </blockquote>
-      )}
+      {week.prediction && <EditorsPick prediction={week.prediction} opponent={fixture.opponent} />}
       <blockquote>
         <span className="muted small">Ian's pick</span>
         <p>We win 24-0.</p>
@@ -73,8 +65,8 @@ function Tonight({ week, fixture, today }: { week: TeamWeek; fixture: FixtureRow
   );
 }
 
-const Pin = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+const Pin = ({ size = 18 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
     <path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
   </svg>
 );
@@ -94,11 +86,24 @@ function Directions({ venue }: { venue: string }) {
   );
 }
 
-/** The featured write-up is long; keep its final call, which ends with the score. */
-function pickLine(p: { featured: boolean; text: string }): string {
-  if (!p.featured) return p.text;
-  const sentences = p.text.replace(/^Match(?:es)? #[^:]+:\s*\([A-H] Div\.\)\s*/, "").split(/(?<=[.!?])\s+/);
-  return sentences.slice(-2).join(" ");
+/** "Area 501 to win 14–10", with the editor's full write-up a tap away. */
+function EditorsPick({ prediction, opponent }: { prediction: { featured: boolean; text: string }; opponent: string }) {
+  const pick = editorPick(prediction, TEAM, opponent);
+  if (!pick) {
+    return <blockquote><span className="muted small">Editor's pick</span><p>{prediction.text}</p></blockquote>;
+  }
+  const call = <p>{pick.winner ? `${pick.winner} to win ${pick.score}` : pick.score}</p>;
+  return (
+    <blockquote>
+      <span className="muted small">Editor's pick</span>
+      {pick.detail ? (
+        <details className="pick">
+          <summary>{call}<span className="more small">Read more</span></summary>
+          <p className="small">{pick.detail}</p>
+        </details>
+      ) : call}
+    </blockquote>
+  );
 }
 
 function LastResult({ week }: { week: TeamWeek }) {
@@ -118,10 +123,10 @@ function ResultCard({ r, names }: { r: MatchResult; names: string[] }) {
   ];
   return (
     <section className="card" aria-labelledby="last">
-      <h2 id="last">Last week <span className="muted">· Week {r.week} · {shortDate(r.date)}</span></h2>
+      <h2 id="last">Last week <span className="muted">· Week {r.week} · {shortDate(r.date)} · {r.home ? "Home" : "Away"}</span></h2>
       <p className="big">
         <span className={`badge ${won ? "win" : r.score.us === r.score.them ? "tie" : "loss"}`}>{won ? "W" : r.score.us === r.score.them ? "T" : "L"}</span>{" "}
-        {r.score.us}–{r.score.them} {r.home ? "vs" : "@"} {fullTeamName(r.opponentShort, names)}
+        {r.score.us}–{r.score.them} vs {fullTeamName(r.opponentShort, names)}
       </p>
       <ul className="chips">
         {cats.map(([k, v]) => <li key={k}>{k} <b>{v}/6</b></li>)}
@@ -170,9 +175,14 @@ function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string)
             <span className="fwk">{f.week}</span>
             <span className="fdate">{shortDate(f.date, false)}</span>
             <span className="fopp">
-              {f.bye ? "Bye" : <>{f.home ? "vs" : "@"} {f.result ? fullTeamName(f.result.opponentShort, names) : f.opponent}</>}
-              {!f.bye && f.status !== "past" && (
-                <a className="fvenue" href={maps(f.venue)} target="_blank" rel="noopener">{f.venue}</a>
+              {f.bye ? "Bye" : <>vs {f.result ? fullTeamName(f.result.opponentShort, names) : f.opponent}</>}
+              {!f.bye && (
+                <span className="fwhere">
+                  {f.home ? "Home" : "Away"}
+                  {f.status !== "past" && (
+                    <> · <a className="fvenue" href={maps(f.venue)} target="_blank" rel="noopener"><Pin size={14} />{f.venue}</a></>
+                  )}
+                </span>
               )}
             </span>
             <span className="fres">

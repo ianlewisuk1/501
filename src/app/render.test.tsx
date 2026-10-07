@@ -3,8 +3,9 @@ import { describe, expect, it } from "vitest";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
 import { App, PLAYER_COLUMNS } from "./App";
-import { Trend } from "./Chart";
-import { trend } from "./model";
+import schedule from "../../data/Fa26/schedule.json";
+import { CompareChart, WeeklyChart } from "./Chart";
+import { buildFixtures, form, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -17,12 +18,22 @@ describe("rendering", () => {
     }
   });
 
-  it("renders the season trend", () => {
-    const { points, weekly } = trend([wk06, wk07], "Fa26", "Ian Lewis");
-    const html = renderToStaticMarkup(<Trend points={points} weekly={weekly} />);
-    expect(html).toContain("Wk 5");
-    expect(html).toContain("Wk 6");
-    expect(html).toContain("3–0");
+  it("renders the week-by-week chart", () => {
+    const rows = buildFixtures(wk07, [wk06, wk07], schedule as SeasonSchedule);
+    const html = renderToStaticMarkup(<WeeklyChart weeks={weeklyGames(wk07, [wk06, wk07], rows, WHOLE_TEAM)} />);
+    expect(html).toContain("3-week form");
+    expect(html).not.toContain("Games"); // every match is 24 games, so the row says nothing
+    expect(html).toContain("Week 6: 3-week form 74%, season 65%");
+  });
+
+  it("compares the three players in best form by default", () => {
+    const rows = buildFixtures(wk07, [wk06, wk07], schedule as SeasonSchedule);
+    const players = wk07.players.map((p) => ({ name: p.name, pts: form(weeklyGames(wk07, [wk06, wk07], rows, p.name)) }));
+    const team = form(weeklyGames(wk07, [wk06, wk07], rows, WHOLE_TEAM));
+    const html = renderToStaticMarkup(<CompareChart players={players} team={team} />);
+    expect(html.match(/class="pline /g)).toHaveLength(3);
+    expect(html.match(/aria-pressed="true"/g)).toHaveLength(3);
+    expect(html).toContain("Ian Lewis");
   });
 
   it("shows every category in the players table", () => {
