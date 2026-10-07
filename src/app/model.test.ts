@@ -110,7 +110,7 @@ describe("editorPick", () => {
 });
 
 describe("form", () => {
-  it("averages the last 3 weeks and the season so far", () => {
+  it("gives each week's own win % and the season so far", () => {
     const pts = form([
       { week: 1, won: 4, lost: 0 },
       { week: 2, won: 2, lost: 1 },
@@ -118,7 +118,7 @@ describe("form", () => {
       { week: 4, won: 1, lost: 3 },
       { week: 5, won: 3, lost: 0 },
     ]);
-    expect(pts.map((p) => p.recent)).toEqual([1, 6 / 7, null, 3 / 7, 4 / 7]);
+    expect(pts.map((p) => p.night)).toEqual([1, 2 / 3, null, 1 / 4, 1]);
     expect(pts.map((p) => p.season)).toEqual([1, 6 / 7, null, 7 / 11, 10 / 14]);
   });
 });

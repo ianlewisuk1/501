@@ -226,19 +226,17 @@ export function weeklyGames(current: TeamWeek, history: TeamWeek[], fixtures: Fi
 }
 
 export interface FormPoint extends WeekGames {
-  /** Win % over this week and the two before it (weeks with data only). */
-  recent: number | null;
+  /** Win % that night. */
+  night: number | null;
   /** Win % for the season so far. */
   season: number | null;
 }
 
-export const FORM_WEEKS = 3;
-
-/** Smooths noisy weekly records (a player plays only 3 or 4 games a night) into recent and season win %. */
+/** Each week's own win %, and the season's so far. */
 export function form(weeks: WeekGames[]): FormPoint[] {
   const sum = (ws: WeekGames[]): WL => ws.reduce((a, w) => ({ w: a.w + (w.won ?? 0), l: a.l + (w.lost ?? 0) }), { w: 0, l: 0 });
   return weeks.map((w, i) => {
-    if (w.won === null) return { ...w, recent: null, season: null };
-    return { ...w, recent: pct(sum(weeks.slice(Math.max(0, i - FORM_WEEKS + 1), i + 1))), season: pct(sum(weeks.slice(0, i + 1))) };
+    if (w.won === null) return { ...w, night: null, season: null };
+    return { ...w, night: pct({ w: w.won, l: w.lost! }), season: pct(sum(weeks.slice(0, i + 1))) };
   });
 }

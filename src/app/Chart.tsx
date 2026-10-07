@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Player, TeamWeek } from "../parser/types";
-import { fmtPct, fmtWL, form, FORM_WEEKS, pct, playerIn, weeklyGames, WHOLE_TEAM, type FixtureRow, type FormPoint, type WeekGames } from "./model";
+import { fmtPct, fmtWL, form, pct, playerIn, weeklyGames, WHOLE_TEAM, type FixtureRow, type FormPoint, type WeekGames } from "./model";
 
 const CATEGORIES: [keyof Player, string][] = [
   ["singles301", "Singles 301"],
@@ -85,8 +85,10 @@ function Breakdown({ player }: { player: Player }) {
 export function WeeklyChart({ weeks }: { weeks: WeekGames[] }) {
   const [hover, setHover] = useState<number | null>(null);
   const pts = form(weeks);
-  const W = 340, H = 196, PAD = { l: 44, r: 10, t: 12, b: 48 };
-  const vals = pts.flatMap((p) => [p.recent, p.season]).filter((v): v is number => v !== null);
+  // Every team match is 24 games; only a player's games played varies.
+  const showGames = new Set(pts.filter((p) => p.won !== null).map((p) => p.won! + p.lost!)).size > 1;
+  const PAD = { l: 44, r: 10, t: 12, b: showGames ? 48 : 30 }, W = 340, H = 148 + PAD.b;
+  const vals = pts.flatMap((p) => [p.night, p.season]).filter((v): v is number => v !== null);
   // Never zoom in past 50–100%: a tighter axis makes an 82% week look like a slump.
   const yMin = Math.min(0.5, Math.max(0, Math.floor((Math.min(...vals) - 0.05) * 4) / 4));
   const ticks = [0, 0.25, 0.5, 0.75, 1].filter((t) => t >= yMin);
@@ -94,25 +96,23 @@ export function WeeklyChart({ weeks }: { weeks: WeekGames[] }) {
   const x = (i: number) => PAD.l + slot * (i + 0.5);
   const y = (v: number) => PAD.t + (1 - (v - yMin) / (1 - yMin)) * (H - PAD.t - PAD.b);
   const baseY = H - PAD.b;
-  const path = (key: "recent" | "season") => {
+  const path = (key: "night" | "season") => {
     let d = "";
     pts.forEach((p, i) => { const v = p[key]; d += v === null ? "" : `${d && pts[i - 1]?.[key] != null ? "L" : "M"}${x(i)},${y(v)}`; });
     return d;
   };
   const h = hover === null ? null : pts[hover];
-  // Every team match is 24 games; only a player's games played varies.
-  const showGames = new Set(pts.filter((p) => p.won !== null).map((p) => p.won! + p.lost!)).size > 1;
 
   return (
     <figure className="chart">
       <figcaption>Win % by week</figcaption>
       <div className="legend" aria-hidden>
-        <span><i className="sw line-recent" /> {FORM_WEEKS}-week form</span>
+        <span><i className="sw line-recent" /> That week</span>
         <span><i className="sw line-season" /> Season so far</span>
       </div>
       <div className="plot">
         <svg viewBox={`0 0 ${W} ${H}`} role="img" onPointerLeave={() => setHover(null)}
-          aria-label={`Win % by week. ${pts.filter((p) => p.recent !== null).map((p) => `Week ${p.week}: ${FORM_WEEKS}-week form ${fmtPct(p.recent)}, season ${fmtPct(p.season)}`).join(". ")}`}>
+          aria-label={`Win % by week. ${pts.filter((p) => p.night !== null).map((p) => `Week ${p.week}: that week ${fmtPct(p.night)}, season ${fmtPct(p.season)}`).join(". ")}`}>
           {ticks.map((t) => (
             <g key={t}>
               <line className="grid" x1={PAD.l} x2={W - PAD.r} y1={y(t)} y2={y(t)} />
@@ -121,10 +121,10 @@ export function WeeklyChart({ weeks }: { weeks: WeekGames[] }) {
           ))}
           {h && <line className="crosshair" x1={x(hover!)} x2={x(hover!)} y1={PAD.t} y2={baseY} />}
           <path className="trend-season" d={path("season")} />
-          <path className="trend-recent" d={path("recent")} />
+          <path className="trend-recent" d={path("night")} />
           {pts.map((p, i) => (
             <g key={p.week}>
-              {p.recent !== null && <circle className="dot-recent" cx={x(i)} cy={y(p.recent)} r={hover === i ? 5 : 4} />}
+              {p.night !== null && <circle className="dot-recent" cx={x(i)} cy={y(p.night)} r={hover === i ? 5 : 4} />}
               <text className="tick" x={x(i)} y={baseY + 14} textAnchor="middle">{p.week}</text>
               {showGames && <text className="tick played" x={x(i)} y={baseY + 30} textAnchor="middle">{p.won === null ? "–" : p.won + p.lost!}</text>}
               <rect className="hit" x={x(i) - slot / 2} width={slot} y={0} height={H} onPointerEnter={() => setHover(i)} onPointerDown={() => setHover(i)} />
@@ -136,27 +136,25 @@ export function WeeklyChart({ weeks }: { weeks: WeekGames[] }) {
         {h && (
           <div className="tip" style={{ left: `${Math.min(78, Math.max(22, (x(hover!) / W) * 100))}%` }}>
             <b>Week {h.week}</b>{h.opponent && <> · vs {h.opponent}</>}
-            {h.won === null ? <div>No stats for this week</div> : (
+            {h.won === null ? <div>No stats for this week</div> : h.night === null ? <div>Didn't play</div> : (
               <>
-                <div>That night: {h.won}–{h.lost}</div>
-                <div><i className="sw line-recent" /> Weeks {Math.max(1, h.week - FORM_WEEKS + 1)}–{h.week}: {fmtPct(h.recent)}</div>
+                <div><i className="sw line-recent" /> That week {h.won}–{h.lost} · {fmtPct(h.night)}</div>
                 <div><i className="sw line-season" /> Season {fmtPct(h.season)}</div>
               </>
             )}
           </div>
         )}
       </div>
-      <p className="muted small">The green line is the win % for each week and the {FORM_WEEKS - 1} before it.</p>
     </figure>
   );
 }
 
 /**
- * Pick players to compare by 3-week form, against a faint team line. Colours follow newsletter
- * order, so a player keeps theirs however many are picked. Starts with the three in best form.
+ * Pick players to compare week by week, against a faint team line. Colours follow newsletter
+ * order, so a player keeps theirs however many are picked. Starts with the top three for the season.
  */
 export function CompareChart({ players, team }: { players: { name: string; pts: FormPoint[] }[]; team: FormPoint[] }) {
-  const series = players.map((p, i) => ({ ...p, color: i, last: [...p.pts].reverse().find((x) => x.recent !== null)?.recent ?? null }));
+  const series = players.map((p, i) => ({ ...p, color: i, last: [...p.pts].reverse().find((x) => x.season !== null)?.season ?? null }));
   const ranked = [...series].sort((a, b) => (b.last ?? -1) - (a.last ?? -1));
   const [picked, setPicked] = useState(() => new Set(ranked.slice(0, 3).map((s) => s.name)));
   const [hover, setHover] = useState<number | null>(null);
@@ -168,7 +166,7 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
   const y = (v: number) => PAD.t + (1 - v) * (H - PAD.t - PAD.b);
   const path = (pts: FormPoint[]) => {
     let d = "";
-    pts.forEach((p, i) => { if (p.recent !== null) d += `${d && pts[i - 1]?.recent != null ? "L" : "M"}${x(i)},${y(p.recent)}`; });
+    pts.forEach((p, i) => { if (p.night !== null) d += `${d && pts[i - 1]?.night != null ? "L" : "M"}${x(i)},${y(p.night)}`; });
     return d;
   };
   const toggle = (name: string) => setPicked((prev) => {
@@ -179,12 +177,12 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
 
   return (
     <figure className="chart">
-      <figcaption>{FORM_WEEKS}-week form, all season</figcaption>
+      <figcaption>Win % by week</figcaption>
       <div className="legend" aria-hidden>
         <span><i className="sw line-season" /> Whole team</span>
       </div>
       <div className="plot">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${FORM_WEEKS}-week win % by week for ${shown.map((s) => s.name).join(", ") || "no players"} and the whole team`} onPointerLeave={() => setHover(null)}>
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Win % by week for ${shown.map((s) => s.name).join(", ") || "no players"} and the whole team`} onPointerLeave={() => setHover(null)}>
           {[0, 0.25, 0.5, 0.75, 1].map((t) => (
             <g key={t}>
               <line className="grid" x1={PAD.l} x2={W - PAD.r} y1={y(t)} y2={y(t)} />
@@ -198,7 +196,7 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
           {shown.map((s) => (
             <g key={s.name} className={`pline p${s.color}`}>
               <path d={path(s.pts)} />
-              {s.pts.map((p, i) => p.recent !== null && <circle key={p.week} className="pdot" cx={x(i)} cy={y(p.recent)} r={3} />)}
+              {s.pts.map((p, i) => p.night !== null && <circle key={p.week} className="pdot" cx={x(i)} cy={y(p.night)} r={3} />)}
             </g>
           ))}
           {weeks.map((w, i) => (
@@ -208,16 +206,17 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
         {!shown.length && <p className="plot-empty muted small">Pick players below to compare.</p>}
         {hover !== null && (
           <div className="tip" style={{ left: `${Math.min(75, Math.max(25, (x(hover) / W) * 100))}%` }}>
-            <b>Weeks {Math.max(1, weeks[hover] - FORM_WEEKS + 1)}–{weeks[hover]}</b>
-            {[...shown].sort((a, b) => (b.pts[hover].recent ?? -1) - (a.pts[hover].recent ?? -1)).map((s) => (
-              <div key={s.name}><i className={`sw p${s.color}`} /> {s.name} {fmtPct(s.pts[hover].recent)}</div>
-            ))}
-            <div className="muted"><i className="sw line-season" /> Team {fmtPct(team[hover].recent)}</div>
+            <b>Week {weeks[hover]}</b>
+            {[...shown].sort((a, b) => (b.pts[hover].night ?? -1) - (a.pts[hover].night ?? -1)).map((s) => {
+              const p = s.pts[hover];
+              return <div key={s.name}><i className={`sw p${s.color}`} /> {s.name} {p.won === null ? "–" : p.night === null ? "didn't play" : `${p.won}–${p.lost} · ${fmtPct(p.night)}`}</div>;
+            })}
+            <div className="muted"><i className="sw line-season" /> Team {fmtPct(team[hover].night)}</div>
           </div>
         )}
       </div>
       <div className="pick-head">
-        <span className="small"><b>Compare players</b> <span className="muted">· latest {FORM_WEEKS} weeks</span></span>
+        <span className="small"><b>Compare players</b> <span className="muted">· season win %</span></span>
         <span className="small">
           <button className="linkish" onClick={() => setPicked(new Set(series.map((s) => s.name)))}>All</button>
           {" · "}
@@ -233,7 +232,6 @@ export function CompareChart({ players, team }: { players: { name: string; pts: 
           </li>
         ))}
       </ul>
-      <p className="muted small">Each point is the win % for that week and the {FORM_WEEKS - 1} before it.</p>
     </figure>
   );
 }

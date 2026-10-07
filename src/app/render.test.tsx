@@ -21,9 +21,10 @@ describe("rendering", () => {
   it("renders the week-by-week chart", () => {
     const rows = buildFixtures(wk07, [wk06, wk07], schedule as SeasonSchedule);
     const html = renderToStaticMarkup(<WeeklyChart weeks={weeklyGames(wk07, [wk06, wk07], rows, WHOLE_TEAM)} />);
-    expect(html).toContain("3-week form");
+    expect(html).toContain("That week");
+    expect(html).not.toContain("3-week");
     expect(html).not.toContain("Games"); // every match is 24 games, so the row says nothing
-    expect(html).toContain("Week 6: 3-week form 74%, season 65%");
+    expect(html).toContain("Week 6: that week 79%, season 65%");
   });
 
   it("compares the three players in best form by default", () => {
