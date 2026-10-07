@@ -183,6 +183,10 @@ table.wide tbody tr:last-child td, table.wide tbody tr:last-child th { border-bo
   padding: 7px 4px; border-bottom: 1px solid var(--line);
 }
 .fixtures li:last-child { border-bottom: 0; }
+.showall {
+  font: inherit; font-size: 1rem; width: 100%; min-height: 48px; margin-top: 8px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--accent); font-weight: 600;
+}
 .fixtures li.past { color: var(--text-2); }
 .fixtures li.current { background: var(--accent-soft); border-radius: 8px; font-weight: 650; }
 .fwk { color: var(--text-2); font-size: 0.8rem; text-align: right; }
@@ -210,7 +214,7 @@ select {
   background: var(--bg); color: var(--text); max-width: 100%;
 }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-.seg button { font: inherit; font-size: 0.85rem; padding: 6px 10px; border: 0; background: transparent; color: var(--text); cursor: pointer; }
+.seg button { font: inherit; font-size: 0.95rem; padding: 10px 18px; border: 0; background: transparent; color: var(--text); cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--alien); color: var(--navy); font-weight: 700; }
 
 .legend { display: flex; gap: 14px; font-size: 0.8rem; color: var(--text-2); margin-bottom: 8px; }
@@ -225,21 +229,19 @@ select {
 .bar.lost { background: var(--lost-bar); }
 .bval { text-align: right; font-weight: 600; }
 
-.chart { margin: 8px 0 12px; }
-.chart figcaption { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+.chart { margin: 8px 0 20px; }
+.chart figcaption { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.chart figcaption .muted { display: block; font-size: 0.85rem; font-weight: 400; }
 .plot { position: relative; }
 .plot svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
 .grid { stroke: var(--grid); stroke-width: 1; }
 .tick { fill: var(--text-2); font-size: 11px; }
 .dlabel { fill: var(--text); font-size: 11px; font-weight: 600; }
 .crosshair { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 3 3; }
-.trend-recent { fill: none; stroke: var(--won-bar); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
 .trend-season { fill: none; stroke: var(--text-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
-.dot-recent { fill: var(--won-bar); stroke: var(--surface); stroke-width: 2; }
 .tick.axis { font-size: 10px; }
 .hit { fill: transparent; cursor: pointer; }
-.sw.line-recent, .sw.line-season { width: 16px; height: 0; border-radius: 0; vertical-align: 3px; }
-.sw.line-recent { border-top: 3px solid var(--won-bar); }
+.sw.line-season { width: 16px; height: 0; border-radius: 0; vertical-align: 3px; }
 .sw.line-season { border-top: 2px dashed var(--text-2); }
 /* All players: one line each, tap to focus. */
 .p0 { --pc: var(--p0); }
@@ -256,18 +258,16 @@ select {
 .pline path { fill: none; stroke: var(--pc); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
 .empty-note { fill: var(--text-2); font-size: 12px; }
 .pdot { fill: var(--pc); stroke: var(--surface); stroke-width: 1.5; }
-.pick-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; }
-.linkish { all: unset; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 4px 2px; }
+.pick-head { margin: 10px 0 0; }
 .plegend { list-style: none; padding: 0; margin: 6px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .plegend button {
-  all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; width: 100%; min-height: 40px;
-  padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 0.85rem; cursor: pointer; color: var(--text-2);
+  all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; width: 100%; min-height: 48px;
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 1rem; cursor: pointer; color: var(--text-2);
 }
 .plegend button .sw { flex: none; background: transparent; border: 2px solid var(--pc); width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; }
 .plegend button[aria-pressed="true"] { color: var(--text); border-color: var(--pc); background: var(--bg); }
 .plegend button[aria-pressed="true"] .sw { background: var(--pc); }
 .plegend button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.plegend button b { margin-left: auto; }
 .plegend button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tip { max-width: 70vw; }
 

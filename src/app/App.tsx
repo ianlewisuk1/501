@@ -165,12 +165,18 @@ function Standings({ week }: { week: TeamWeek }) {
 }
 
 function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string) => string; names: string[] }) {
+  const [all, setAll] = useState(false);
   if (!rows.length) return null;
+  // Collapsed: last week, this week and next week. Before or after the season, the nearest three.
+  const now = rows.findIndex((f) => f.status !== "past");
+  const mid = now === -1 ? rows.length - 1 : now;
+  const start = Math.max(0, Math.min(mid - 1, rows.length - 3));
+  const shown = all ? rows : rows.slice(start, start + 3);
   return (
     <section aria-labelledby="fixtures">
       <h2 id="fixtures">Fixtures</h2>
       <ol className="fixtures">
-        {rows.map((f) => (
+        {shown.map((f) => (
           <li key={f.week} className={f.status}>
             <span className="fwk">{f.week}</span>
             <span className="fdate">{shortDate(f.date, false)}</span>
@@ -193,6 +199,11 @@ function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string)
           </li>
         ))}
       </ol>
+      {rows.length > 3 && (
+        <button className="showall" aria-expanded={all} onClick={() => setAll(!all)}>
+          {all ? "Show fewer weeks" : `Show all ${rows.length} weeks`}
+        </button>
+      )}
     </section>
   );
 }
