@@ -69,3 +69,18 @@ describe("spot checks", () => {
     }
   });
 });
+
+describe("edge cases", () => {
+  it("parses the week 1 issue, which has no results or stats yet", () => {
+    const wk01 = parse("fixtures/Fa26wk01.xlsx", TEAM);
+    expect(wk01.lastResult).toBeNull();
+    expect(wk01.players).toEqual([]);
+    expect(wk01.standings).toHaveLength(8);
+  });
+
+  it("gives a tied team with a blank rank cell the rank above (wk03)", () => {
+    const wk03 = parse("fixtures/Fa26wk03.xlsx", TEAM);
+    expect(wk03.standings).toHaveLength(8);
+    expect(wk03.standings[5]).toMatchObject({ rank: 5, team: "Projectile Dysfunction" });
+  });
+});

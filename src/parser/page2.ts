@@ -14,9 +14,10 @@ export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; las
 
   const standings: Standing[] = [];
   const blockRows: number[] = [];
-  for (let r = top; r <= ws.maxRow && !isBlank(ws.get("C", r)); r++) {
+  // A blank rank means tied with the row above, so the block runs on team name.
+  for (let r = top; r <= ws.maxRow && !isBlank(ws.get("D", r)); r++) {
     standings.push({
-      rank: ws.get("C", r) as number,
+      rank: isBlank(ws.get("C", r)) && standings.length ? standings.at(-1)!.rank : (ws.get("C", r) as number),
       team: str(ws.get("D", r)).trim(),
       wins: ws.get("F", r) as number,
       losses: ws.get("G", r) as number,

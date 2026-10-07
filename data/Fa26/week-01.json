@@ -1,0 +1,83 @@
+{
+  "season": "Fa26",
+  "week": 1,
+  "issueDate": "2026-08-12",
+  "issue": "JK945",
+  "team": {
+    "name": "Area 501",
+    "division": "C",
+    "code": ""
+  },
+  "standings": [
+    {
+      "rank": 1,
+      "team": "Mulligans Mafia",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 2,
+      "team": "Projectile Dysfunction",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 3,
+      "team": "Darty Little Secrets",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 4,
+      "team": "Pints and Points",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 5,
+      "team": "Brutha Duckas",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 6,
+      "team": "Area 501",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 7,
+      "team": "Menace 2 Sobriety",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "rank": 8,
+      "team": "Still Hump'N",
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    }
+  ],
+  "lastResult": null,
+  "thisWeek": null,
+  "nextWeek": null,
+  "prediction": null,
+  "headline": null,
+  "players": [],
+  "leaderboards": {
+    "singles": [],
+    "singlesPlusDoubles": [],
+    "allStarAverage": []
+  },
+  "hotDarts": [],
+  "trophyDarts": [],
+  "perfectThrows": []
+}

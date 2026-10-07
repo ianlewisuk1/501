@@ -247,15 +247,16 @@ How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disa
 
 **One scrolling page.** No tabs, routes or links to other pages. The most important information goes at the top. Every section is compact, and any empty section is hidden.
 
-1. **Header:** AREA 501, then labeled lines: "Division: C Division", "Current week: Week 7", "Date: Wed, Sep 23".
+1. **Header:** AREA 501, then one line: "C Division · Week 7". The date lives in the Tonight card.
 2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line. Below the venue, show two buttons: **Apple Maps** (`https://maps.apple.com/?q=<maps>`) and **Google Maps** (`https://www.google.com/maps/search/?api=1&query=<maps>`), with the query URL-encoded. Style each after its app's own buttons but don't use their logos. Use the `maps` value from `venues`, or the venue name plus ", Raleigh, NC" if the venue isn't listed. In the Fixtures list, each upcoming venue gets one link: Apple Maps on iOS, Google Maps everywhere else.
 3. **Last result:** W/L, score, opponent's full name, home or away, and games won per category out of 6.
 4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
 5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section.
 6. **Players:** a wide table that scrolls sideways, with the player name pinned on the left. Columns are grouped Overall (W-L, win %), Singles (W-L, win %, 301, cricket), Doubles (W-L, win %, 501, cricket), Tiebreak (1001), All-star (points, average) and Played (games, matches). Every column sorts, and a team total row sits at the bottom. Label it "through week N-1".
-7. **Performance chart:** a single card with a dropdown to pick a player, plus a "Whole team" option (the sum of all players). It has two views:
+7. **Performance chart:** a single card with a dropdown to pick a player, plus a "Whole team" option (the sum of all players). It has three views:
    - **Breakdown** (works from a single issue): won and lost bars for singles 301, singles cricket, doubles cricket, doubles 501 and the tiebreaker.
-   - **Season trend** (needs 2 or more issues in `data/`): win % (singles, doubles, total) and ASP average by week, one point per parsed issue, each labeled "through week N-1". It also shows W-L per week, calculated as the difference between consecutive issues' season totals. It is hidden when there is only one issue. Weeks with no issue are gaps, not zeros. To fill weeks 1 to 4, drop the older newsletters into `inbox/`.
+   - **Week by week:** a line of 3-week form (win % over that week and the 2 before it) against a dashed season-to-date line, with games played under each week (players only; a team match is always 24). A week's own record is too noisy to plot (3 or 4 games a night), so it is in the tooltip. Team weeks come from match scores; a player's week is the difference between consecutive issues' season totals, so weeks with no issue are gaps, not zeros.
+   - **Compare:** 3-week form for the players you pick (chips below the chart, the top 3 by current form to start), against a faint team line. Each player keeps one color (newsletter order).
 
    The chart is hand-rolled SVG with no chart library. It must be readable at phone width and have labeled axes. The build step needs a `data/{season}/index.json`, or a glob import, so the UI can load every week.
 8. **Key dates:** tournaments and the banquet from `schedule.json`. Hide dates that have passed.

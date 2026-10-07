@@ -27,9 +27,13 @@ export function parseWorkbook(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek {
   const pg1 = page("Pg1");
   const pg3 = page("Pg3");
   const pg5 = page("Pg5");
-  const { standings, lastResult } = page2(page("Pg2"), team);
+  const { standings, lastResult: result } = page2(page("Pg2"), team);
+  // Before week 1 is played, page 2 carries an empty results block for week 1 itself.
+  const lastResult = result && result.week < week ? result : null;
   const { thisWeek, nextWeek } = fixtures(pg5, team);
-  const { code, players } = page10(page(`Pg10${team.division}`), team);
+  // The week 1 issue comes out before any games, so it has no per-division stats page.
+  const pg10 = wb.Sheets[`${season}-Wk${week}-Pg10${team.division}`];
+  const { code, players } = pg10 ? page10(new Sheet(pg10), team) : { code: "", players: [] };
   const { trophyDarts, perfectThrows } = trophies(pg3, team);
 
   return {
