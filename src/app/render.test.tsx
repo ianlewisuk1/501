@@ -50,4 +50,13 @@ describe("rendering", () => {
       "19–2", "90%", "11–1", "92%", "5–1", "6–0", "8–1", "89%", "3–1", "5–0", "0–0", "19.5", "0.93", "21", "6",
     ]);
   });
+
+  it("groups scouting columns as season stats, then the recent weeks on their own, all sortable", () => {
+    const html = renderToStaticMarkup(<App />);
+    const scout = html.slice(html.indexOf('id="scouting"'), html.indexOf("</section>", html.indexOf('id="scouting"')));
+    const groups = [...scout.matchAll(/class="group">([^<]+)</g)].map((m) => m[1]);
+    expect(groups).toEqual(["Season", "Last 3 wks"]);
+    expect(scout.match(/<button>|<button /g)?.length).toBe(7); // player + 6 stat columns
+    expect(scout).toContain('aria-sort="descending"');
+  });
 });

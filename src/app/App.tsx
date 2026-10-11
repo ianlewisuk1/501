@@ -5,7 +5,7 @@ import type { MatchResult, Player, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { current, divisions, history, schedule } from "./data";
 import {
-  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow,
+  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
@@ -107,45 +107,63 @@ function EditorsPick({ prediction, opponent }: { prediction: { featured: boolean
   );
 }
 
+const scoutColumns = (recentLabel: string | null): Column<ScoutRow>[] => {
+  const season: Column<ScoutRow>[] = [
+    wlCol("record", "Record", "Season", (p) => p.total),
+    // Ties on win % go to whoever has played more, so "best record first" holds by default.
+    { key: "pct", label: "Win %", group: "Season", sort: (p) => (pct(p.total) ?? -1) * 1e4 + p.matches, show: (p) => fmtPct(pct(p.total)) },
+    { ...pctCol("singles", "Season", (p) => p.singles), label: "Singles" },
+    { ...pctCol("doubles", "Season", (p) => p.doubles), label: "Doubles" },
+    { key: "matches", label: "Matches", group: "Season", sort: (p) => p.matches, show: (p) => String(p.matches) },
+  ];
+  if (!recentLabel) return season;
+  const recent = wlCol<ScoutRow>("recent", "W–L", recentLabel, (p) => p.recent ?? { w: 0, l: 0 });
+  return [...season, { ...recent, show: (p) => (p.recent ? fmtWL(p.recent) : "–") }];
+};
+
 /** Tonight's opponent's players, so we know who to watch for. */
 function Scouting({ week, fixture }: { week: TeamWeek; fixture: FixtureRow | undefined }) {
   const report = fixture && !fixture.bye ? scoutReport(fixture.opponent, week, divisions) : null;
+  const [from, to] = report?.recentWeeks ?? [0, 0];
+  const columns = scoutColumns(report?.recentWeeks ? `Last ${to - from + 1} wks` : null);
+  const { rows, sortKey, toggle, arrow, ariaSort } = useSort(report?.rows ?? [], columns, "pct");
+  const start = (i: number) => i > 0 && columns[i - 1].group !== columns[i].group;
   if (!report?.rows.length) return null;
-  const [from, to] = report.recentWeeks ?? [0, 0];
   return (
     <section aria-labelledby="scouting">
       <h2 id="scouting">Scouting <span className="muted">· {report.team}</span></h2>
       <div className="scroll-x" tabIndex={0} role="region" aria-label="Opponent player stats, scrolls sideways">
         <table className="players wide scout">
           <thead>
+            <tr className="groups">
+              <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
+                <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
+              </th>
+              {groupSpans(columns).map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
+            </tr>
             <tr>
-              <th className="sticky">Player</th>
-              <th className="num">Record</th>
-              <th className="num">Win %</th>
-              {report.recentWeeks && <th className="num">Last {to - from + 1} wks</th>}
-              <th className="num">Singles</th>
-              <th className="num">Doubles</th>
-              <th className="num">Matches</th>
+              {columns.map((c, i) => (
+                <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
+                  <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {report.rows.map((p) => (
+            {rows.map((p) => (
               <tr key={p.number}>
                 <th scope="row" className="sticky">{p.name}</th>
-                <td className="num">{fmtWL(p.total)}</td>
-                <td className="num"><b>{fmtPct(pct(p.total))}</b></td>
-                {report.recentWeeks && <td className="num">{p.recent ? fmtWL(p.recent) : "–"}</td>}
-                <td className="num">{fmtPct(pct(p.singles))}</td>
-                <td className="num">{fmtPct(pct(p.doubles))}</td>
-                <td className="num">{p.matches}</td>
+                {columns.map((c, i) => (
+                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="muted small">
-        Best record first. Season stats through week {report.through}
-        {report.recentWeeks && <>; "Last {to - from + 1} wks" is weeks {from}–{to} only</>}.
+        Season stats through week {report.through}
+        {report.recentWeeks && <>; "Last {to - from + 1} wks" is weeks {from}–{to} only</>}. Tap a heading to sort.
       </p>
     </section>
   );
@@ -253,21 +271,21 @@ function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string)
   );
 }
 
-interface Column {
+interface Column<T = Player> {
   key: string;
   label: string;
   group: string;
   /** Sort value; higher is better. */
-  sort: (p: Player) => number;
-  show: (p: Player) => string;
+  sort: (p: T) => number;
+  show: (p: T) => string;
 }
 
-const wlCol = (key: string, label: string, group: string, get: (p: Player) => WL): Column => ({
+const wlCol = <T,>(key: string, label: string, group: string, get: (p: T) => WL): Column<T> => ({
   key, label, group,
   sort: (p) => { const r = get(p); return (pct(r) ?? -1) * 1000 + r.w; },
   show: (p) => fmtWL(get(p)),
 });
-const pctCol = (key: string, group: string, get: (p: Player) => WL): Column => ({
+const pctCol = <T,>(key: string, group: string, get: (p: T) => WL): Column<T> => ({
   key, label: "Win %", group, sort: (p) => pct(get(p)) ?? -1, show: (p) => fmtPct(pct(get(p))),
 });
 
@@ -289,24 +307,31 @@ export const PLAYER_COLUMNS: Column[] = [
   { key: "matches", label: "Matches", group: "Played", sort: (p) => p.matchesPlayed, show: (p) => String(p.matchesPlayed) },
 ];
 
-/** Consecutive columns sharing a group, for the top header row. */
-const GROUPS = PLAYER_COLUMNS.reduce<{ group: string; span: number }[]>((acc, c) => {
-  const last = acc.at(-1);
-  if (last?.group === c.group) last.span++;
-  else acc.push({ group: c.group, span: 1 });
-  return acc;
-}, []);
-
-function Players({ week }: { week: TeamWeek }) {
-  const [sort, setSort] = useState<{ key: string; desc: boolean }>({ key: "totalPct", desc: true });
-  const col = PLAYER_COLUMNS.find((c) => c.key === sort.key);
-  const rows = [...week.players].sort((a, b) => {
+/** Table sorting shared by Players and Scouting: tap a heading to sort, tap again to flip. */
+function useSort<T extends { name: string }>(items: T[], columns: Column<T>[], initial: string) {
+  const [sort, setSort] = useState<{ key: string; desc: boolean }>({ key: initial, desc: true });
+  const col = columns.find((c) => c.key === sort.key);
+  const rows = [...items].sort((a, b) => {
     const c = col ? col.sort(a) - col.sort(b) : a.name.localeCompare(b.name);
     return sort.desc ? -c : c;
   });
   const toggle = (key: string) => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key !== "name" }));
   const arrow = (key: string) => (sort.key === key ? (sort.desc ? " ▾" : " ▴") : "");
-  const ariaSort = (key: string) => (sort.key === key ? (sort.desc ? "descending" : "ascending") : "none");
+  const ariaSort = (key: string) => (sort.key === key ? (sort.desc ? "descending" : "ascending") : "none") as "descending" | "ascending" | "none";
+  return { rows, sortKey: sort.key, toggle, arrow, ariaSort };
+}
+
+/** Consecutive columns sharing a group, for the top header row. */
+const groupSpans = <T,>(columns: Column<T>[]) => columns.reduce<{ group: string; span: number }[]>((acc, c) => {
+  const last = acc.at(-1);
+  if (last?.group === c.group) last.span++;
+  else acc.push({ group: c.group, span: 1 });
+  return acc;
+}, []);
+const GROUPS = groupSpans(PLAYER_COLUMNS);
+
+function Players({ week }: { week: TeamWeek }) {
+  const { rows, sortKey, toggle, arrow, ariaSort } = useSort(week.players, PLAYER_COLUMNS, "totalPct");
   const team = teamTotals(week.players);
   const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
 
@@ -335,7 +360,7 @@ function Players({ week }: { week: TeamWeek }) {
               <tr key={p.number}>
                 <th scope="row" className="sticky">{p.name} <span className="muted small">#{p.number}</span></th>
                 {PLAYER_COLUMNS.map((c, i) => (
-                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sort.key ? " sorted" : ""}`}>{c.show(p)}</td>
+                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
                 ))}
               </tr>
             ))}
