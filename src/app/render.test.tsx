@@ -13,7 +13,7 @@ const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 describe("rendering", () => {
   it("renders the whole page from data/", () => {
     const html = renderToStaticMarkup(<App />);
-    for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "Fixtures", "Players", "Performance"]) {
+    for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "Scouting", "Fixtures", "Players", "Performance"]) {
       expect(html).toContain(text);
     }
   });

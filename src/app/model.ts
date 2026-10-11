@@ -1,5 +1,5 @@
 import { fullTeamName, norm } from "../parser/names";
-import type { MatchResult, Player, Standing, TeamWeek, WL } from "../parser/types";
+import type { DivisionWeek, MatchResult, Player, Standing, TeamWeek, WL } from "../parser/types";
 
 export interface SeasonSchedule {
   season: string;
@@ -239,4 +239,52 @@ export function form(weeks: WeekGames[]): FormPoint[] {
     if (w.won === null) return { ...w, night: null, season: null };
     return { ...w, night: pct({ w: w.won, l: w.lost! }), season: pct(sum(weeks.slice(0, i + 1))) };
   });
+}
+
+export interface ScoutRow { name: string; number: number; total: WL; recent: WL | null; singles: WL; doubles: WL; matches: number }
+
+export interface ScoutReport {
+  team: string;
+  /** Stats run through this week. */
+  through: number;
+  /** First and last week covered by `recent`, or null when the older issue is missing. */
+  recentWeeks: [number, number] | null;
+  rows: ScoutRow[];
+}
+
+/** How many weeks "recent form" covers. */
+export const RECENT_WEEKS = 3;
+
+/**
+ * An opponent's players from the same issue as `current`, best record first. Recent form is the
+ * difference from the issue RECENT_WEEKS earlier; at the start of the season that base is zero.
+ * Players who haven't played a match yet are left out.
+ */
+export function scoutReport(opponent: string, current: TeamWeek, divisions: DivisionWeek[]): ScoutReport | null {
+  const issue = (week: number) => divisions.find((d) => d.season === current.season && d.week === week);
+  const div = issue(current.week);
+  if (!div) return null;
+  const name = fullTeamName(opponent, div.teams.map((t) => t.name));
+  const team = div.teams.find((t) => norm(t.name) === norm(name));
+  if (!team) return null;
+
+  const baseWeek = current.week - RECENT_WEEKS;
+  // Issue N has stats through week N-1, so the week 1 issue (or earlier) means "nothing played yet".
+  const base = baseWeek <= 1 ? [] : issue(baseWeek)?.teams.find((t) => t.code === team.code)?.players;
+  const recent = (p: Player): WL | null => {
+    if (!base) return null;
+    const before = base.find((b) => b.number === p.number)?.total ?? { w: 0, l: 0 };
+    return { w: p.total.w - before.w, l: p.total.l - before.l };
+  };
+
+  const rows = team.players
+    .filter((p) => p.matchesPlayed > 0)
+    .map((p) => ({ name: p.name, number: p.number, total: p.total, recent: recent(p), singles: p.singles, doubles: p.doubles, matches: p.matchesPlayed }))
+    .sort((a, b) => (pct(b.total) ?? -1) - (pct(a.total) ?? -1) || b.matches - a.matches);
+  return {
+    team: team.name,
+    through: current.week - 1,
+    recentWeeks: base ? [Math.max(1, baseWeek), current.week - 1] : null,
+    rows,
+  };
 }

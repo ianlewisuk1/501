@@ -4,20 +4,30 @@ import { headline, issueInfo } from "./page1";
 import { page2 } from "./page2";
 import { hotDarts, trophies } from "./page3";
 import { fixtures, prediction } from "./page5";
-import { page10 } from "./page10";
+import { divisionTeams, page10 } from "./page10";
 import { Sheet } from "./sheet";
 import type { TeamConfig } from "./team";
-import type { AspRow, TeamWeek, WinPctRow } from "./types";
+import type { AspRow, DivisionWeek, TeamWeek, WinPctRow } from "./types";
 import { loadWorkbook } from "./workbook";
 
-export type { TeamWeek } from "./types";
+export type { DivisionWeek, TeamWeek } from "./types";
+
+function issueOf(wb: XLSX.WorkBook): { season: string; week: number } {
+  const m = wb.SheetNames[0]?.match(/^(\w+?)-Wk(\d+)-Pg/);
+  if (!m) throw new Error(`Unrecognised sheet name: ${wb.SheetNames[0]}`);
+  return { season: m[1], week: Number(m[2]) };
+}
+
+/** Every team's player stats in our division, for scouting. Empty in the week 1 issue. */
+export function parseDivisionWorkbook(wb: XLSX.WorkBook, team: TeamConfig): DivisionWeek {
+  const { season, week } = issueOf(wb);
+  const pg10 = wb.Sheets[`${season}-Wk${week}-Pg10${team.division}`];
+  return { season, week, division: team.division, teams: pg10 ? divisionTeams(new Sheet(pg10), team.division) : [] };
+}
 
 /** Parse one newsletter workbook into our team's week. */
 export function parseWorkbook(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek {
-  const m = wb.SheetNames[0]?.match(/^(\w+?)-Wk(\d+)-Pg/);
-  if (!m) throw new Error(`Unrecognised sheet name: ${wb.SheetNames[0]}`);
-  const season = m[1];
-  const week = Number(m[2]);
+  const { season, week } = issueOf(wb);
   const page = (pg: string) => {
     const ws = wb.Sheets[`${season}-Wk${week}-${pg}`];
     if (!ws) throw new Error(`Missing sheet ${season}-Wk${week}-${pg}`);

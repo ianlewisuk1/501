@@ -1,0 +1,2855 @@
+{
+  "season": "Fa26",
+  "week": 6,
+  "division": "C",
+  "teams": [
+    {
+      "code": "C1",
+      "name": "Mulligans Mafia",
+      "players": [
+        {
+          "number": 10,
+          "name": "Robert Long",
+          "singles": {
+            "w": 0,
+            "l": 6
+          },
+          "doubles": {
+            "w": 1,
+            "l": 3
+          },
+          "total": {
+            "w": 1,
+            "l": 9
+          },
+          "singles301": {
+            "w": 0,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 3.5,
+          "gamesPlayed": 10,
+          "aspAverage": 0.35,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 11,
+          "name": "Dustin Jones",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 8,
+            "l": 2
+          },
+          "total": {
+            "w": 15,
+            "l": 5
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 9.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.475,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 12,
+          "name": "Jimmy Arnold",
+          "singles": {
+            "w": 6,
+            "l": 3
+          },
+          "doubles": {
+            "w": 9,
+            "l": 1
+          },
+          "total": {
+            "w": 15,
+            "l": 4
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 5,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 13,
+          "gamesPlayed": 19,
+          "aspAverage": 0.6842,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 13,
+          "name": "Brandon Roper",
+          "singles": {
+            "w": 5,
+            "l": 4
+          },
+          "doubles": {
+            "w": 8,
+            "l": 2
+          },
+          "total": {
+            "w": 13,
+            "l": 6
+          },
+          "singles301": {
+            "w": 2,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 5,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 10,
+          "gamesPlayed": 19,
+          "aspAverage": 0.5263,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 14,
+          "name": "Denny \"Wood\" Williams",
+          "singles": {
+            "w": 4,
+            "l": 5
+          },
+          "doubles": {
+            "w": 8,
+            "l": 1
+          },
+          "total": {
+            "w": 12,
+            "l": 6
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 7.5,
+          "gamesPlayed": 18,
+          "aspAverage": 0.4167,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 15,
+          "name": "Deane \"Dino\" Morin",
+          "singles": {
+            "w": 3,
+            "l": 6
+          },
+          "doubles": {
+            "w": 2,
+            "l": 8
+          },
+          "total": {
+            "w": 5,
+            "l": 14
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 7,
+          "gamesPlayed": 19,
+          "aspAverage": 0.3684,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 16,
+          "name": "James Creech",
+          "singles": {
+            "w": 3,
+            "l": 5
+          },
+          "doubles": {
+            "w": 2,
+            "l": 5
+          },
+          "total": {
+            "w": 5,
+            "l": 10
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 1
+          },
+          "allStarPoints": 7,
+          "gamesPlayed": 15,
+          "aspAverage": 0.4667,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 17,
+          "name": "Matt Ondek",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        }
+      ]
+    },
+    {
+      "code": "C2",
+      "name": "Projectile Dysfunction",
+      "players": [
+        {
+          "number": 20,
+          "name": "Brian Smith",
+          "singles": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles": {
+            "w": 2,
+            "l": 5
+          },
+          "total": {
+            "w": 4,
+            "l": 8
+          },
+          "singles301": {
+            "w": 1,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 1,
+          "gamesPlayed": 12,
+          "aspAverage": 0.0833,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 21,
+          "name": "Dan Clark",
+          "singles": {
+            "w": 5,
+            "l": 2
+          },
+          "doubles": {
+            "w": 7,
+            "l": 1
+          },
+          "total": {
+            "w": 12,
+            "l": 3
+          },
+          "singles301": {
+            "w": 2,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 6.5,
+          "gamesPlayed": 15,
+          "aspAverage": 0.4333,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 22,
+          "name": "Mike Steppe",
+          "singles": {
+            "w": 1,
+            "l": 9
+          },
+          "doubles": {
+            "w": 2,
+            "l": 5
+          },
+          "total": {
+            "w": 3,
+            "l": 14
+          },
+          "singles301": {
+            "w": 1,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 5
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 5.5,
+          "gamesPlayed": 17,
+          "aspAverage": 0.3235,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 23,
+          "name": "J.J. Tant",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 9,
+            "l": 1
+          },
+          "total": {
+            "w": 16,
+            "l": 4
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 5,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 9.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.475,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 24,
+          "name": "Chris Peterson",
+          "singles": {
+            "w": 4,
+            "l": 6
+          },
+          "doubles": {
+            "w": 2,
+            "l": 5
+          },
+          "total": {
+            "w": 6,
+            "l": 11
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3.5,
+          "gamesPlayed": 17,
+          "aspAverage": 0.2059,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 25,
+          "name": "Gray Talley",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 2
+          },
+          "total": {
+            "w": 0,
+            "l": 2
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 2,
+          "aspAverage": 0,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 26,
+          "name": "Pat Ball",
+          "singles": {
+            "w": 2,
+            "l": 7
+          },
+          "doubles": {
+            "w": 4,
+            "l": 5
+          },
+          "total": {
+            "w": 6,
+            "l": 12
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 8.5,
+          "gamesPlayed": 18,
+          "aspAverage": 0.4722,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 27,
+          "name": "Steve Harp",
+          "singles": {
+            "w": 6,
+            "l": 3
+          },
+          "doubles": {
+            "w": 4,
+            "l": 6
+          },
+          "total": {
+            "w": 10,
+            "l": 9
+          },
+          "singles301": {
+            "w": 2,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 11.5,
+          "gamesPlayed": 19,
+          "aspAverage": 0.6053,
+          "matchesPlayed": 5
+        }
+      ]
+    },
+    {
+      "code": "C3",
+      "name": "Darty Little Secrets",
+      "players": [
+        {
+          "number": 30,
+          "name": "Andrew Borgna",
+          "singles": {
+            "w": 3,
+            "l": 0
+          },
+          "doubles": {
+            "w": 2,
+            "l": 0
+          },
+          "total": {
+            "w": 5,
+            "l": 0
+          },
+          "singles301": {
+            "w": 2,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 1,
+          "gamesPlayed": 5,
+          "aspAverage": 0.2,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 31,
+          "name": "Charles Tompkins",
+          "singles": {
+            "w": 3,
+            "l": 7
+          },
+          "doubles": {
+            "w": 5,
+            "l": 4
+          },
+          "total": {
+            "w": 8,
+            "l": 11
+          },
+          "singles301": {
+            "w": 1,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 7.5,
+          "gamesPlayed": 19,
+          "aspAverage": 0.3947,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 32,
+          "name": "Matt Wilson",
+          "singles": {
+            "w": 8,
+            "l": 2
+          },
+          "doubles": {
+            "w": 2,
+            "l": 8
+          },
+          "total": {
+            "w": 10,
+            "l": 10
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 14.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.725,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 33,
+          "name": "Jim Kerr",
+          "singles": {
+            "w": 5,
+            "l": 3
+          },
+          "doubles": {
+            "w": 3,
+            "l": 4
+          },
+          "total": {
+            "w": 8,
+            "l": 7
+          },
+          "singles301": {
+            "w": 2,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 3,
+          "gamesPlayed": 15,
+          "aspAverage": 0.2,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 34,
+          "name": "Ahmed \"Al\" Al-Hoory",
+          "singles": {
+            "w": 3,
+            "l": 6
+          },
+          "doubles": {
+            "w": 8,
+            "l": 2
+          },
+          "total": {
+            "w": 11,
+            "l": 8
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 7,
+          "gamesPlayed": 19,
+          "aspAverage": 0.3684,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 35,
+          "name": "Samantha Pausback",
+          "singles": {
+            "w": 4,
+            "l": 2
+          },
+          "doubles": {
+            "w": 4,
+            "l": 2
+          },
+          "total": {
+            "w": 8,
+            "l": 4
+          },
+          "singles301": {
+            "w": 3,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 5.5,
+          "gamesPlayed": 12,
+          "aspAverage": 0.4583,
+          "matchesPlayed": 3
+        },
+        {
+          "number": 36,
+          "name": "Christian \"Buddy\" Pausback",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        },
+        {
+          "number": 37,
+          "name": "Olivia Mathews",
+          "singles": {
+            "w": 9,
+            "l": 1
+          },
+          "doubles": {
+            "w": 4,
+            "l": 6
+          },
+          "total": {
+            "w": 13,
+            "l": 7
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 5,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 1
+          },
+          "allStarPoints": 17.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.875,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 38,
+          "name": "Joanna Tompkins",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        },
+        {
+          "number": 39,
+          "name": "Theresa Mathews",
+          "singles": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles": {
+            "w": 2,
+            "l": 4
+          },
+          "total": {
+            "w": 4,
+            "l": 6
+          },
+          "singles301": {
+            "w": 1,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 1,
+          "gamesPlayed": 10,
+          "aspAverage": 0.1,
+          "matchesPlayed": 4
+        }
+      ]
+    },
+    {
+      "code": "C4",
+      "name": "Pints and Points",
+      "players": [
+        {
+          "number": 40,
+          "name": "Daniel Cody",
+          "singles": {
+            "w": 6,
+            "l": 5
+          },
+          "doubles": {
+            "w": 6,
+            "l": 3
+          },
+          "total": {
+            "w": 12,
+            "l": 8
+          },
+          "singles301": {
+            "w": 3,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 9,
+          "gamesPlayed": 20,
+          "aspAverage": 0.45,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 41,
+          "name": "Mike Cody",
+          "singles": {
+            "w": 1,
+            "l": 1
+          },
+          "doubles": {
+            "w": 2,
+            "l": 2
+          },
+          "total": {
+            "w": 3,
+            "l": 3
+          },
+          "singles301": {
+            "w": 0,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 6,
+          "aspAverage": 0,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 42,
+          "name": "Travis Wilson",
+          "singles": {
+            "w": 0,
+            "l": 2
+          },
+          "doubles": {
+            "w": 2,
+            "l": 1
+          },
+          "total": {
+            "w": 2,
+            "l": 3
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3,
+          "gamesPlayed": 5,
+          "aspAverage": 0.6,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 43,
+          "name": "Scott Stephenson",
+          "singles": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles": {
+            "w": 1,
+            "l": 3
+          },
+          "total": {
+            "w": 3,
+            "l": 5
+          },
+          "singles301": {
+            "w": 1,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 1.5,
+          "gamesPlayed": 8,
+          "aspAverage": 0.1875,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 44,
+          "name": "Brian Gaertner",
+          "singles": {
+            "w": 1,
+            "l": 6
+          },
+          "doubles": {
+            "w": 0,
+            "l": 7
+          },
+          "total": {
+            "w": 1,
+            "l": 13
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3,
+          "gamesPlayed": 14,
+          "aspAverage": 0.2143,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 45,
+          "name": "Ed Williams",
+          "singles": {
+            "w": 4,
+            "l": 4
+          },
+          "doubles": {
+            "w": 4,
+            "l": 4
+          },
+          "total": {
+            "w": 8,
+            "l": 8
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 8,
+          "gamesPlayed": 16,
+          "aspAverage": 0.5,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 46,
+          "name": "Matt St. Clair",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        },
+        {
+          "number": 47,
+          "name": "Matt Haney",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 6,
+            "l": 4
+          },
+          "total": {
+            "w": 13,
+            "l": 7
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 6,
+          "gamesPlayed": 20,
+          "aspAverage": 0.3,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 48,
+          "name": "Dennis Horger",
+          "singles": {
+            "w": 3,
+            "l": 7
+          },
+          "doubles": {
+            "w": 4,
+            "l": 6
+          },
+          "total": {
+            "w": 7,
+            "l": 13
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 10,
+          "gamesPlayed": 20,
+          "aspAverage": 0.5,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 49,
+          "name": "Michelle Brady",
+          "singles": {
+            "w": 4,
+            "l": 2
+          },
+          "doubles": {
+            "w": 1,
+            "l": 4
+          },
+          "total": {
+            "w": 5,
+            "l": 6
+          },
+          "singles301": {
+            "w": 2,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 7,
+          "gamesPlayed": 11,
+          "aspAverage": 0.6364,
+          "matchesPlayed": 3
+        }
+      ]
+    },
+    {
+      "code": "C5",
+      "name": "Brutha Ducks",
+      "players": [
+        {
+          "number": 50,
+          "name": "Bob Kuppler",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        },
+        {
+          "number": 51,
+          "name": "Kevin Carter",
+          "singles": {
+            "w": 1,
+            "l": 7
+          },
+          "doubles": {
+            "w": 4,
+            "l": 4
+          },
+          "total": {
+            "w": 5,
+            "l": 11
+          },
+          "singles301": {
+            "w": 1,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4,
+          "gamesPlayed": 16,
+          "aspAverage": 0.25,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 52,
+          "name": "Laurence Converse",
+          "singles": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 0
+          },
+          "total": {
+            "w": 0,
+            "l": 0
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 0,
+          "aspAverage": null,
+          "matchesPlayed": 0
+        },
+        {
+          "number": 53,
+          "name": "Tim Ellis",
+          "singles": {
+            "w": 4,
+            "l": 5
+          },
+          "doubles": {
+            "w": 3,
+            "l": 6
+          },
+          "total": {
+            "w": 7,
+            "l": 11
+          },
+          "singles301": {
+            "w": 3,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4.5,
+          "gamesPlayed": 18,
+          "aspAverage": 0.25,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 54,
+          "name": "Dave Finney",
+          "singles": {
+            "w": 3,
+            "l": 3
+          },
+          "doubles": {
+            "w": 4,
+            "l": 4
+          },
+          "total": {
+            "w": 7,
+            "l": 7
+          },
+          "singles301": {
+            "w": 1,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 13.5,
+          "gamesPlayed": 14,
+          "aspAverage": 0.9643,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 55,
+          "name": "Alex Kuppler",
+          "singles": {
+            "w": 2,
+            "l": 5
+          },
+          "doubles": {
+            "w": 1,
+            "l": 7
+          },
+          "total": {
+            "w": 3,
+            "l": 12
+          },
+          "singles301": {
+            "w": 0,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 6,
+          "gamesPlayed": 15,
+          "aspAverage": 0.4,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 56,
+          "name": "Steve Lalino",
+          "singles": {
+            "w": 6,
+            "l": 4
+          },
+          "doubles": {
+            "w": 5,
+            "l": 5
+          },
+          "total": {
+            "w": 11,
+            "l": 9
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 10,
+          "gamesPlayed": 20,
+          "aspAverage": 0.5,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 57,
+          "name": "Shane Rawlings",
+          "singles": {
+            "w": 5,
+            "l": 5
+          },
+          "doubles": {
+            "w": 3,
+            "l": 7
+          },
+          "total": {
+            "w": 8,
+            "l": 12
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.225,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 58,
+          "name": "Somchai Samaluk",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 2,
+            "l": 5
+          },
+          "total": {
+            "w": 9,
+            "l": 8
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 11,
+          "gamesPlayed": 17,
+          "aspAverage": 0.6471,
+          "matchesPlayed": 5
+        }
+      ]
+    },
+    {
+      "code": "C6",
+      "name": "Area 501",
+      "players": [
+        {
+          "number": 60,
+          "name": "Steve Massey",
+          "singles": {
+            "w": 8,
+            "l": 2
+          },
+          "doubles": {
+            "w": 8,
+            "l": 2
+          },
+          "total": {
+            "w": 16,
+            "l": 4
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 5,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 25,
+          "gamesPlayed": 20,
+          "aspAverage": 1.25,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 61,
+          "name": "Ian Lewis",
+          "singles": {
+            "w": 9,
+            "l": 1
+          },
+          "doubles": {
+            "w": 7,
+            "l": 1
+          },
+          "total": {
+            "w": 16,
+            "l": 2
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 5,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 18.5,
+          "gamesPlayed": 18,
+          "aspAverage": 1.0278,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 62,
+          "name": "Jamie Bender",
+          "singles": {
+            "w": 3,
+            "l": 4
+          },
+          "doubles": {
+            "w": 4,
+            "l": 1
+          },
+          "total": {
+            "w": 7,
+            "l": 5
+          },
+          "singles301": {
+            "w": 2,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4,
+          "gamesPlayed": 12,
+          "aspAverage": 0.3333,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 63,
+          "name": "Nick Beach",
+          "singles": {
+            "w": 2,
+            "l": 3
+          },
+          "doubles": {
+            "w": 4,
+            "l": 3
+          },
+          "total": {
+            "w": 6,
+            "l": 6
+          },
+          "singles301": {
+            "w": 1,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3,
+          "gamesPlayed": 12,
+          "aspAverage": 0.25,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 64,
+          "name": "Andrew Hagarty",
+          "singles": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles": {
+            "w": 2,
+            "l": 3
+          },
+          "total": {
+            "w": 3,
+            "l": 6
+          },
+          "singles301": {
+            "w": 0,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4.5,
+          "gamesPlayed": 9,
+          "aspAverage": 0.5,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 65,
+          "name": "Anthony Lawless",
+          "singles": {
+            "w": 1,
+            "l": 0
+          },
+          "doubles": {
+            "w": 0,
+            "l": 3
+          },
+          "total": {
+            "w": 1,
+            "l": 3
+          },
+          "singles301": {
+            "w": 1,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 4,
+          "aspAverage": 0,
+          "matchesPlayed": 2
+        },
+        {
+          "number": 66,
+          "name": "Russell Riley",
+          "singles": {
+            "w": 3,
+            "l": 4
+          },
+          "doubles": {
+            "w": 3,
+            "l": 3
+          },
+          "total": {
+            "w": 6,
+            "l": 7
+          },
+          "singles301": {
+            "w": 2,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 2
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 5,
+          "gamesPlayed": 13,
+          "aspAverage": 0.3846,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 67,
+          "name": "Juan Mata-Adams",
+          "singles": {
+            "w": 3,
+            "l": 1
+          },
+          "doubles": {
+            "w": 0,
+            "l": 3
+          },
+          "total": {
+            "w": 3,
+            "l": 4
+          },
+          "singles301": {
+            "w": 1,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4.5,
+          "gamesPlayed": 7,
+          "aspAverage": 0.6429,
+          "matchesPlayed": 3
+        },
+        {
+          "number": 68,
+          "name": "Ryley Edmonds",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 6,
+            "l": 3
+          },
+          "total": {
+            "w": 13,
+            "l": 6
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 10.5,
+          "gamesPlayed": 19,
+          "aspAverage": 0.5526,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 69,
+          "name": "John Geraghty",
+          "singles": {
+            "w": 2,
+            "l": 0
+          },
+          "doubles": {
+            "w": 2,
+            "l": 2
+          },
+          "total": {
+            "w": 4,
+            "l": 2
+          },
+          "singles301": {
+            "w": 1,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 2,
+          "gamesPlayed": 6,
+          "aspAverage": 0.3333,
+          "matchesPlayed": 2
+        }
+      ]
+    },
+    {
+      "code": "C7",
+      "name": "Menace 2 Sobriety",
+      "players": [
+        {
+          "number": 70,
+          "name": "Dave Johnson",
+          "singles": {
+            "w": 4,
+            "l": 4
+          },
+          "doubles": {
+            "w": 5,
+            "l": 3
+          },
+          "total": {
+            "w": 9,
+            "l": 7
+          },
+          "singles301": {
+            "w": 3,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 9.5,
+          "gamesPlayed": 16,
+          "aspAverage": 0.5938,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 71,
+          "name": "J.J. White",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 5,
+            "l": 5
+          },
+          "total": {
+            "w": 12,
+            "l": 8
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doubles501": {
+            "w": 4,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 5.5,
+          "gamesPlayed": 20,
+          "aspAverage": 0.275,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 72,
+          "name": "Brady Price",
+          "singles": {
+            "w": 7,
+            "l": 3
+          },
+          "doubles": {
+            "w": 6,
+            "l": 4
+          },
+          "total": {
+            "w": 13,
+            "l": 7
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 13,
+          "gamesPlayed": 20,
+          "aspAverage": 0.65,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 73,
+          "name": "Keith Bouchard",
+          "singles": {
+            "w": 3,
+            "l": 6
+          },
+          "doubles": {
+            "w": 3,
+            "l": 5
+          },
+          "total": {
+            "w": 6,
+            "l": 11
+          },
+          "singles301": {
+            "w": 2,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 8,
+          "gamesPlayed": 17,
+          "aspAverage": 0.4706,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 74,
+          "name": "James Gartland",
+          "singles": {
+            "w": 3,
+            "l": 3
+          },
+          "doubles": {
+            "w": 7,
+            "l": 1
+          },
+          "total": {
+            "w": 10,
+            "l": 4
+          },
+          "singles301": {
+            "w": 1,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 4,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 8.5,
+          "gamesPlayed": 14,
+          "aspAverage": 0.6071,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 75,
+          "name": "Spencer Rogers",
+          "singles": {
+            "w": 7,
+            "l": 0
+          },
+          "doubles": {
+            "w": 5,
+            "l": 2
+          },
+          "total": {
+            "w": 12,
+            "l": 2
+          },
+          "singles301": {
+            "w": 3,
+            "l": 0
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 0
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 4,
+          "gamesPlayed": 14,
+          "aspAverage": 0.2857,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 76,
+          "name": "Dennis Baker",
+          "singles": {
+            "w": 5,
+            "l": 5
+          },
+          "doubles": {
+            "w": 3,
+            "l": 6
+          },
+          "total": {
+            "w": 8,
+            "l": 11
+          },
+          "singles301": {
+            "w": 3,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 1,
+            "l": 0
+          },
+          "allStarPoints": 6.5,
+          "gamesPlayed": 19,
+          "aspAverage": 0.3421,
+          "matchesPlayed": 5
+        }
+      ]
+    },
+    {
+      "code": "C8",
+      "name": "Still Hump'N",
+      "players": [
+        {
+          "number": 80,
+          "name": "Randy Deemer",
+          "singles": {
+            "w": 0,
+            "l": 6
+          },
+          "doubles": {
+            "w": 1,
+            "l": 8
+          },
+          "total": {
+            "w": 1,
+            "l": 14
+          },
+          "singles301": {
+            "w": 0,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 5
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 5,
+          "gamesPlayed": 15,
+          "aspAverage": 0.3333,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 81,
+          "name": "Dawn Bordeaux",
+          "singles": {
+            "w": 0,
+            "l": 7
+          },
+          "doubles": {
+            "w": 3,
+            "l": 3
+          },
+          "total": {
+            "w": 3,
+            "l": 10
+          },
+          "singles301": {
+            "w": 0,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 0
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3,
+          "gamesPlayed": 13,
+          "aspAverage": 0.2308,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 82,
+          "name": "Dave McEwen",
+          "singles": {
+            "w": 8,
+            "l": 2
+          },
+          "doubles": {
+            "w": 4,
+            "l": 6
+          },
+          "total": {
+            "w": 12,
+            "l": 8
+          },
+          "singles301": {
+            "w": 4,
+            "l": 1
+          },
+          "singlesCricket": {
+            "w": 4,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 1,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 15,
+          "gamesPlayed": 20,
+          "aspAverage": 0.75,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 83,
+          "name": "Rob Stuckey",
+          "singles": {
+            "w": 2,
+            "l": 5
+          },
+          "doubles": {
+            "w": 4,
+            "l": 2
+          },
+          "total": {
+            "w": 6,
+            "l": 7
+          },
+          "singles301": {
+            "w": 1,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 0
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 2.5,
+          "gamesPlayed": 13,
+          "aspAverage": 0.1923,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 84,
+          "name": "Andy Krestalude",
+          "singles": {
+            "w": 3,
+            "l": 6
+          },
+          "doubles": {
+            "w": 6,
+            "l": 3
+          },
+          "total": {
+            "w": 9,
+            "l": 9
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 2,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 3,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 3,
+            "l": 1
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 11.5,
+          "gamesPlayed": 18,
+          "aspAverage": 0.6389,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 85,
+          "name": "Jim Allen",
+          "singles": {
+            "w": 1,
+            "l": 4
+          },
+          "doubles": {
+            "w": 0,
+            "l": 5
+          },
+          "total": {
+            "w": 1,
+            "l": 9
+          },
+          "singles301": {
+            "w": 1,
+            "l": 3
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 1
+          },
+          "doublesCricket": {
+            "w": 0,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 3
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 0,
+          "gamesPlayed": 10,
+          "aspAverage": 0,
+          "matchesPlayed": 4
+        },
+        {
+          "number": 86,
+          "name": "Shane Pike",
+          "singles": {
+            "w": 1,
+            "l": 7
+          },
+          "doubles": {
+            "w": 2,
+            "l": 6
+          },
+          "total": {
+            "w": 3,
+            "l": 13
+          },
+          "singles301": {
+            "w": 1,
+            "l": 4
+          },
+          "singlesCricket": {
+            "w": 0,
+            "l": 3
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 2
+          },
+          "doubles501": {
+            "w": 0,
+            "l": 4
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 3.5,
+          "gamesPlayed": 16,
+          "aspAverage": 0.2188,
+          "matchesPlayed": 5
+        },
+        {
+          "number": 87,
+          "name": "Andy Bohn",
+          "singles": {
+            "w": 2,
+            "l": 6
+          },
+          "doubles": {
+            "w": 4,
+            "l": 3
+          },
+          "total": {
+            "w": 6,
+            "l": 9
+          },
+          "singles301": {
+            "w": 1,
+            "l": 2
+          },
+          "singlesCricket": {
+            "w": 1,
+            "l": 4
+          },
+          "doublesCricket": {
+            "w": 2,
+            "l": 1
+          },
+          "doubles501": {
+            "w": 2,
+            "l": 2
+          },
+          "tiebreaker": {
+            "w": 0,
+            "l": 0
+          },
+          "allStarPoints": 2.5,
+          "gamesPlayed": 15,
+          "aspAverage": 0.1667,
+          "matchesPlayed": 5
+        }
+      ]
+    }
+  ]
+}

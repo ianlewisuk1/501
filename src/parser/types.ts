@@ -95,3 +95,18 @@ export interface TeamWeek {
   trophyDarts: TrophyDart[];
   perfectThrows: string[];
 }
+
+/** One team's block on Pg10{division}. */
+export interface DivisionTeam {
+  code: string; // "C7"
+  name: string; // "Menace 2 Sobriety"
+  players: Player[];
+}
+
+/** Every team's player stats for one issue, written beside week-NN.json for scouting. */
+export interface DivisionWeek {
+  season: string;
+  week: number;
+  division: string;
+  teams: DivisionTeam[];
+}

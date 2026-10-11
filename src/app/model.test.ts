@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import schedule from "../../data/Fa26/schedule.json";
 import { parse } from "../parser/index";
+import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { buildFixtures, editorPick, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { buildFixtures, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -120,5 +121,32 @@ describe("form", () => {
     ]);
     expect(pts.map((p) => p.night)).toEqual([1, 2 / 3, null, 1 / 4, 1]);
     expect(pts.map((p) => p.season)).toEqual([1, 6 / 7, null, 7 / 11, 10 / 14]);
+  });
+});
+
+describe("scouting", () => {
+  const div = (w: number): DivisionWeek => JSON.parse(readFileSync(`data/Fa26/division-week-0${w}.json`, "utf8"));
+  const divisions = [div(4), div(7)];
+
+  it("ranks the opponent's players by record, with the last three weeks beside it", () => {
+    const r = scoutReport("Menace 2 Sobriety", wk07, divisions)!;
+    expect(r).toMatchObject({ team: "Menace 2 Sobriety", through: 6, recentWeeks: [4, 6] });
+    expect(r.rows).toHaveLength(7);
+    expect(r.rows[0]).toMatchObject({ name: "Spencer Rogers", total: { w: 14, l: 3 }, recent: { w: 6, l: 1 }, matches: 5 });
+  });
+
+  it("finds the team from a short name", () => {
+    expect(scoutReport("Menace", wk07, divisions)?.team).toBe("Menace 2 Sobriety");
+  });
+
+  it("drops the recent column when the older issue is missing", () => {
+    const r = scoutReport("Menace 2 Sobriety", wk07, [div(7)])!;
+    expect(r.recentWeeks).toBeNull();
+    expect(r.rows[0].recent).toBeNull();
+  });
+
+  it("is null without this issue's division page or a known opponent", () => {
+    expect(scoutReport("Menace 2 Sobriety", wk07, [div(4)])).toBeNull();
+    expect(scoutReport("Nobody", wk07, divisions)).toBeNull();
   });
 });

@@ -34,7 +34,7 @@ raleighdartleague.org (WordPress)
 inbox/Fa26wk07.xlsx
    │  scripts/parse.ts   pure parser: (workbook, teamConfig) -> TeamWeek JSON
    ▼
-data/Fa26/week-07.json  +  data/latest.json  +  data/manifest.json (processed files)
+data/Fa26/week-07.json  +  division-week-07.json (every C team's players, for Scouting)  +  data/latest.json  +  data/manifest.json (processed files)
    │  git commit, then Pages deploy
    ▼
 Static React page reads data/latest.json
@@ -249,6 +249,7 @@ How to merge: for weeks N and N+1, Page 5 wins over `schedule.json` if they disa
 
 1. **Header:** AREA 501, then one line: "C Division · Week 7". The date lives in the Tonight card.
 2. **Tonight:** opponent (full name), home or away, venue, the opponent's rank and record (join with standings), and the editor's prediction on one line. Below the venue, show two buttons: **Apple Maps** (`https://maps.apple.com/?q=<maps>`) and **Google Maps** (`https://www.google.com/maps/search/?api=1&query=<maps>`), with the query URL-encoded. Style each after its app's own buttons but don't use their logos. Use the `maps` value from `venues`, or the venue name plus ", Raleigh, NC" if the venue isn't listed. In the Fixtures list, each upcoming venue gets one link: Apple Maps on iOS, Google Maps everywhere else.
+2a. **Scouting:** tonight's opponent's players from the same issue's Page 10, best season record first: record, win %, last 3 weeks' W–L (the difference from the issue 3 weeks earlier; the column hides if that issue is missing), singles %, doubles % and matches. Players with no matches are left out. Plain table, no charts. Hidden on a bye.
 3. **Last result:** W/L, score, opponent's full name, home or away, and games won per category out of 6.
 4. **Standings:** the C table with our row highlighted and the gap to 2nd place ("8 pts clear").
 5. **Fixtures:** all 14 weeks in one compact list. Past weeks show W/L and the score where we have them, tonight is highlighted, and future weeks show the opponent, H/A and venue. This replaces a separate "next week" section. It starts collapsed to last week, this week and next week, with a big "Show all 14 weeks" button to expand it.
@@ -264,7 +265,7 @@ Keep it fast and plain: system fonts, no heavy UI kit, dark mode via `prefers-co
 
 **Removed at the owner's request (2026-09-23):** the Bragging rights and From the newsletter sections. The parser still extracts `leaderboards`, `hotDarts`, `trophyDarts`, `perfectThrows` and `headline`, so either can come back.
 
-**Out of scope for v1:** other divisions and teams, the Page 9 team comparison, venue addresses and maps, and the prose pages apart from our headline and prediction.
+**Out of scope for v1:** other divisions, other teams beyond the Scouting table, the Page 9 team comparison, venue addresses and maps, and the prose pages apart from our headline and prediction.
 
 ---
 

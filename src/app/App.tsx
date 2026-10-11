@@ -3,9 +3,9 @@ import { fullTeamName } from "../parser/names";
 import { TEAM } from "../parser/team";
 import type { MatchResult, Player, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
-import { current, history, schedule } from "./data";
+import { current, divisions, history, schedule } from "./data";
 import {
-  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, shortDate, teamTotals, todayIso, type FixtureRow,
+  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
@@ -29,6 +29,7 @@ function Page({ week }: { week: TeamWeek }) {
         <p className="meta">{week.team.division} Division · Week {week.week}</p>
       </header>
       <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} today={today} />
+      <Scouting week={week} fixture={fixtures.find((f) => f.status === "current")} />
       <LastResult week={week} />
       <Standings week={week} />
       <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} />
@@ -103,6 +104,50 @@ function EditorsPick({ prediction, opponent }: { prediction: { featured: boolean
         </details>
       ) : call}
     </blockquote>
+  );
+}
+
+/** Tonight's opponent's players, so we know who to watch for. */
+function Scouting({ week, fixture }: { week: TeamWeek; fixture: FixtureRow | undefined }) {
+  const report = fixture && !fixture.bye ? scoutReport(fixture.opponent, week, divisions) : null;
+  if (!report?.rows.length) return null;
+  const [from, to] = report.recentWeeks ?? [0, 0];
+  return (
+    <section aria-labelledby="scouting">
+      <h2 id="scouting">Scouting <span className="muted">· {report.team}</span></h2>
+      <div className="scroll-x" tabIndex={0} role="region" aria-label="Opponent player stats, scrolls sideways">
+        <table className="players wide scout">
+          <thead>
+            <tr>
+              <th className="sticky">Player</th>
+              <th className="num">Record</th>
+              <th className="num">Win %</th>
+              {report.recentWeeks && <th className="num">Last {to - from + 1} wks</th>}
+              <th className="num">Singles</th>
+              <th className="num">Doubles</th>
+              <th className="num">Matches</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.rows.map((p) => (
+              <tr key={p.number}>
+                <th scope="row" className="sticky">{p.name}</th>
+                <td className="num">{fmtWL(p.total)}</td>
+                <td className="num"><b>{fmtPct(pct(p.total))}</b></td>
+                {report.recentWeeks && <td className="num">{p.recent ? fmtWL(p.recent) : "–"}</td>}
+                <td className="num">{fmtPct(pct(p.singles))}</td>
+                <td className="num">{fmtPct(pct(p.doubles))}</td>
+                <td className="num">{p.matches}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="muted small">
+        Best record first. Season stats through week {report.through}
+        {report.recentWeeks && <>; "Last {to - from + 1} wks" is weeks {from}–{to} only</>}.
+      </p>
+    </section>
   );
 }
 

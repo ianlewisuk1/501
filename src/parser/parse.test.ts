@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parse } from "./index";
+import { parse, parseDivisionWorkbook } from "./index";
+import { loadWorkbook } from "./workbook";
 import { TEAM } from "./team";
 import type { MatchResult, Player } from "./types";
 
@@ -82,5 +83,23 @@ describe("edge cases", () => {
     const wk03 = parse("fixtures/Fa26wk03.xlsx", TEAM);
     expect(wk03.standings).toHaveLength(8);
     expect(wk03.standings[5]).toMatchObject({ rank: 5, team: "Projectile Dysfunction" });
+  });
+});
+
+describe("division players (scouting)", () => {
+  const div = parseDivisionWorkbook(loadWorkbook("fixtures/Fa26wk07.xlsx"), TEAM);
+
+  it("finds all eight C teams in page order", () => {
+    expect(div).toMatchObject({ season: "Fa26", week: 7, division: "C" });
+    expect(div.teams.map((t) => t.code)).toEqual(["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]);
+  });
+
+  it("our block matches the team page's players", () => {
+    expect(div.teams.find((t) => t.code === "C6")).toEqual({ code: "C6", name: "Area 501", players: wk07.players });
+  });
+
+  it("every team has players and the opponent's block is named like the standings", () => {
+    for (const t of div.teams) expect(t.players.length).toBeGreaterThan(0);
+    expect(div.teams.map((t) => t.name)).toContain("Menace 2 Sobriety");
   });
 });

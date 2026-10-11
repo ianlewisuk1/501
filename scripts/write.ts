@@ -1,10 +1,11 @@
 /**
- * Writes data/{season}/week-NN.json, data/{season}/index.json, data/latest.json (a copy of the newest week)
+ * Writes data/{season}/week-NN.json, data/{season}/division-week-NN.json (every team's players, for scouting), data/{season}/index.json, data/latest.json (a copy of the newest week)
  * and records the file in data/manifest.json.
  */
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { basename, join } from "node:path";
-import { parse } from "../src/parser/index";
+import { parseDivisionWorkbook, parseWorkbook } from "../src/parser/index";
+import { loadWorkbook } from "../src/parser/workbook";
 import { TEAM } from "../src/parser/team";
 
 const DATA = "data";
@@ -20,11 +21,14 @@ export function parseFiles(files: string[]): string[] {
   const manifest: Record<string, string> = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : {};
   const written: string[] = [];
   for (const file of files) {
-    const week = parse(file, TEAM);
+    const wb = loadWorkbook(file);
+    const week = parseWorkbook(wb, TEAM);
     const dir = join(DATA, week.season);
     mkdirSync(dir, { recursive: true });
-    const out = join(dir, `week-${String(week.week).padStart(2, "0")}.json`);
+    const nn = String(week.week).padStart(2, "0");
+    const out = join(dir, `week-${nn}.json`);
     write(out, week);
+    write(join(dir, `division-week-${nn}.json`), parseDivisionWorkbook(wb, TEAM));
     manifest[basename(file)] = out;
     written.push(out);
     console.log(`${file} -> ${out}`);
