@@ -57,9 +57,9 @@ describe("helpers", () => {
   });
 
   it("builds maps links per platform", () => {
-    expect(mapsUrl("The Flying Saucer", sched, true)).toBe("https://maps.apple.com/?q=The%20Flying%20Saucer%2C%20Raleigh%2C%20NC");
+    expect(mapsUrl("The Flying Saucer", sched, true)).toBe("https://maps.apple.com/?q=Flying%20Saucer%20Draught%20Emporium%2C%20328%20W%20Morgan%20St%2C%20Raleigh%2C%20NC%2027601");
     expect(mapsUrl("Nowhere", sched, false)).toBe("https://www.google.com/maps/search/?api=1&query=Nowhere%2C%20Raleigh%2C%20NC");
-    expect(mapsUrls("Snooker's 1&2", sched).google).toContain("query=Snooker's%2C%20Raleigh%2C%20NC");
+    expect(mapsUrls("Snooker's 1&2", sched).google).toContain("query=Snooker's%20Bar%20%26%20Billiards%2C%203520%20Wade%20Ave");
     expect(isIOS({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)" })).toBe(true);
     expect(isIOS({ userAgent: "Mozilla/5.0 (Linux; Android 15)" })).toBe(false);
   });
