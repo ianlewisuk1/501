@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import schedule from "../../data/Fa26/schedule.json";
-import { parse } from "../parser/index";
+import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/index";
+import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { buildFixtures, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { buildFixtures, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -148,5 +149,39 @@ describe("scouting", () => {
   it("is null without this issue's division page or a known opponent", () => {
     expect(scoutReport("Menace 2 Sobriety", wk07, [div(4)])).toBeNull();
     expect(scoutReport("Nobody", wk07, divisions)).toBeNull();
+  });
+});
+
+describe("other teams' schedules", () => {
+  const issues = [6, 7].flatMap((n) => parseDivisionTeams(loadWorkbook(`fixtures/Fa26wk0${n}.xlsx`), TEAM));
+
+  it("rebuilds ours from the newsletters alone, around weeks 5 to 8 and mirrored half a season away", () => {
+    const ours = teamSchedule("Area 501", issues, sched).weeks;
+    const strip = ({ score: _, ...w }: Record<string, unknown>) => w;
+    const want = sched.weeks.filter((w) => [5, 6, 7, 8, 12, 13, 14, 1].includes(w.week)).map(strip);
+    expect(ours).toEqual(want);
+  });
+
+  it("uses the home team's bar for inferred weeks", () => {
+    const menace = teamSchedule("Menace 2 Sobriety", issues, sched).weeks;
+    expect(menace.find((w) => w.week === 14)).toEqual({ week: 14, date: "2026-11-11", home: true, opponent: "Area 501", venue: "High Park 1&2" });
+  });
+
+  it("slugs team names for links", () => expect(teamSlug("Still Hump'N")).toBe("still-hump-n"));
+});
+
+describe("division leaderboard", () => {
+  const div = parseDivisionWorkbook(loadWorkbook("fixtures/Fa26wk07.xlsx"), TEAM);
+
+  it("lists every player in the division from the same issue, with their team", () => {
+    const all = divisionPlayers(wk07, [div]);
+    expect(all.length).toBe(div.teams.reduce((n, t) => n + t.players.length, 0));
+    expect(all.find((p) => p.name === "Ian Lewis")).toMatchObject({ team: "Area 501", code: "C6", number: 61 });
+    expect(divisionPlayers(wk06, [div])).toEqual([]); // no issue for that week, no rows
+  });
+
+  it("counts regulars as half the weeks played so far", () => {
+    expect(regularMatches(wk07)).toBe(3);
+    expect(regularMatches({ ...wk07, week: 1 })).toBe(1);
   });
 });

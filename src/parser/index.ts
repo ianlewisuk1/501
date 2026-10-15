@@ -5,7 +5,8 @@ import { page2 } from "./page2";
 import { hotDarts, trophies } from "./page3";
 import { fixtures, prediction } from "./page5";
 import { divisionTeams, page10 } from "./page10";
-import { Sheet } from "./sheet";
+import { divisionHeader, fullTeamName, isUs, norm } from "./names";
+import { isBlank, Sheet, str } from "./sheet";
 import type { TeamConfig } from "./team";
 import type { AspRow, DivisionWeek, TeamWeek, WinPctRow } from "./types";
 import { loadWorkbook } from "./workbook";
@@ -67,6 +68,35 @@ export function parseWorkbook(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek {
     trophyDarts,
     perfectThrows,
   };
+}
+
+/**
+ * A config for every team in our division, from page 2: the standings' full name plus the
+ * short name its results column uses. Our own team keeps its hand-written aliases.
+ */
+export function divisionTeamConfigs(wb: XLSX.WorkBook, team: TeamConfig): TeamConfig[] {
+  const { season, week } = issueOf(wb);
+  const ws = wb.Sheets[`${season}-Wk${week}-Pg2`];
+  if (!ws) return [];
+  const pg2 = new Sheet(ws);
+  const top = pg2.findRow("A", (v) => norm(v) === divisionHeader(team.division));
+  if (top === null) return [];
+  const full: string[] = [];
+  const short: string[] = [];
+  for (let r = top; r <= pg2.maxRow && !isBlank(pg2.get("D", r)); r++) {
+    full.push(str(pg2.get("D", r)).trim());
+    if (!isBlank(pg2.get("K", r))) short.push(str(pg2.get("K", r)).trim());
+  }
+  return full.map((name) => isUs(team, name) ? team : {
+    name,
+    division: team.division,
+    aliases: [name, ...short.filter((s) => norm(s) !== norm(name) && fullTeamName(s, full) === name)],
+  });
+}
+
+/** Every team in our division's week, ours included, in standings order. */
+export function parseDivisionTeams(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek[] {
+  return divisionTeamConfigs(wb, team).map((t) => parseWorkbook(wb, t));
 }
 
 export function parse(path: string, team: TeamConfig): TeamWeek {

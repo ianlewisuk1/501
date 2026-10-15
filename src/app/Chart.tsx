@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Fold } from "./Fold";
 import type { Player, TeamWeek } from "../parser/types";
 import { fmtPct, fmtWL, form, pct, playerIn, weeklyGames, WHOLE_TEAM, type FixtureRow, type FormPoint } from "./model";
 
@@ -7,7 +8,6 @@ const CATEGORIES: [keyof Player, string][] = [
   ["singlesCricket", "Singles cricket"],
   ["doublesCricket", "Doubles cricket"],
   ["doubles501", "Doubles 501"],
-  ["tiebreaker", "1001 tiebreaker"],
 ];
 
 export function PerformanceChart({ current, history, fixtures }: { current: TeamWeek; history: TeamWeek[]; fixtures: FixtureRow[] }) {
@@ -20,27 +20,29 @@ export function PerformanceChart({ current, history, fixtures }: { current: Team
   return (
     <section aria-labelledby="perf">
       <h2 id="perf">Performance</h2>
-      <div className="controls">
-        {hasWeekly && (
-          <div className="seg" role="group" aria-label="Chart view">
-            <button aria-pressed={shown === "compare"} onClick={() => setView("compare")}>Compare</button>
-            <button aria-pressed={shown === "breakdown"} onClick={() => setView("breakdown")}>Breakdown</button>
-          </div>
-        )}
-        <label hidden={shown !== "breakdown"}>
-          <span className="sr-only">Player</span>
-          <select value={who} onChange={(e) => setWho(e.target.value)}>
-            <option>{WHOLE_TEAM}</option>
-            {current.players.map((p) => <option key={p.number}>{p.name}</option>)}
-          </select>
-        </label>
-      </div>
-      {shown === "breakdown" ? <Breakdown player={player} />
-        : <CompareChart
-            players={current.players.map((p) => ({ name: p.name, pts: form(weeklyGames(current, history, fixtures, p.name)) }))}
-            team={form(weeklyGames(current, history, fixtures, WHOLE_TEAM))}
-          />}
-      <p className="muted small">Through week {current.week - 1}.</p>
+      <Fold show="Show charts" hide="Hide charts" summary="Win % week by week, and each player's games by type.">
+        <div className="controls">
+          {hasWeekly && (
+            <div className="seg" role="group" aria-label="Chart view">
+              <button aria-pressed={shown === "compare"} onClick={() => setView("compare")}>Compare</button>
+              <button aria-pressed={shown === "breakdown"} onClick={() => setView("breakdown")}>Breakdown</button>
+            </div>
+          )}
+          <label hidden={shown !== "breakdown"}>
+            <span className="sr-only">Player</span>
+            <select value={who} onChange={(e) => setWho(e.target.value)}>
+              <option>{WHOLE_TEAM}</option>
+              {current.players.map((p) => <option key={p.number}>{p.name}</option>)}
+            </select>
+          </label>
+        </div>
+        {shown === "breakdown" ? <Breakdown player={player} />
+          : <CompareChart
+              players={current.players.map((p) => ({ name: p.name, pts: form(weeklyGames(current, history, fixtures, p.name)) }))}
+              team={form(weeklyGames(current, history, fixtures, WHOLE_TEAM))}
+            />}
+        <p className="muted small">Through week {current.week - 1}.</p>
+      </Fold>
     </section>
   );
 }
@@ -55,7 +57,6 @@ function Breakdown({ player }: { player: Player }) {
       </div>
       {CATEGORIES.map(([k, label]) => {
         const r = player[k] as { w: number; l: number };
-        if (k === "tiebreaker" && r.w + r.l === 0) return null;
         return (
           <div className="brow" key={k} title={`${label}: won ${r.w}, lost ${r.l} (${fmtPct(pct(r))})`}>
             <span className="blabel">{label}</span>

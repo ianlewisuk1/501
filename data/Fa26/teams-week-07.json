@@ -1,0 +1,4125 @@
+[
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Area 501",
+      "division": "C",
+      "code": "C6"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Pints",
+      "home": false,
+      "score": {
+        "us": 19,
+        "them": 5
+      },
+      "gamesWon": {
+        "singles301": 4,
+        "singlesCricket": 5,
+        "doublesCricket": 4,
+        "doubles501": 6
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 9.5,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": true,
+      "opponent": "Menace 2 Sobriety",
+      "venue": "The Flying Saucer"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": false,
+      "opponent": "Brutha Ducks",
+      "venue": "Snooker's 1&2"
+    },
+    "prediction": {
+      "featured": true,
+      "text": "Match #4: (C Div.) Menace 2 Sobriety @ Area 501. What the heck was that week 5 hibernation act Menace pulled? That's the only thing preventing this from being yet another battle of unbeatens. Alas, this is just another rung on Area's climb to B (and A?). Area it is, 14-10."
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 60,
+        "name": "Steve Massey",
+        "singles": {
+          "w": 10,
+          "l": 2
+        },
+        "doubles": {
+          "w": 8,
+          "l": 3
+        },
+        "total": {
+          "w": 18,
+          "l": 5
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 6,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 26,
+        "gamesPlayed": 23,
+        "aspAverage": 1.1304,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 61,
+        "name": "Ian Lewis",
+        "singles": {
+          "w": 11,
+          "l": 1
+        },
+        "doubles": {
+          "w": 8,
+          "l": 1
+        },
+        "total": {
+          "w": 19,
+          "l": 2
+        },
+        "singles301": {
+          "w": 5,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 6,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 19.5,
+        "gamesPlayed": 21,
+        "aspAverage": 0.9286,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 62,
+        "name": "Jamie Bender",
+        "singles": {
+          "w": 4,
+          "l": 4
+        },
+        "doubles": {
+          "w": 6,
+          "l": 1
+        },
+        "total": {
+          "w": 10,
+          "l": 5
+        },
+        "singles301": {
+          "w": 2,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 6.5,
+        "gamesPlayed": 15,
+        "aspAverage": 0.4333,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 63,
+        "name": "Nick Beach",
+        "singles": {
+          "w": 2,
+          "l": 3
+        },
+        "doubles": {
+          "w": 4,
+          "l": 3
+        },
+        "total": {
+          "w": 6,
+          "l": 6
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 3,
+        "gamesPlayed": 12,
+        "aspAverage": 0.25,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 64,
+        "name": "Andrew Hagarty",
+        "singles": {
+          "w": 1,
+          "l": 4
+        },
+        "doubles": {
+          "w": 3,
+          "l": 3
+        },
+        "total": {
+          "w": 4,
+          "l": 7
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 4.5,
+        "gamesPlayed": 11,
+        "aspAverage": 0.4091,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 65,
+        "name": "Anthony Lawless",
+        "singles": {
+          "w": 2,
+          "l": 0
+        },
+        "doubles": {
+          "w": 1,
+          "l": 3
+        },
+        "total": {
+          "w": 3,
+          "l": 3
+        },
+        "singles301": {
+          "w": 2,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 1.5,
+        "gamesPlayed": 6,
+        "aspAverage": 0.25,
+        "matchesPlayed": 3
+      },
+      {
+        "number": 66,
+        "name": "Russell Riley",
+        "singles": {
+          "w": 5,
+          "l": 4
+        },
+        "doubles": {
+          "w": 4,
+          "l": 3
+        },
+        "total": {
+          "w": 9,
+          "l": 7
+        },
+        "singles301": {
+          "w": 3,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 7.5,
+        "gamesPlayed": 16,
+        "aspAverage": 0.4688,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 67,
+        "name": "Juan Mata-Adams",
+        "singles": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles": {
+          "w": 1,
+          "l": 4
+        },
+        "total": {
+          "w": 4,
+          "l": 6
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 4.5,
+        "gamesPlayed": 10,
+        "aspAverage": 0.45,
+        "matchesPlayed": 4
+      },
+      {
+        "number": 68,
+        "name": "Ryley Edmonds",
+        "singles": {
+          "w": 7,
+          "l": 4
+        },
+        "doubles": {
+          "w": 8,
+          "l": 3
+        },
+        "total": {
+          "w": 15,
+          "l": 7
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 11.5,
+        "gamesPlayed": 22,
+        "aspAverage": 0.5227,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 69,
+        "name": "John Geraghty",
+        "singles": {
+          "w": 3,
+          "l": 0
+        },
+        "doubles": {
+          "w": 3,
+          "l": 2
+        },
+        "total": {
+          "w": 6,
+          "l": 2
+        },
+        "singles301": {
+          "w": 1,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 2,
+        "gamesPlayed": 8,
+        "aspAverage": 0.25,
+        "matchesPlayed": 3
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 1,
+          "player": "Ian Lewis",
+          "w": 11,
+          "l": 1,
+          "pct": 0.9167
+        },
+        {
+          "rank": 3,
+          "player": "Steve Massey",
+          "w": 10,
+          "l": 2,
+          "pct": 0.8333
+        }
+      ],
+      "singlesPlusDoubles": [
+        {
+          "rank": 1,
+          "player": "Ian Lewis",
+          "w": 19,
+          "l": 2,
+          "pct": 0.9048
+        },
+        {
+          "rank": 6,
+          "player": "Steve Massey",
+          "w": 18,
+          "l": 5,
+          "pct": 0.7826
+        },
+        {
+          "rank": 9,
+          "player": "Ryley Edmonds",
+          "w": 15,
+          "l": 7,
+          "pct": 0.6818
+        },
+        {
+          "rank": 10,
+          "player": "Jamie Bender",
+          "w": 10,
+          "l": 5,
+          "pct": 0.6667
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 1,
+          "player": "Steve Massey",
+          "asp": 26,
+          "gamesPlayed": 23,
+          "average": 1.1304
+        },
+        {
+          "rank": 2,
+          "player": "Ian Lewis",
+          "asp": 19.5,
+          "gamesPlayed": 21,
+          "average": 0.9286
+        }
+      ]
+    },
+    "hotDarts": [],
+    "trophyDarts": [
+      {
+        "category": "Fast Singles 301",
+        "value": "9 darts",
+        "date": "2026-08-12",
+        "players": [
+          "Ian Lewis"
+        ]
+      },
+      {
+        "category": "Fast Doubles 501",
+        "value": "21 darts",
+        "date": "2026-09-02",
+        "players": [
+          "Ian Lewis",
+          "Steve Massey"
+        ]
+      }
+    ],
+    "perfectThrows": []
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Menace 2 Sobriety",
+      "division": "C",
+      "code": "C7"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Secrets",
+      "home": true,
+      "score": {
+        "us": 16,
+        "them": 8
+      },
+      "gamesWon": {
+        "singles301": 2,
+        "singlesCricket": 2,
+        "doublesCricket": 6,
+        "doubles501": 6
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 17,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": false,
+      "opponent": "Area 501",
+      "venue": "The Flying Saucer"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": false,
+      "opponent": "Still Hump'N",
+      "venue": "Mackey's Pub 3&4"
+    },
+    "prediction": {
+      "featured": true,
+      "text": "Match #4: (C Div.) Menace 2 Sobriety @ Area 501. What the heck was that week 5 hibernation act Menace pulled? That's the only thing preventing this from being yet another battle of unbeatens. Alas, this is just another rung on Area's climb to B (and A?). Area it is, 14-10."
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 70,
+        "name": "Dave Johnson",
+        "singles": {
+          "w": 4,
+          "l": 5
+        },
+        "doubles": {
+          "w": 7,
+          "l": 3
+        },
+        "total": {
+          "w": 11,
+          "l": 8
+        },
+        "singles301": {
+          "w": 3,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 9.5,
+        "gamesPlayed": 19,
+        "aspAverage": 0.5,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 71,
+        "name": "J.J. White",
+        "singles": {
+          "w": 9,
+          "l": 3
+        },
+        "doubles": {
+          "w": 7,
+          "l": 5
+        },
+        "total": {
+          "w": 16,
+          "l": 8
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 5,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 6.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.2708,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 72,
+        "name": "Brady Price",
+        "singles": {
+          "w": 8,
+          "l": 4
+        },
+        "doubles": {
+          "w": 8,
+          "l": 4
+        },
+        "total": {
+          "w": 16,
+          "l": 8
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 19.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.8125,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 73,
+        "name": "Keith Bouchard",
+        "singles": {
+          "w": 4,
+          "l": 7
+        },
+        "doubles": {
+          "w": 5,
+          "l": 5
+        },
+        "total": {
+          "w": 9,
+          "l": 12
+        },
+        "singles301": {
+          "w": 2,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 11.5,
+        "gamesPlayed": 21,
+        "aspAverage": 0.5476,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 74,
+        "name": "James Gartland",
+        "singles": {
+          "w": 3,
+          "l": 5
+        },
+        "doubles": {
+          "w": 9,
+          "l": 1
+        },
+        "total": {
+          "w": 12,
+          "l": 6
+        },
+        "singles301": {
+          "w": 1,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 11,
+        "gamesPlayed": 18,
+        "aspAverage": 0.6111,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 75,
+        "name": "Spencer Rogers",
+        "singles": {
+          "w": 7,
+          "l": 1
+        },
+        "doubles": {
+          "w": 7,
+          "l": 2
+        },
+        "total": {
+          "w": 14,
+          "l": 3
+        },
+        "singles301": {
+          "w": 3,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 6,
+        "gamesPlayed": 17,
+        "aspAverage": 0.3529,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 76,
+        "name": "Dennis Baker",
+        "singles": {
+          "w": 5,
+          "l": 7
+        },
+        "doubles": {
+          "w": 3,
+          "l": 6
+        },
+        "total": {
+          "w": 8,
+          "l": 13
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 8,
+        "gamesPlayed": 21,
+        "aspAverage": 0.381,
+        "matchesPlayed": 6
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 2,
+          "player": "Spencer Rogers",
+          "w": 7,
+          "l": 1,
+          "pct": 0.875
+        },
+        {
+          "rank": 7,
+          "player": "J.J. White",
+          "w": 9,
+          "l": 3,
+          "pct": 0.75
+        }
+      ],
+      "singlesPlusDoubles": [
+        {
+          "rank": 4,
+          "player": "Spencer Rogers",
+          "w": 14,
+          "l": 3,
+          "pct": 0.8235
+        },
+        {
+          "rank": 10,
+          "player": "Brady Price",
+          "w": 16,
+          "l": 8,
+          "pct": 0.6667
+        },
+        {
+          "rank": 10,
+          "player": "J.J. White",
+          "w": 16,
+          "l": 8,
+          "pct": 0.6667
+        },
+        {
+          "rank": 10,
+          "player": "James Gartland",
+          "w": 12,
+          "l": 6,
+          "pct": 0.6667
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 3,
+          "player": "Brady Price",
+          "asp": 19.5,
+          "gamesPlayed": 24,
+          "average": 0.8125
+        },
+        {
+          "rank": 11,
+          "player": "James Gartland",
+          "asp": 11,
+          "gamesPlayed": 18,
+          "average": 0.6111
+        },
+        {
+          "rank": 14,
+          "player": "Keith Bouchard",
+          "asp": 11.5,
+          "gamesPlayed": 21,
+          "average": 0.5476
+        }
+      ]
+    },
+    "hotDarts": [
+      {
+        "players": [
+          "Brady Price"
+        ],
+        "feat": "102-In"
+      },
+      {
+        "players": [
+          "Brady Price"
+        ],
+        "feat": "6.5 ASPs"
+      },
+      {
+        "players": [
+          "Keith Bouchard"
+        ],
+        "feat": "3.5 ASPs"
+      }
+    ],
+    "trophyDarts": [],
+    "perfectThrows": [
+      "James Gartland (Menace 2 Sobriety, 8/26)"
+    ]
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Mulligans Mafia",
+      "division": "C",
+      "code": "C1"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Hump'N",
+      "home": false,
+      "score": {
+        "us": 17,
+        "them": 7
+      },
+      "gamesWon": {
+        "singles301": 6,
+        "singlesCricket": 5,
+        "doublesCricket": 2,
+        "doubles501": 4
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 13.5,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": true,
+      "opponent": "Pints and Points",
+      "venue": "Mulligans Arcade"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": true,
+      "opponent": "Darty Little Secrets",
+      "venue": "Mulligans Arcade"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Mulligans Mafia 15, Pints and Points 9"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 10,
+        "name": "Robert Long",
+        "singles": {
+          "w": 1,
+          "l": 6
+        },
+        "doubles": {
+          "w": 1,
+          "l": 5
+        },
+        "total": {
+          "w": 2,
+          "l": 11
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 0
+        },
+        "allStarPoints": 3.5,
+        "gamesPlayed": 13,
+        "aspAverage": 0.2692,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 11,
+        "name": "Dustin Jones",
+        "singles": {
+          "w": 9,
+          "l": 3
+        },
+        "doubles": {
+          "w": 9,
+          "l": 3
+        },
+        "total": {
+          "w": 18,
+          "l": 6
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 5,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 14,
+        "gamesPlayed": 24,
+        "aspAverage": 0.5833,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 12,
+        "name": "Jimmy Arnold",
+        "singles": {
+          "w": 8,
+          "l": 3
+        },
+        "doubles": {
+          "w": 11,
+          "l": 1
+        },
+        "total": {
+          "w": 19,
+          "l": 4
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 6,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 15.5,
+        "gamesPlayed": 23,
+        "aspAverage": 0.6739,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 13,
+        "name": "Brandon Roper",
+        "singles": {
+          "w": 6,
+          "l": 4
+        },
+        "doubles": {
+          "w": 8,
+          "l": 4
+        },
+        "total": {
+          "w": 14,
+          "l": 8
+        },
+        "singles301": {
+          "w": 2,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 12,
+        "gamesPlayed": 22,
+        "aspAverage": 0.5455,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 14,
+        "name": "Denny \"Wood\" Williams",
+        "singles": {
+          "w": 6,
+          "l": 5
+        },
+        "doubles": {
+          "w": 10,
+          "l": 1
+        },
+        "total": {
+          "w": 16,
+          "l": 6
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 5,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 10,
+        "gamesPlayed": 22,
+        "aspAverage": 0.4545,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 15,
+        "name": "Deane \"Dino\" Morin",
+        "singles": {
+          "w": 5,
+          "l": 6
+        },
+        "doubles": {
+          "w": 2,
+          "l": 9
+        },
+        "total": {
+          "w": 7,
+          "l": 15
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 9,
+        "gamesPlayed": 22,
+        "aspAverage": 0.4091,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 16,
+        "name": "James Creech",
+        "singles": {
+          "w": 4,
+          "l": 6
+        },
+        "doubles": {
+          "w": 3,
+          "l": 5
+        },
+        "total": {
+          "w": 7,
+          "l": 11
+        },
+        "singles301": {
+          "w": 2,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 1,
+          "l": 1
+        },
+        "allStarPoints": 7,
+        "gamesPlayed": 18,
+        "aspAverage": 0.3889,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 17,
+        "name": "Matt Ondek",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 0
+        },
+        "total": {
+          "w": 0,
+          "l": 0
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 0,
+        "aspAverage": null,
+        "matchesPlayed": 0
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 7,
+          "player": "Dustin Jones",
+          "w": 9,
+          "l": 3,
+          "pct": 0.75
+        },
+        {
+          "rank": 9,
+          "player": "Jimmy Arnold",
+          "w": 8,
+          "l": 3,
+          "pct": 0.7273
+        }
+      ],
+      "singlesPlusDoubles": [
+        {
+          "rank": 3,
+          "player": "Jimmy Arnold",
+          "w": 19,
+          "l": 4,
+          "pct": 0.8261
+        },
+        {
+          "rank": 7,
+          "player": "Dustin Jones",
+          "w": 18,
+          "l": 6,
+          "pct": 0.75
+        },
+        {
+          "rank": 8,
+          "player": "Denny Williams",
+          "w": 16,
+          "l": 6,
+          "pct": 0.7273
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 9,
+          "player": "Jimmy Arnold",
+          "asp": 15.5,
+          "gamesPlayed": 23,
+          "average": 0.6739
+        },
+        {
+          "rank": 13,
+          "player": "Dustin Jones",
+          "asp": 14,
+          "gamesPlayed": 24,
+          "average": 0.5833
+        }
+      ]
+    },
+    "hotDarts": [
+      {
+        "players": [
+          "Dustin Jones"
+        ],
+        "feat": "4.5 ASPs"
+      }
+    ],
+    "trophyDarts": [
+      {
+        "category": "Fast Doubles Cricket",
+        "value": "17 darts",
+        "date": "2026-08-19",
+        "players": [
+          "Jimmy Arnold",
+          "Denny Williams"
+        ]
+      }
+    ],
+    "perfectThrows": [
+      "Robert Long (Mulligans Mafia, 8/19)"
+    ]
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Projectile Dysfunction",
+      "division": "C",
+      "code": "C2"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Ducks",
+      "home": true,
+      "score": {
+        "us": 20,
+        "them": 4
+      },
+      "gamesWon": {
+        "singles301": 3,
+        "singlesCricket": 5,
+        "doublesCricket": 6,
+        "doubles501": 6
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 10,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": false,
+      "opponent": "Darty Little Secrets",
+      "venue": "Brass Tap 5&6"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": true,
+      "opponent": "Pints and Points",
+      "venue": "Brass Tap 1&2"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Darty Little Secrets 13, Projectile Dysfunction 11"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 20,
+        "name": "Brian Smith",
+        "singles": {
+          "w": 2,
+          "l": 4
+        },
+        "doubles": {
+          "w": 3,
+          "l": 5
+        },
+        "total": {
+          "w": 5,
+          "l": 9
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 1,
+        "gamesPlayed": 14,
+        "aspAverage": 0.0714,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 21,
+        "name": "Dan Clark",
+        "singles": {
+          "w": 7,
+          "l": 2
+        },
+        "doubles": {
+          "w": 8,
+          "l": 1
+        },
+        "total": {
+          "w": 15,
+          "l": 3
+        },
+        "singles301": {
+          "w": 3,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 5,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 7.5,
+        "gamesPlayed": 18,
+        "aspAverage": 0.4167,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 22,
+        "name": "Mike Steppe",
+        "singles": {
+          "w": 1,
+          "l": 10
+        },
+        "doubles": {
+          "w": 4,
+          "l": 5
+        },
+        "total": {
+          "w": 5,
+          "l": 15
+        },
+        "singles301": {
+          "w": 1,
+          "l": 5
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 5
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 7.5,
+        "gamesPlayed": 20,
+        "aspAverage": 0.375,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 23,
+        "name": "J.J. Tant",
+        "singles": {
+          "w": 8,
+          "l": 4
+        },
+        "doubles": {
+          "w": 11,
+          "l": 1
+        },
+        "total": {
+          "w": 19,
+          "l": 5
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 6,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 5,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 10.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.4375,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 24,
+        "name": "Chris Peterson",
+        "singles": {
+          "w": 6,
+          "l": 6
+        },
+        "doubles": {
+          "w": 4,
+          "l": 5
+        },
+        "total": {
+          "w": 10,
+          "l": 11
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 5,
+        "gamesPlayed": 21,
+        "aspAverage": 0.2381,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 25,
+        "name": "Gray Talley",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 2
+        },
+        "total": {
+          "w": 0,
+          "l": 2
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 2,
+        "aspAverage": 0,
+        "matchesPlayed": 2
+      },
+      {
+        "number": 26,
+        "name": "Pat Ball",
+        "singles": {
+          "w": 4,
+          "l": 7
+        },
+        "doubles": {
+          "w": 6,
+          "l": 5
+        },
+        "total": {
+          "w": 10,
+          "l": 12
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 11,
+        "gamesPlayed": 22,
+        "aspAverage": 0.5,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 27,
+        "name": "Steve Harp",
+        "singles": {
+          "w": 7,
+          "l": 4
+        },
+        "doubles": {
+          "w": 6,
+          "l": 6
+        },
+        "total": {
+          "w": 13,
+          "l": 10
+        },
+        "singles301": {
+          "w": 2,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 13.5,
+        "gamesPlayed": 23,
+        "aspAverage": 0.587,
+        "matchesPlayed": 6
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 6,
+          "player": "Dan Clark",
+          "w": 7,
+          "l": 2,
+          "pct": 0.7778
+        }
+      ],
+      "singlesPlusDoubles": [
+        {
+          "rank": 2,
+          "player": "Dan Clark",
+          "w": 15,
+          "l": 3,
+          "pct": 0.8333
+        },
+        {
+          "rank": 5,
+          "player": "J.J. Tant",
+          "w": 19,
+          "l": 5,
+          "pct": 0.7917
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 12,
+          "player": "Steve Harp",
+          "asp": 13.5,
+          "gamesPlayed": 23,
+          "average": 0.587
+        }
+      ]
+    },
+    "hotDarts": [],
+    "trophyDarts": [],
+    "perfectThrows": []
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Darty Little Secrets",
+      "division": "C",
+      "code": "C3"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Menace",
+      "home": false,
+      "score": {
+        "us": 8,
+        "them": 16
+      },
+      "gamesWon": {
+        "singles301": 4,
+        "singlesCricket": 4,
+        "doublesCricket": 0,
+        "doubles501": 0
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 7,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": true,
+      "opponent": "Projectile Dysfunction",
+      "venue": "Brass Tap 5&6"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": false,
+      "opponent": "Mulligans Mafia",
+      "venue": "Mulligans Arcade"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Darty Little Secrets 13, Projectile Dysfunction 11"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 30,
+        "name": "Andrew Borgna",
+        "singles": {
+          "w": 3,
+          "l": 0
+        },
+        "doubles": {
+          "w": 2,
+          "l": 0
+        },
+        "total": {
+          "w": 5,
+          "l": 0
+        },
+        "singles301": {
+          "w": 2,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 1,
+        "gamesPlayed": 5,
+        "aspAverage": 0.2,
+        "matchesPlayed": 2
+      },
+      {
+        "number": 31,
+        "name": "Charles Tompkins",
+        "singles": {
+          "w": 4,
+          "l": 8
+        },
+        "doubles": {
+          "w": 5,
+          "l": 5
+        },
+        "total": {
+          "w": 9,
+          "l": 13
+        },
+        "singles301": {
+          "w": 2,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 7.5,
+        "gamesPlayed": 22,
+        "aspAverage": 0.3409,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 32,
+        "name": "Matt Wilson",
+        "singles": {
+          "w": 10,
+          "l": 2
+        },
+        "doubles": {
+          "w": 2,
+          "l": 10
+        },
+        "total": {
+          "w": 12,
+          "l": 12
+        },
+        "singles301": {
+          "w": 5,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 5,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 5
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 16.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.6875,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 33,
+        "name": "Jim Kerr",
+        "singles": {
+          "w": 7,
+          "l": 3
+        },
+        "doubles": {
+          "w": 3,
+          "l": 6
+        },
+        "total": {
+          "w": 10,
+          "l": 9
+        },
+        "singles301": {
+          "w": 3,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 3,
+        "gamesPlayed": 19,
+        "aspAverage": 0.1579,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 34,
+        "name": "Ahmed \"Al\" Al-Hoory",
+        "singles": {
+          "w": 4,
+          "l": 7
+        },
+        "doubles": {
+          "w": 8,
+          "l": 4
+        },
+        "total": {
+          "w": 12,
+          "l": 11
+        },
+        "singles301": {
+          "w": 2,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 8.5,
+        "gamesPlayed": 23,
+        "aspAverage": 0.3696,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 35,
+        "name": "Samantha Pausback",
+        "singles": {
+          "w": 5,
+          "l": 3
+        },
+        "doubles": {
+          "w": 4,
+          "l": 4
+        },
+        "total": {
+          "w": 9,
+          "l": 7
+        },
+        "singles301": {
+          "w": 3,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 8,
+        "gamesPlayed": 16,
+        "aspAverage": 0.5,
+        "matchesPlayed": 4
+      },
+      {
+        "number": 36,
+        "name": "Christian \"Buddy\" Pausback",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 0
+        },
+        "total": {
+          "w": 0,
+          "l": 0
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 0,
+        "aspAverage": null,
+        "matchesPlayed": 0
+      },
+      {
+        "number": 37,
+        "name": "Olivia Mathews",
+        "singles": {
+          "w": 10,
+          "l": 2
+        },
+        "doubles": {
+          "w": 4,
+          "l": 8
+        },
+        "total": {
+          "w": 14,
+          "l": 10
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 6,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 1
+        },
+        "allStarPoints": 18.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.7708,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 38,
+        "name": "Joanna Tompkins",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 0
+        },
+        "total": {
+          "w": 0,
+          "l": 0
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 0,
+        "aspAverage": null,
+        "matchesPlayed": 0
+      },
+      {
+        "number": 39,
+        "name": "Theresa Mathews",
+        "singles": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles": {
+          "w": 2,
+          "l": 5
+        },
+        "total": {
+          "w": 4,
+          "l": 7
+        },
+        "singles301": {
+          "w": 1,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 1,
+        "gamesPlayed": 11,
+        "aspAverage": 0.0909,
+        "matchesPlayed": 5
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 3,
+          "player": "Olivia Mathews",
+          "w": 10,
+          "l": 2,
+          "pct": 0.8333
+        },
+        {
+          "rank": 3,
+          "player": "Matt Wilson",
+          "w": 10,
+          "l": 2,
+          "pct": 0.8333
+        },
+        {
+          "rank": 10,
+          "player": "Jim Kerr",
+          "w": 7,
+          "l": 3,
+          "pct": 0.7
+        }
+      ],
+      "singlesPlusDoubles": [],
+      "allStarAverage": [
+        {
+          "rank": 6,
+          "player": "Olivia Mathews",
+          "asp": 18.5,
+          "gamesPlayed": 24,
+          "average": 0.7708
+        },
+        {
+          "rank": 8,
+          "player": "Matt Wilson",
+          "asp": 16.5,
+          "gamesPlayed": 24,
+          "average": 0.6875
+        }
+      ]
+    },
+    "hotDarts": [],
+    "trophyDarts": [
+      {
+        "category": "High In",
+        "value": "Ton-22",
+        "date": "2026-08-26",
+        "players": [
+          "Olivia Mathews"
+        ]
+      }
+    ],
+    "perfectThrows": [
+      "Ahmed Al-Hoory (Darty Little Secrets, 8/19)",
+      "Olivia Mathews (Darty Little Secrets, 9/2)"
+    ]
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Brutha Ducks",
+      "division": "C",
+      "code": "C5"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Projectile",
+      "home": false,
+      "score": {
+        "us": 4,
+        "them": 20
+      },
+      "gamesWon": {
+        "singles301": 3,
+        "singlesCricket": 1,
+        "doublesCricket": 0,
+        "doubles501": 0
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 12,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": true,
+      "opponent": "Still Hump'N",
+      "venue": "Snooker's 1&2"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": true,
+      "opponent": "Area 501",
+      "venue": "Snooker's 1&2"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Ducks 14, Still Hump'N 10"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 50,
+        "name": "Bob Kuppler",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 1
+        },
+        "total": {
+          "w": 0,
+          "l": 1
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 1,
+        "gamesPlayed": 1,
+        "aspAverage": 1,
+        "matchesPlayed": 1
+      },
+      {
+        "number": 51,
+        "name": "Kevin Carter",
+        "singles": {
+          "w": 1,
+          "l": 9
+        },
+        "doubles": {
+          "w": 4,
+          "l": 6
+        },
+        "total": {
+          "w": 5,
+          "l": 15
+        },
+        "singles301": {
+          "w": 1,
+          "l": 5
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 4,
+        "gamesPlayed": 20,
+        "aspAverage": 0.2,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 52,
+        "name": "Laurence Converse",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 0
+        },
+        "total": {
+          "w": 0,
+          "l": 0
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 0,
+        "aspAverage": null,
+        "matchesPlayed": 0
+      },
+      {
+        "number": 53,
+        "name": "Tim Ellis",
+        "singles": {
+          "w": 5,
+          "l": 6
+        },
+        "doubles": {
+          "w": 3,
+          "l": 8
+        },
+        "total": {
+          "w": 8,
+          "l": 14
+        },
+        "singles301": {
+          "w": 4,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 5
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 5.5,
+        "gamesPlayed": 22,
+        "aspAverage": 0.25,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 54,
+        "name": "Dave Finney",
+        "singles": {
+          "w": 4,
+          "l": 4
+        },
+        "doubles": {
+          "w": 4,
+          "l": 6
+        },
+        "total": {
+          "w": 8,
+          "l": 10
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 14.5,
+        "gamesPlayed": 18,
+        "aspAverage": 0.8056,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 55,
+        "name": "Alex Kuppler",
+        "singles": {
+          "w": 2,
+          "l": 7
+        },
+        "doubles": {
+          "w": 1,
+          "l": 8
+        },
+        "total": {
+          "w": 3,
+          "l": 15
+        },
+        "singles301": {
+          "w": 0,
+          "l": 5
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 9,
+        "gamesPlayed": 18,
+        "aspAverage": 0.5,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 56,
+        "name": "Steve Lalino",
+        "singles": {
+          "w": 6,
+          "l": 4
+        },
+        "doubles": {
+          "w": 5,
+          "l": 5
+        },
+        "total": {
+          "w": 11,
+          "l": 9
+        },
+        "singles301": {
+          "w": 4,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 10,
+        "gamesPlayed": 20,
+        "aspAverage": 0.5,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 57,
+        "name": "Shane Rawlings",
+        "singles": {
+          "w": 6,
+          "l": 6
+        },
+        "doubles": {
+          "w": 3,
+          "l": 9
+        },
+        "total": {
+          "w": 9,
+          "l": 15
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 5
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 4.5,
+        "gamesPlayed": 24,
+        "aspAverage": 0.1875,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 58,
+        "name": "Somchai Samaluk",
+        "singles": {
+          "w": 8,
+          "l": 4
+        },
+        "doubles": {
+          "w": 2,
+          "l": 7
+        },
+        "total": {
+          "w": 10,
+          "l": 11
+        },
+        "singles301": {
+          "w": 5,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 17,
+        "gamesPlayed": 21,
+        "aspAverage": 0.8095,
+        "matchesPlayed": 6
+      }
+    ],
+    "leaderboards": {
+      "singles": [],
+      "singlesPlusDoubles": [],
+      "allStarAverage": [
+        {
+          "rank": 4,
+          "player": "Somchai Samaluk",
+          "asp": 17,
+          "gamesPlayed": 21,
+          "average": 0.8095
+        },
+        {
+          "rank": 5,
+          "player": "Dave Finney",
+          "asp": 14.5,
+          "gamesPlayed": 18,
+          "average": 0.8056
+        }
+      ]
+    },
+    "hotDarts": [
+      {
+        "players": [
+          "Somchai Samaluk"
+        ],
+        "feat": "6 ASPs"
+      }
+    ],
+    "trophyDarts": [
+      {
+        "category": "High Out",
+        "value": "Ton-20",
+        "date": "2026-08-12",
+        "players": [
+          "Somchai Samaluk"
+        ]
+      }
+    ],
+    "perfectThrows": [
+      "Steve Lalino (Brutha Ducks, 8/26)"
+    ]
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Pints and Points",
+      "division": "C",
+      "code": "C4"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Area 501",
+      "home": true,
+      "score": {
+        "us": 5,
+        "them": 19
+      },
+      "gamesWon": {
+        "singles301": 2,
+        "singlesCricket": 1,
+        "doublesCricket": 2,
+        "doubles501": 0
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 10,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": false,
+      "opponent": "Mulligans Mafia",
+      "venue": "Mulligans Arcade"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": false,
+      "opponent": "Projectile Dysfunction",
+      "venue": "Brass Tap 1&2"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Mulligans Mafia 15, Pints and Points 9"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 40,
+        "name": "Daniel Cody",
+        "singles": {
+          "w": 7,
+          "l": 6
+        },
+        "doubles": {
+          "w": 6,
+          "l": 5
+        },
+        "total": {
+          "w": 13,
+          "l": 11
+        },
+        "singles301": {
+          "w": 3,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 10,
+        "gamesPlayed": 24,
+        "aspAverage": 0.4167,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 41,
+        "name": "Mike Cody",
+        "singles": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles": {
+          "w": 2,
+          "l": 4
+        },
+        "total": {
+          "w": 4,
+          "l": 6
+        },
+        "singles301": {
+          "w": 1,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 1
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 2.5,
+        "gamesPlayed": 10,
+        "aspAverage": 0.25,
+        "matchesPlayed": 3
+      },
+      {
+        "number": 42,
+        "name": "Travis Wilson",
+        "singles": {
+          "w": 0,
+          "l": 2
+        },
+        "doubles": {
+          "w": 2,
+          "l": 2
+        },
+        "total": {
+          "w": 2,
+          "l": 4
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 3,
+        "gamesPlayed": 6,
+        "aspAverage": 0.5,
+        "matchesPlayed": 3
+      },
+      {
+        "number": 43,
+        "name": "Scott Stephenson",
+        "singles": {
+          "w": 2,
+          "l": 4
+        },
+        "doubles": {
+          "w": 1,
+          "l": 5
+        },
+        "total": {
+          "w": 3,
+          "l": 9
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 4,
+        "gamesPlayed": 12,
+        "aspAverage": 0.3333,
+        "matchesPlayed": 3
+      },
+      {
+        "number": 44,
+        "name": "Brian Gaertner",
+        "singles": {
+          "w": 1,
+          "l": 8
+        },
+        "doubles": {
+          "w": 0,
+          "l": 8
+        },
+        "total": {
+          "w": 1,
+          "l": 16
+        },
+        "singles301": {
+          "w": 1,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 3,
+        "gamesPlayed": 17,
+        "aspAverage": 0.1765,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 45,
+        "name": "Ed Williams",
+        "singles": {
+          "w": 4,
+          "l": 6
+        },
+        "doubles": {
+          "w": 5,
+          "l": 5
+        },
+        "total": {
+          "w": 9,
+          "l": 11
+        },
+        "singles301": {
+          "w": 1,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 10,
+        "gamesPlayed": 20,
+        "aspAverage": 0.5,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 46,
+        "name": "Matt St. Clair",
+        "singles": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles": {
+          "w": 0,
+          "l": 0
+        },
+        "total": {
+          "w": 0,
+          "l": 0
+        },
+        "singles301": {
+          "w": 0,
+          "l": 0
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 0,
+        "aspAverage": null,
+        "matchesPlayed": 0
+      },
+      {
+        "number": 47,
+        "name": "Matt Haney",
+        "singles": {
+          "w": 7,
+          "l": 3
+        },
+        "doubles": {
+          "w": 6,
+          "l": 4
+        },
+        "total": {
+          "w": 13,
+          "l": 7
+        },
+        "singles301": {
+          "w": 4,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 4,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 6,
+        "gamesPlayed": 20,
+        "aspAverage": 0.3,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 48,
+        "name": "Dennis Horger",
+        "singles": {
+          "w": 4,
+          "l": 8
+        },
+        "doubles": {
+          "w": 5,
+          "l": 7
+        },
+        "total": {
+          "w": 9,
+          "l": 15
+        },
+        "singles301": {
+          "w": 3,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 2,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 12,
+        "gamesPlayed": 24,
+        "aspAverage": 0.5,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 49,
+        "name": "Michelle Brady",
+        "singles": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles": {
+          "w": 1,
+          "l": 4
+        },
+        "total": {
+          "w": 5,
+          "l": 6
+        },
+        "singles301": {
+          "w": 2,
+          "l": 1
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 0,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 1
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 7,
+        "gamesPlayed": 11,
+        "aspAverage": 0.6364,
+        "matchesPlayed": 3
+      }
+    ],
+    "leaderboards": {
+      "singles": [
+        {
+          "rank": 10,
+          "player": "Matt Haney",
+          "w": 7,
+          "l": 3,
+          "pct": 0.7
+        }
+      ],
+      "singlesPlusDoubles": [
+        {
+          "rank": 14,
+          "player": "Matt Haney",
+          "w": 13,
+          "l": 7,
+          "pct": 0.65
+        }
+      ],
+      "allStarAverage": []
+    },
+    "hotDarts": [],
+    "trophyDarts": [],
+    "perfectThrows": []
+  },
+  {
+    "season": "Fa26",
+    "week": 7,
+    "issueDate": "2026-09-23",
+    "issue": "JK951",
+    "team": {
+      "name": "Still Hump'N",
+      "division": "C",
+      "code": "C8"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "team": "Area 501",
+        "wins": 6,
+        "losses": 0,
+        "points": 94
+      },
+      {
+        "rank": 2,
+        "team": "Menace 2 Sobriety",
+        "wins": 5,
+        "losses": 1,
+        "points": 86
+      },
+      {
+        "rank": 3,
+        "team": "Mulligans Mafia",
+        "wins": 4,
+        "losses": 2,
+        "points": 83
+      },
+      {
+        "rank": 4,
+        "team": "Projectile Dysfunction",
+        "wins": 3,
+        "losses": 3,
+        "points": 77
+      },
+      {
+        "rank": 5,
+        "team": "Darty Little Secrets",
+        "wins": 3,
+        "losses": 3,
+        "points": 74
+      },
+      {
+        "rank": 6,
+        "team": "Brutha Ducks",
+        "wins": 2,
+        "losses": 4,
+        "points": 54
+      },
+      {
+        "rank": 7,
+        "team": "Pints and Points",
+        "wins": 1,
+        "losses": 5,
+        "points": 59
+      },
+      {
+        "rank": 8,
+        "team": "Still Hump'N",
+        "wins": 0,
+        "losses": 6,
+        "points": 48
+      }
+    ],
+    "lastResult": {
+      "week": 6,
+      "date": "2026-09-16",
+      "opponentShort": "Mafia",
+      "home": true,
+      "score": {
+        "us": 7,
+        "them": 17
+      },
+      "gamesWon": {
+        "singles301": 0,
+        "singlesCricket": 1,
+        "doublesCricket": 4,
+        "doubles501": 2
+      },
+      "tiebreaker1001": null,
+      "allStarPoints": 10,
+      "shortHanded": null,
+      "penalties": null
+    },
+    "thisWeek": {
+      "week": 7,
+      "home": false,
+      "opponent": "Brutha Ducks",
+      "venue": "Snooker's 1&2"
+    },
+    "nextWeek": {
+      "week": 8,
+      "home": true,
+      "opponent": "Menace 2 Sobriety",
+      "venue": "Mackey's Pub 3&4"
+    },
+    "prediction": {
+      "featured": false,
+      "text": "Ducks 14, Still Hump'N 10"
+    },
+    "headline": "Menace, after trailing 8-4, gets back on track with a full doubles sweep of the Secrets; Mafia, Area and Projectile all race to big singles leads, and then all just keep on racing out",
+    "players": [
+      {
+        "number": 80,
+        "name": "Randy Deemer",
+        "singles": {
+          "w": 1,
+          "l": 6
+        },
+        "doubles": {
+          "w": 1,
+          "l": 9
+        },
+        "total": {
+          "w": 2,
+          "l": 15
+        },
+        "singles301": {
+          "w": 0,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 6
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 5,
+        "gamesPlayed": 17,
+        "aspAverage": 0.2941,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 81,
+        "name": "Dawn Bordeaux",
+        "singles": {
+          "w": 0,
+          "l": 9
+        },
+        "doubles": {
+          "w": 4,
+          "l": 3
+        },
+        "total": {
+          "w": 4,
+          "l": 12
+        },
+        "singles301": {
+          "w": 0,
+          "l": 5
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 0
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 3
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 5.5,
+        "gamesPlayed": 16,
+        "aspAverage": 0.3438,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 82,
+        "name": "Dave McEwen",
+        "singles": {
+          "w": 8,
+          "l": 4
+        },
+        "doubles": {
+          "w": 5,
+          "l": 6
+        },
+        "total": {
+          "w": 13,
+          "l": 10
+        },
+        "singles301": {
+          "w": 4,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doublesCricket": {
+          "w": 4,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 1,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 16,
+        "gamesPlayed": 23,
+        "aspAverage": 0.6957,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 83,
+        "name": "Rob Stuckey",
+        "singles": {
+          "w": 2,
+          "l": 7
+        },
+        "doubles": {
+          "w": 5,
+          "l": 2
+        },
+        "total": {
+          "w": 7,
+          "l": 9
+        },
+        "singles301": {
+          "w": 1,
+          "l": 3
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 0
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 3.5,
+        "gamesPlayed": 16,
+        "aspAverage": 0.2188,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 84,
+        "name": "Andy Krestalude",
+        "singles": {
+          "w": 3,
+          "l": 8
+        },
+        "doubles": {
+          "w": 6,
+          "l": 5
+        },
+        "total": {
+          "w": 9,
+          "l": 13
+        },
+        "singles301": {
+          "w": 1,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 2,
+          "l": 4
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 3
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 14,
+        "gamesPlayed": 22,
+        "aspAverage": 0.6364,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 85,
+        "name": "Jim Allen",
+        "singles": {
+          "w": 1,
+          "l": 5
+        },
+        "doubles": {
+          "w": 1,
+          "l": 6
+        },
+        "total": {
+          "w": 2,
+          "l": 11
+        },
+        "singles301": {
+          "w": 1,
+          "l": 4
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 1
+        },
+        "doublesCricket": {
+          "w": 1,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 4
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 0,
+        "gamesPlayed": 13,
+        "aspAverage": 0,
+        "matchesPlayed": 5
+      },
+      {
+        "number": 86,
+        "name": "Shane Pike",
+        "singles": {
+          "w": 1,
+          "l": 8
+        },
+        "doubles": {
+          "w": 3,
+          "l": 7
+        },
+        "total": {
+          "w": 4,
+          "l": 15
+        },
+        "singles301": {
+          "w": 1,
+          "l": 5
+        },
+        "singlesCricket": {
+          "w": 0,
+          "l": 3
+        },
+        "doublesCricket": {
+          "w": 3,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 0,
+          "l": 5
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 5.5,
+        "gamesPlayed": 19,
+        "aspAverage": 0.2895,
+        "matchesPlayed": 6
+      },
+      {
+        "number": 87,
+        "name": "Andy Bohn",
+        "singles": {
+          "w": 2,
+          "l": 7
+        },
+        "doubles": {
+          "w": 5,
+          "l": 4
+        },
+        "total": {
+          "w": 7,
+          "l": 11
+        },
+        "singles301": {
+          "w": 1,
+          "l": 2
+        },
+        "singlesCricket": {
+          "w": 1,
+          "l": 5
+        },
+        "doublesCricket": {
+          "w": 2,
+          "l": 2
+        },
+        "doubles501": {
+          "w": 3,
+          "l": 2
+        },
+        "tiebreaker": {
+          "w": 0,
+          "l": 0
+        },
+        "allStarPoints": 3.5,
+        "gamesPlayed": 18,
+        "aspAverage": 0.1944,
+        "matchesPlayed": 6
+      }
+    ],
+    "leaderboards": {
+      "singles": [],
+      "singlesPlusDoubles": [],
+      "allStarAverage": [
+        {
+          "rank": 7,
+          "player": "Dave McEwen",
+          "asp": 16,
+          "gamesPlayed": 23,
+          "average": 0.6957
+        },
+        {
+          "rank": 10,
+          "player": "Andy Krestalude",
+          "asp": 14,
+          "gamesPlayed": 22,
+          "average": 0.6364
+        }
+      ]
+    },
+    "hotDarts": [
+      {
+        "players": [
+          "Dawn Bordeaux"
+        ],
+        "feat": "5-Bulls"
+      }
+    ],
+    "trophyDarts": [
+      {
+        "category": "Fast Singles Cricket",
+        "value": "15 darts",
+        "date": "2026-08-26",
+        "players": [
+          "Dave McEwen"
+        ]
+      }
+    ],
+    "perfectThrows": []
+  }
+]

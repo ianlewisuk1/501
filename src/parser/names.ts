@@ -29,8 +29,10 @@ export function fullTeamName(short: string, fullNames: string[]): string {
   if (!target) return short;
   const exact = fullNames.find((n) => norm(n) === target);
   if (exact) return exact;
-  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escaped = escapeRe(target);
   const re = new RegExp(`(^|\\s)${escaped}(\\s|$)`);
   const hits = fullNames.filter((n) => re.test(norm(n)));
   return hits.length === 1 ? hits[0] : short;
 }
+
+export const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

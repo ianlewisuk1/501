@@ -1,0 +1,172 @@
+/* Per-team palettes for the team picker. Area 501 keeps the defaults in styles.css.
+   Win/loss and chart colors stay the same for every team so they always mean the same thing. */
+/* Brutha Ducks: mallard teal, bill yellow */
+:root[data-team="brutha-ducks"] {
+  --navy: #0f3d3b;
+  --cream: #f4efe3;
+  --alien: #f2c230;
+  --bg: #e8f3f2;
+  --surface: #f6fbfa;
+  --text: #122b29;
+  --text-2: #576665;
+  --line: #d0e1e0;
+  --grid: #dde9e8;
+  --accent: #18726a;
+  --accent-soft: #d4edeb;
+}
+/* Darty Little Secrets: plum, hot pink */
+:root[data-team="darty-little-secrets"] {
+  --navy: #2e1030;
+  --cream: #f4efe3;
+  --alien: #f07bb8;
+  --bg: #f3e8ef;
+  --surface: #fbf6f9;
+  --text: #2b1223;
+  --text-2: #665761;
+  --line: #e1d0dc;
+  --grid: #e9dde5;
+  --accent: #721854;
+  --accent-soft: #edd4e4;
+}
+/* Menace 2 Sobriety: black, warning red */
+:root[data-team="menace-2-sobriety"] {
+  --navy: #221012;
+  --cream: #f4efe3;
+  --alien: #ff5a4e;
+  --bg: #f3e8e8;
+  --surface: #fbf6f6;
+  --text: #2b1212;
+  --text-2: #665757;
+  --line: #e1d0d0;
+  --grid: #e9dddd;
+  --accent: #721818;
+  --accent-soft: #edd4d4;
+}
+/* Mulligans Mafia: pinstripe charcoal, gold */
+:root[data-team="mulligans-mafia"] {
+  --navy: #1c1d21;
+  --cream: #f4efe3;
+  --alien: #d8ad4c;
+  --bg: #ecedee;
+  --surface: #f8f8f9;
+  --text: #1c1e22;
+  --text-2: #5c5e60;
+  --line: #d7d8db;
+  --grid: #e2e2e4;
+  --accent: #3a4150;
+  --accent-soft: #dddfe3;
+}
+/* Pints and Points: stout brown, lager amber */
+:root[data-team="pints-and-points"] {
+  --navy: #3b2312;
+  --cream: #f4efe3;
+  --alien: #f3a73b;
+  --bg: #f3ede8;
+  --surface: #fbf9f6;
+  --text: #2b1f12;
+  --text-2: #665e57;
+  --line: #e1d9d0;
+  --grid: #e9e3dd;
+  --accent: #724518;
+  --accent-soft: #ede0d4;
+}
+/* Projectile Dysfunction: steel blue, hazard orange */
+:root[data-team="projectile-dysfunction"] {
+  --navy: #102a46;
+  --cream: #f4efe3;
+  --alien: #ff8a3d;
+  --bg: #e8edf3;
+  --surface: #f6f9fb;
+  --text: #121f2b;
+  --text-2: #575e66;
+  --line: #d0d9e1;
+  --grid: #dde3e9;
+  --accent: #184572;
+  --accent-soft: #d4e0ed;
+}
+/* Still Hump'N: midnight, violet */
+:root[data-team="still-hump-n"] {
+  --navy: #1d1850;
+  --cream: #f4efe3;
+  --alien: #a493ff;
+  --bg: #ebe8f3;
+  --surface: #f8f6fb;
+  --text: #1b122b;
+  --text-2: #5c5766;
+  --line: #d6d0e1;
+  --grid: #e1dde9;
+  --accent: #361872;
+  --accent-soft: #dcd4ed;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-team="brutha-ducks"] {
+    --bg: #0d1c1a;
+    --surface: #172b29;
+    --text: #f1ecdc;
+    --text-2: #b6c3c2;
+    --line: #2a4644;
+    --grid: #223937;
+    --accent: #f2c230;
+    --accent-soft: #203c39;
+  }
+  :root[data-team="darty-little-secrets"] {
+    --bg: #1c0d17;
+    --surface: #2b1724;
+    --text: #f1ecdc;
+    --text-2: #c3b6bf;
+    --line: #462a3d;
+    --grid: #392232;
+    --accent: #f07bb8;
+    --accent-soft: #3c2032;
+  }
+  :root[data-team="menace-2-sobriety"] {
+    --bg: #1c0d0d;
+    --surface: #2b1717;
+    --text: #f1ecdc;
+    --text-2: #c3b6b6;
+    --line: #462a2a;
+    --grid: #392222;
+    --accent: #ff5a4e;
+    --accent-soft: #3c2020;
+  }
+  :root[data-team="mulligans-mafia"] {
+    --bg: #131416;
+    --surface: #1f2024;
+    --text: #f1ecdc;
+    --text-2: #bbbcbe;
+    --line: #35373c;
+    --grid: #2b2d31;
+    --accent: #d8ad4c;
+    --accent-soft: #2a2d31;
+  }
+  :root[data-team="pints-and-points"] {
+    --bg: #1c140d;
+    --surface: #2b2117;
+    --text: #f1ecdc;
+    --text-2: #c3bdb6;
+    --line: #46382a;
+    --grid: #392e22;
+    --accent: #f3a73b;
+    --accent-soft: #3c2e20;
+  }
+  :root[data-team="projectile-dysfunction"] {
+    --bg: #0d141c;
+    --surface: #17212b;
+    --text: #f1ecdc;
+    --text-2: #b6bdc3;
+    --line: #2a3846;
+    --grid: #222e39;
+    --accent: #ff8a3d;
+    --accent-soft: #202e3c;
+  }
+  :root[data-team="still-hump-n"] {
+    --bg: #120d1c;
+    --surface: #1e172b;
+    --text: #f1ecdc;
+    --text-2: #bab6c3;
+    --line: #332a46;
+    --grid: #2a2239;
+    --accent: #a493ff;
+    --accent-soft: #29203c;
+  }
+}

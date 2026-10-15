@@ -1,22 +1,67 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
 import { TEAM } from "../parser/team";
-import type { MatchResult, Player, TeamWeek, WL } from "../parser/types";
+import type { Player, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
-import { current, divisions, history, schedule } from "./data";
+import { Fold } from "./Fold";
+import { TeamArt } from "./TeamArt";
+import { current, divisions, historyOf, schedule, scheduleOf, teamNames } from "./data";
 import {
-  buildFixtures, editorPick, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
+  buildFixtures, divisionPlayers, editorPick, regularMatches, type DivisionPlayer, findStanding, teamSlug, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
 
-export function App() {
-  if (!current) return <main><h1>Area 501</h1><p>No newsletter parsed yet.</p></main>;
-  return <Page week={current} />;
+/** The team in the ?team= link, or ours. */
+function teamFromUrl(): string {
+  const slug = typeof location === "undefined" ? null : new URLSearchParams(location.search).get("team");
+  return teamNames.find((t) => teamSlug(t) === slug) ?? TEAM.name;
 }
 
-function Page({ week }: { week: TeamWeek }) {
-  const fixtures = useMemo(() => buildFixtures(week, history, schedule), [week]);
+export function App() {
+  const [team, setTeam] = useState(teamFromUrl);
+  const issues = useMemo(() => historyOf(team), [team]);
+  useTeamTheme(team);
+  const week = issues.at(-1);
+  if (!current || !week) return <main><h1>Area 501</h1><p>No newsletter parsed yet.</p></main>;
+  const pick = (name: string) => {
+    setTeam(name);
+    const url = new URL(location.href);
+    if (name === TEAM.name) url.searchParams.delete("team");
+    else url.searchParams.set("team", teamSlug(name));
+    window.history.replaceState(null, "", url);
+  };
+  // Keyed by team so sorting, chart picks and the expanded fixtures list start fresh.
+  return <Page key={team} week={week} history={issues} onTeam={pick} />;
+}
+
+/** Swap to the team's palette (themes.css) and tint the phone's status bar to match its header. */
+function useTeamTheme(team: string) {
+  useEffect(() => {
+    const root = document.documentElement;
+    if (team === TEAM.name) delete root.dataset.team;
+    else root.dataset.team = teamSlug(team);
+    const header = getComputedStyle(root).getPropertyValue("--navy").trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", header);
+  }, [team]);
+}
+
+/** A big plain dropdown of every team in the division, A to Z. */
+function TeamPicker({ team, onTeam }: { team: string; onTeam: (name: string) => void }) {
+  if (teamNames.length < 2) return null;
+  return (
+    <label className="team-pick">
+      <span>Show team</span>
+      <select value={team} onChange={(e) => onTeam(e.target.value)}>
+        {teamNames.map((t) => <option key={t} value={t}>{t}{t === TEAM.name ? " (us)" : ""}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; onTeam: (name: string) => void }) {
+  const teamSchedule = useMemo(() => scheduleOf(week.team.name), [week]);
+  const fixtures = useMemo(() => buildFixtures(week, history, teamSchedule), [week, history, teamSchedule]);
   const ios = useMemo(() => isIOS(), []);
   const maps = (venue: string) => mapsUrl(venue, schedule, ios);
   const today = todayIso();
@@ -24,16 +69,17 @@ function Page({ week }: { week: TeamWeek }) {
   return (
     <main>
       <header className="brand">
-        <img className="art" src={`${import.meta.env.BASE_URL}area501-art.webp`} alt="" width={360} height={287} />
-        <h1>{week.team.name}</h1>
+        <TeamArt team={week.team.name} />
+        <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
         <p className="meta">{week.team.division} Division · Week {week.week}</p>
+        <TeamPicker team={week.team.name} onTeam={onTeam} />
       </header>
       <Tonight week={week} fixture={fixtures.find((f) => f.status === "current")} today={today} />
       <Scouting week={week} fixture={fixtures.find((f) => f.status === "current")} />
-      <LastResult week={week} />
       <Standings week={week} />
       <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} />
       <Players week={week} />
+      <Division week={week} />
       <PerformanceChart current={week} history={history} fixtures={fixtures} />
       <KeyDates today={today} />
       <footer className="muted small">
@@ -57,11 +103,13 @@ function Tonight({ week, fixture, today }: { week: TeamWeek; fixture: FixtureRow
       {opp && <p className="muted">{ordinal(opp.rank)} in C · {opp.wins}–{opp.losses} · {opp.points} pts</p>}
       <p>{fixture.home ? "Home" : "Away"} · {fixture.venue}</p>
       <Directions venue={fixture.venue} />
-      {week.prediction && <EditorsPick prediction={week.prediction} opponent={fixture.opponent} />}
-      <blockquote>
-        <span className="muted small">Ian's pick</span>
-        <p>We win 24-0.</p>
-      </blockquote>
+      {week.prediction && <EditorsPick prediction={week.prediction} us={week.team.name} opponent={fixture.opponent} />}
+      {week.team.name === TEAM.name && (
+        <blockquote>
+          <span className="muted small">Ian's pick</span>
+          <p>We win 24-0.</p>
+        </blockquote>
+      )}
     </section>
   );
 }
@@ -88,8 +136,10 @@ function Directions({ venue }: { venue: string }) {
 }
 
 /** "Area 501 to win 14–10", with the editor's full write-up a tap away. */
-function EditorsPick({ prediction, opponent }: { prediction: { featured: boolean; text: string }; opponent: string }) {
-  const pick = editorPick(prediction, TEAM, opponent);
+function EditorsPick({ prediction, us, opponent }: { prediction: { featured: boolean; text: string }; us: string; opponent: string }) {
+  // Prose calls teams by a short word ("Area", "Menace"), so any longer word of the name counts.
+  const team = us === TEAM.name ? TEAM : { name: us, aliases: [us, ...us.split(/\s+/).filter((w) => w.length > 3)] };
+  const pick = editorPick(prediction, team, opponent);
   if (!pick) {
     return <blockquote><span className="muted small">Editor's pick</span><p>{prediction.text}</p></blockquote>;
   }
@@ -131,7 +181,7 @@ function Scouting({ week, fixture }: { week: TeamWeek; fixture: FixtureRow | und
   if (!report?.rows.length) return null;
   return (
     <section aria-labelledby="scouting">
-      <h2 id="scouting">Scouting <span className="muted">· {report.team}</span></h2>
+      <h2 id="scouting">This Week's Opponent (Week {fixture!.week}) <span className="muted">· {report.team}</span></h2>
       <div className="scroll-x" tabIndex={0} role="region" aria-label="Opponent player stats, scrolls sideways">
         <table className="players wide scout">
           <thead>
@@ -165,40 +215,6 @@ function Scouting({ week, fixture }: { week: TeamWeek; fixture: FixtureRow | und
         Season stats through week {report.through}
         {report.recentWeeks && <>; "Last {to - from + 1} wks" is weeks {from}–{to} only</>}. Tap a heading to sort.
       </p>
-    </section>
-  );
-}
-
-function LastResult({ week }: { week: TeamWeek }) {
-  const r = week.lastResult;
-  if (!r) return null;
-  if ("bye" in r) return <section className="card"><h2>Last week <span className="muted">· Week {r.week}</span></h2><p>Bye</p></section>;
-  return <ResultCard r={r} names={week.standings.map((s) => s.team)} />;
-}
-
-function ResultCard({ r, names }: { r: MatchResult; names: string[] }) {
-  const won = r.score.us > r.score.them;
-  const cats: [string, number][] = [
-    ["301", r.gamesWon.singles301],
-    ["Cricket", r.gamesWon.singlesCricket],
-    ["Dbl cricket", r.gamesWon.doublesCricket],
-    ["Dbl 501", r.gamesWon.doubles501],
-  ];
-  return (
-    <section className="card" aria-labelledby="last">
-      <h2 id="last">Last week <span className="muted">· Week {r.week} · {shortDate(r.date)} · {r.home ? "Home" : "Away"}</span></h2>
-      <p className="big">
-        <span className={`badge ${won ? "win" : r.score.us === r.score.them ? "tie" : "loss"}`}>{won ? "W" : r.score.us === r.score.them ? "T" : "L"}</span>{" "}
-        {r.score.us}–{r.score.them} vs {fullTeamName(r.opponentShort, names)}
-      </p>
-      <ul className="chips">
-        {cats.map(([k, v]) => <li key={k}>{k} <b>{v}/6</b></li>)}
-        {r.tiebreaker1001 && <li>1001 <b>{r.tiebreaker1001}</b></li>}
-        <li>ASPs <b>{r.allStarPoints}</b></li>
-      </ul>
-      {(r.shortHanded || r.penalties) && (
-        <p className="muted small">{[r.shortHanded && `Short-handed: ${r.shortHanded}`, r.penalties && `Penalties: ${r.penalties}`].filter(Boolean).join(" · ")}</p>
-      )}
     </section>
   );
 }
@@ -300,7 +316,6 @@ export const PLAYER_COLUMNS: Column[] = [
   pctCol("doublesPct", "Doubles", (p) => p.doubles),
   wlCol("d501", "501", "Doubles", (p) => p.doubles501),
   wlCol("dCricket", "Cricket", "Doubles", (p) => p.doublesCricket),
-  wlCol("tiebreaker", "1001", "Tiebreak", (p) => p.tiebreaker),
   { key: "asp", label: "Points", group: "All-star", sort: (p) => p.allStarPoints, show: (p) => String(p.allStarPoints) },
   { key: "aspAvg", label: "Avg", group: "All-star", sort: (p) => p.aspAverage ?? -1, show: (p) => p.aspAverage?.toFixed(2) ?? "–" },
   { key: "games", label: "Games", group: "Played", sort: (p) => p.gamesPlayed, show: (p) => String(p.gamesPlayed) },
@@ -318,7 +333,8 @@ function useSort<T extends { name: string }>(items: T[], columns: Column<T>[], i
   const toggle = (key: string) => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key !== "name" }));
   const arrow = (key: string) => (sort.key === key ? (sort.desc ? " ▾" : " ▴") : "");
   const ariaSort = (key: string) => (sort.key === key ? (sort.desc ? "descending" : "ascending") : "none") as "descending" | "ascending" | "none";
-  return { rows, sortKey: sort.key, toggle, arrow, ariaSort };
+  const sortBy = (key: string) => setSort({ key, desc: true });
+  return { rows, sortKey: sort.key, toggle, sortBy, arrow, ariaSort };
 }
 
 /** Consecutive columns sharing a group, for the top header row. */
@@ -338,44 +354,134 @@ function Players({ week }: { week: TeamWeek }) {
   return (
     <section aria-labelledby="players">
       <h2 id="players">Players <span className="muted">· through week {week.week - 1}</span></h2>
-      <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">
-        <table className="players wide">
-          <thead>
-            <tr className="groups">
-              <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
-                <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
-              </th>
-              {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
-            </tr>
-            <tr>
-              {PLAYER_COLUMNS.map((c, i) => (
-                <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
-                  <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
+      <Fold show="Show player stats" hide="Hide player stats"
+        summary={<>{week.players.length} players · team {fmtWL(team.total)} ({fmtPct(pct(team.total))} of games won)</>}>
+        <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">
+          <table className="players wide">
+            <thead>
+              <tr className="groups">
+                <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
+                  <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p) => (
-              <tr key={p.number}>
-                <th scope="row" className="sticky">{p.name} <span className="muted small">#{p.number}</span></th>
+                {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
+              </tr>
+              <tr>
                 {PLAYER_COLUMNS.map((c, i) => (
-                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
+                  <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
+                    <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row" className="sticky">Team total</th>
-              {PLAYER_COLUMNS.map((c, i) => (
-                <td key={c.key} className={`num${start(i) ? " gstart" : ""}`}>{c.key === "matches" ? "" : c.show(team)}</td>
+            </thead>
+            <tbody>
+              {rows.map((p) => (
+                <tr key={p.number}>
+                  <th scope="row" className="sticky">{p.name} <span className="muted small">#{p.number}</span></th>
+                  {PLAYER_COLUMNS.map((c, i) => (
+                    <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <p className="muted small">Swipe sideways for every category. Tap a heading to sort.</p>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" className="sticky">Team total</th>
+                {PLAYER_COLUMNS.map((c, i) => (
+                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}`}>{c.key === "matches" ? "" : c.show(team)}</td>
+                ))}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p className="muted small">Swipe sideways for every category. Tap a heading to sort.</p>
+      </Fold>
+    </section>
+  );
+}
+
+/** Leaderboard categories for the "Rank by" dropdown: plain words for the table's sort keys. */
+const RANK_BY: [string, string][] = [
+  ["totalPct", "Overall win %"],
+  ["singlesPct", "Singles win %"],
+  ["doublesPct", "Doubles win %"],
+  ["s301", "Singles 301"],
+  ["sCricket", "Singles cricket"],
+  ["d501", "Doubles 501"],
+  ["dCricket", "Doubles cricket"],
+  ["aspAvg", "All-star points per game"],
+  ["asp", "All-star points, total"],
+  ["games", "Games played"],
+];
+const TOP = 25;
+
+/** Every player in the division: a top 25 for any category, like the newsletter's leaderboards. */
+function Division({ week }: { week: TeamWeek }) {
+  const all = useMemo(() => divisionPlayers(week, divisions), [week]);
+  const min = regularMatches(week);
+  const [regulars, setRegulars] = useState(true);
+  const shown = regulars ? all.filter((p) => p.matchesPlayed >= min) : all.filter((p) => p.matchesPlayed > 0);
+  const { rows, sortKey, toggle, sortBy, arrow, ariaSort } = useSort<DivisionPlayer>(shown, PLAYER_COLUMNS, "totalPct");
+  const [everyone, setEveryone] = useState(false);
+  const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
+  if (!all.length) return null;
+  const listed = everyone ? rows : rows.slice(0, TOP);
+  const teams = new Set(all.map((p) => p.code)).size;
+
+  return (
+    <section aria-labelledby="division">
+      <h2 id="division">{week.team.division} Division leaderboard <span className="muted">· through week {week.week - 1}</span></h2>
+      <Fold show="Show leaderboard" hide="Hide leaderboard"
+        summary={<>Top {TOP} of {all.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
+        <label className="rank-by">
+          <span>Rank by</span>
+          <select value={RANK_BY.some(([k]) => k === sortKey) ? sortKey : ""} onChange={(e) => sortBy(e.target.value)}>
+            {!RANK_BY.some(([k]) => k === sortKey) && <option value="">(table heading)</option>}
+            {RANK_BY.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+          </select>
+        </label>
+        <label className="check">
+          <input type="checkbox" checked={regulars} onChange={(e) => setRegulars(e.target.checked)} />
+          Only players with {min}+ matches
+        </label>
+        <div className="scroll-x" tabIndex={0} role="region" aria-label="Division player stats, scrolls sideways">
+          <table className="players wide">
+            <thead>
+              <tr className="groups">
+                <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
+                  <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
+                </th>
+                {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
+              </tr>
+              <tr>
+                {PLAYER_COLUMNS.map((c, i) => (
+                  <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
+                    <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {listed.map((p, i) => (
+                <tr key={`${p.code}-${p.number}`} className={p.team === week.team.name ? "us" : undefined}>
+                  <th scope="row" className="sticky">
+                    <span className="muted small">{i + 1}.</span> {p.name}
+                    <span className="team small muted">{p.team}</span>
+                  </th>
+                  {PLAYER_COLUMNS.map((c, i) => (
+                    <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {rows.length > TOP && (
+          <button className="showall" aria-expanded={everyone} onClick={() => setEveryone(!everyone)}>
+            {everyone ? `Show top ${TOP} only` : `Show all ${rows.length} players`}
+          </button>
+        )}
+        <p className="muted small">{week.team.name} players are highlighted. Swipe sideways for every category, or tap a heading to sort by it.</p>
+      </Fold>
     </section>
   );
 }

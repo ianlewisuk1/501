@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parse, parseDivisionWorkbook } from "./index";
+import { parse, parseDivisionTeams, parseDivisionWorkbook } from "./index";
 import { loadWorkbook } from "./workbook";
 import { TEAM } from "./team";
 import type { MatchResult, Player } from "./types";
@@ -101,5 +101,23 @@ describe("division players (scouting)", () => {
   it("every team has players and the opponent's block is named like the standings", () => {
     for (const t of div.teams) expect(t.players.length).toBeGreaterThan(0);
     expect(div.teams.map((t) => t.name)).toContain("Menace 2 Sobriety");
+  });
+});
+
+describe("every team in the division", () => {
+  const teams = parseDivisionTeams(loadWorkbook("fixtures/Fa26wk07.xlsx"), TEAM);
+
+  it("parses all 8 C teams, ours exactly as before", () => {
+    expect(teams).toHaveLength(8);
+    expect(teams.find((t) => t.team.name === "Area 501")).toEqual(wk07);
+  });
+
+  it("matches other teams by their short page 2 name", () => {
+    const menace = teams.find((t) => t.team.name === "Menace 2 Sobriety")!;
+    expect(menace.team.code).toBe("C7");
+    expect(menace.thisWeek).toEqual({ week: 7, home: false, opponent: "Area 501", venue: "The Flying Saucer" });
+    expect(menace.prediction?.text).toMatch(/^Match #4:/);
+    // The remaining-matches list calls them "Ducks".
+    expect(teams.find((t) => t.team.name === "Brutha Ducks")!.prediction).toEqual({ featured: false, text: "Ducks 14, Still Hump'N 10" });
   });
 });

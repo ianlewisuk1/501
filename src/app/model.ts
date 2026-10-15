@@ -288,3 +288,69 @@ export function scoutReport(opponent: string, current: TeamWeek, divisions: Divi
     rows,
   };
 }
+
+type ScheduleWeek = SeasonSchedule["weeks"][number];
+
+/**
+ * Another division team's season, since only ours is entered by hand. Dates, venue map and key
+ * dates come from our schedule. Each week's match comes from that team's own issues (page 5 for
+ * weeks N and N+1, page 2 for last week's result). Weeks no issue covers are filled from the
+ * double round robin: the same opponent half a season away, with home and away swapped.
+ */
+export function teamSchedule(team: string, issues: TeamWeek[], base: SeasonSchedule): SeasonSchedule {
+  const sorted = sortWeeks(issues.filter((w) => w.season === base.season));
+  const names = sorted.at(-1)?.standings.map((s) => s.team) ?? [];
+  const full = (n: string) => fullTeamName(n, names);
+
+  // Every bar is its home team's: learn them from every team's page 5 fixtures.
+  const venueOf = new Map<string, string>();
+  for (const w of sorted) {
+    for (const f of [w.thisWeek, w.nextWeek]) {
+      if (f && !("bye" in f)) venueOf.set(norm(f.home ? w.team.name : full(f.opponent)), f.venue);
+    }
+  }
+
+  const games = new Map<number, { home: boolean; opponent: string; venue?: string } | "bye">();
+  for (const w of sorted.filter((w) => norm(w.team.name) === norm(team))) {
+    const r = w.lastResult;
+    // A result beats the earlier issue's fixture (reschedules), keeping its venue if it agrees.
+    if (r) {
+      const prev = games.get(r.week);
+      const opponent = "bye" in r ? "" : full(r.opponentShort);
+      games.set(r.week, "bye" in r ? "bye"
+        : { home: r.home, opponent, venue: prev && prev !== "bye" && prev.opponent === opponent ? prev.venue : undefined });
+    }
+    for (const f of [w.thisWeek, w.nextWeek]) {
+      if (f) games.set(f.week, "bye" in f ? "bye" : { home: f.home, opponent: full(f.opponent), venue: f.venue });
+    }
+  }
+  const half = base.weeks.length / 2;
+  const weeks: ScheduleWeek[] = [];
+  for (const { week, date } of base.weeks) {
+    let g = games.get(week);
+    const mirror = Number.isInteger(half) ? games.get(week > half ? week - half : week + half) : undefined;
+    if (!g && mirror && mirror !== "bye") g = { home: !mirror.home, opponent: mirror.opponent };
+    if (!g) continue;
+    if (g === "bye") {
+      weeks.push({ week, date, bye: true });
+      continue;
+    }
+    const venue = g.venue ?? venueOf.get(norm(g.home ? team : g.opponent)) ?? "";
+    weeks.push({ week, date, home: g.home, opponent: g.opponent, venue });
+  }
+  return { ...base, weeks };
+}
+
+/** "Menace 2 Sobriety" -> "menace-2-sobriety", for the ?team= link. */
+export const teamSlug = (name: string): string => norm(name).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+export interface DivisionPlayer extends Player { team: string; code: string }
+
+/** Every player in the division from the same issue as `current`, for the division-wide table. */
+export function divisionPlayers(current: TeamWeek, divisions: DivisionWeek[]): DivisionPlayer[] {
+  const div = divisions.find((d) => d.season === current.season && d.week === current.week);
+  return (div?.teams ?? []).flatMap((t) => t.players.map((p) => ({ ...p, team: t.name, code: t.code })));
+}
+
+/** "Regulars": played at least half the weeks so far, so a 2–0 sub doesn't top the win % table. */
+export const regularMatches = (current: TeamWeek): number => Math.max(1, Math.ceil((current.week - 1) / 2));

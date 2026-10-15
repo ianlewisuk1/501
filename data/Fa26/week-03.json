@@ -98,7 +98,10 @@
     "opponent": "Projectile Dysfunction",
     "venue": "The Flying Saucer"
   },
-  "prediction": null,
+  "prediction": {
+    "featured": true,
+    "text": "Match of the week: (C Div.) Darty Little Secrets @ Area 501. We are just one week 1 tiebreaker loss by the Secrets from this being a pair of 2-0s fighting for the top of C. This outcome could prove important for basically the duration of the season. Area is going the distance, 14-10."
+  },
   "headline": "Area rides big singles lead to critical narrow W over the Mafia; Menace sweeps 501 to flip the script on Projectile; Secrets and Pints grab their first wins, slide up into C's top four",
   "players": [
     {

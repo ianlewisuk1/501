@@ -1,4 +1,4 @@
-import { isUs, norm } from "./names";
+import { escapeRe, isUs, norm } from "./names";
 import { str, type Sheet } from "./sheet";
 import type { TeamConfig } from "./team";
 import type { Fixture } from "./types";
@@ -49,10 +49,13 @@ export function prediction(ws: Sheet, team: TeamConfig): { featured: boolean; te
   for (let r = start; r < end; r++) lines.push(str(ws.get("H", r)).trim());
   const text = lines.join(" ").replace(/\s+/g, " ");
 
-  const name = team.name.toLowerCase();
-  const featured = /(Match(?:es)? #[\d #&]+:\s*\((\w) Div\.\).*?)(?=Match(?:es)? #|And the remaining|$)/g;
+  // Featured write-ups lead with "Away @ Home."; the remaining list reads "Team 15, Other 9".
+  const names = [team.name, ...team.aliases].map(norm);
+  const named = (s: string) => names.some((n) => new RegExp(`(^|[^\\w'])${escapeRe(n)}([^\\w']|$)`).test(norm(s)));
+  const featured = /((?:Match(?:es)? #[\d #&]+|Match of the week):\s*\((\w) Div\.\).*?)(?=Match(?:es)? #|Match of the week|And the remaining|$)/g;
   for (const m of text.matchAll(featured)) {
-    if (m[2] === team.division && m[1].toLowerCase().includes(name)) return { featured: true, text: m[1].trim() };
+    const lead = m[1].replace(/^[^)]*\)\s*/, "").split(/\.\s/)[0];
+    if (m[2] === team.division && named(lead)) return { featured: true, text: m[1].trim() };
   }
 
   const marker = "And the remaining";
@@ -61,7 +64,7 @@ export function prediction(ws: Sheet, team: TeamConfig): { featured: boolean; te
   const m = rest.match(new RegExp(`${team.division} Division:\\s*(.*?)(?=[A-H] Division:|$)`));
   if (m) {
     for (const part of m[1].split(";")) {
-      if (part.toLowerCase().includes(name)) return { featured: false, text: part.trim().replace(/\.+$/, "") };
+      if (named(part)) return { featured: false, text: part.trim().replace(/\.+$/, "") };
     }
   }
   return null;
