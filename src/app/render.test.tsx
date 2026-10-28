@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
-import { App, PLAYER_COLUMNS } from "./App";
+import { App, ClinchBadge, PLAYER_COLUMNS } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
 import { CompareChart } from "./Chart";
 import { buildFixtures, form, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
@@ -16,6 +16,13 @@ describe("rendering", () => {
     for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "This Week&#x27;s Opponent (Week ", "Fixtures", "Players", "Performance"]) {
       expect(html).toContain(text);
     }
+  });
+
+  it("badges clinched teams in the standings, but not bottom-two clinches", () => {
+    expect(renderToStaticMarkup(<ClinchBadge mark="C" />)).toContain(">Clinched<");
+    expect(renderToStaticMarkup(<ClinchBadge mark="G" />)).toContain(">Champion<");
+    expect(renderToStaticMarkup(<ClinchBadge mark="D" />)).toBe("");
+    expect(renderToStaticMarkup(<ClinchBadge mark={undefined} />)).toBe("");
   });
 
   it("compares Russell Riley alone by default, on a nightly and a season chart", () => {

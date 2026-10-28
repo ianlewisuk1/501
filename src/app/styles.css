@@ -178,6 +178,12 @@ th { font-size: 0.8rem; color: var(--text-2); font-weight: 600; }
 .num { text-align: right; white-space: nowrap; }
 tr.us td { background: var(--accent-soft); font-weight: 650; }
 tr.us th.sticky { background: var(--accent-soft); }
+.clinch {
+  display: inline-block; margin-left: 8px; padding: 1px 7px; vertical-align: 1px; white-space: nowrap;
+  border-radius: 999px; background: var(--win); color: var(--surface);
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.clinch.champ { background: #b8860b; color: #fff; }
 table.wide .sticky .team { display: block; font-weight: normal; }
 .rank-by { display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px; font-size: 0.9rem; }
 .rank-by select { font: inherit; font-size: 1rem; min-height: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
 import { TEAM } from "../parser/team";
-import type { Player, TeamWeek, WL } from "../parser/types";
+import type { Player, Standing, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold } from "./Fold";
 import { TeamArt } from "./TeamArt";
@@ -250,13 +250,20 @@ function Standings({ week }: { week: TeamWeek }) {
         <tbody>
           {week.standings.map((s) => (
             <tr key={s.team} className={s === us ? "us" : undefined}>
-              <td className="num">{s.rank}</td><td>{s.team}</td><td className="num">{s.wins}–{s.losses}</td><td className="num">{s.points}</td>
+              <td className="num">{s.rank}</td><td>{s.team}<ClinchBadge mark={s.clinched} /></td><td className="num">{s.wins}–{s.losses}</td><td className="num">{s.points}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </section>
   );
+}
+
+/** Page 2's clinch marker as a small pill; bottom-two clinches get none. */
+export function ClinchBadge({ mark }: { mark: Standing["clinched"] }) {
+  if (mark === "G") return <span className="clinch champ" title="Regular-season division champion">Champion</span>;
+  if (mark === "C") return <span className="clinch" title="Clinched a top-two finish">Clinched</span>;
+  return null;
 }
 
 function Fixtures({ rows, maps, names }: { rows: FixtureRow[]; maps: (v: string) => string; names: string[] }) {
