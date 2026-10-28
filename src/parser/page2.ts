@@ -26,12 +26,14 @@ export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; las
       if (!isBlank(ws.get("B", r)) && (!prev || prev.points !== points)) rank = standings.length + 1;
       else rank = prev ? prev.rank : (ws.get("C", r) as number);
     }
+    const marker = str(ws.get("B", r)).trim().toUpperCase();
     standings.push({
       rank,
       team: str(ws.get("D", r)).trim(),
       wins: ws.get("F", r) as number,
       losses: ws.get("G", r) as number,
       points,
+      ...(marker === "G" || marker === "C" || marker === "D" ? { clinched: marker } : {}),
     });
     blockRows.push(r);
   }

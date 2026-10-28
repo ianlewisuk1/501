@@ -53,6 +53,21 @@ export function findStanding(name: string, standings: Standing[]): Standing | un
   return standings.find((s) => norm(s.team) === norm(full));
 }
 
+/** Breaking news for a team that has clinched a title or a top-two finish; null otherwise. */
+export function clinchNews(current: TeamWeek, seasonWeeks: number): { headline: string; detail: string } | null {
+  const me = findStanding(current.team.name, current.standings);
+  if (me?.clinched !== "G" && me?.clinched !== "C") return null;
+  const headline = me.clinched === "G"
+    ? `${me.team} clinches the ${current.team.division} Division title`
+    : `${me.team} clinches a top-two finish in ${current.team.division} Division`;
+  const left = seasonWeeks - (current.week - 1);
+  const next = current.standings.find((s) => s !== me && s.rank > me.rank) ?? current.standings.find((s) => s !== me);
+  const parts = [`${me.wins}–${me.losses} record`];
+  if (next && me.rank === 1) parts.push(`${me.points - next.points} pts clear`);
+  if (left > 0) parts.push(`${left} ${left === 1 ? "week" : "weeks"} still to play`);
+  return { headline, detail: parts.join(" · ") };
+}
+
 /** Every week of the season: schedule, overridden by the newsletter's own fixtures, plus any results we have. */
 export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: SeasonSchedule | undefined): FixtureRow[] {
   const results = new Map<number, MatchResult>();

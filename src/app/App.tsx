@@ -7,7 +7,7 @@ import { Fold } from "./Fold";
 import { TeamArt } from "./TeamArt";
 import { current, divisions, historyOf, schedule, scheduleOf, teamNames } from "./data";
 import {
-  buildFixtures, divisionPlayers, editorPick, regularMatches, type DivisionPlayer, findStanding, teamSlug, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
+  buildFixtures, clinchNews, divisionPlayers, editorPick, regularMatches, type DivisionPlayer, findStanding, teamSlug, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
@@ -68,6 +68,7 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
 
   return (
     <main>
+      <ClinchBanner week={week} seasonWeeks={teamSchedule?.weeks.length ?? 0} />
       <header className="brand">
         <TeamArt team={week.team.name} />
         <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
@@ -86,6 +87,21 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
         Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
       </footer>
     </main>
+  );
+}
+
+/** A news-style strip announcing a clinched title or top-two finish. */
+function ClinchBanner({ week, seasonWeeks }: { week: TeamWeek; seasonWeeks: number }) {
+  const news = clinchNews(week, seasonWeeks);
+  if (!news) return null;
+  return (
+    <aside className="breaking" role="status">
+      <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
+      <div className="breaking-body">
+        <strong>{news.headline}</strong>
+        <span>{news.detail}</span>
+      </div>
+    </aside>
   );
 }
 

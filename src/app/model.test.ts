@@ -5,7 +5,7 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { buildFixtures, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -183,5 +183,20 @@ describe("division leaderboard", () => {
   it("counts regulars as half the weeks played so far", () => {
     expect(regularMatches(wk07)).toBe(3);
     expect(regularMatches({ ...wk07, week: 1 })).toBe(1);
+  });
+});
+
+describe("clinch news", () => {
+  it("announces nothing before anyone clinches", () => {
+    expect(clinchNews(wk07, 14)).toBeNull();
+  });
+
+  it("announces a clinched top-two finish (wk12)", () => {
+    const wk12 = parse("fixtures/Fa26wk12.xlsx", TEAM);
+    expect(wk12.standings[0].clinched).toBe("C");
+    expect(clinchNews(wk12, 14)).toEqual({
+      headline: "Area 501 clinches a top-two finish in C Division",
+      detail: "11–0 record · 14 pts clear · 3 weeks still to play",
+    });
   });
 });

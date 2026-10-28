@@ -11,6 +11,8 @@ export interface Standing {
   wins: number;
   losses: number;
   points: number;
+  /** Page 2's column B marker, only once set: G = division champion, C = clinched top two, D = clinched bottom two. */
+  clinched?: "G" | "C" | "D";
 }
 
 export interface MatchResult {

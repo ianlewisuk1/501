@@ -80,6 +80,32 @@ main {
   /* Opened from the home screen, the page runs full screen under the status bar and home indicator. */
   padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
+/* Breaking news: fixed broadcast red and ink, the same under every team's palette. */
+.breaking {
+  display: flex; align-items: stretch; margin-bottom: 10px; overflow: hidden;
+  border-radius: 10px; background: #111418; color: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 6px 18px -10px rgba(0, 0, 0, 0.45);
+}
+.breaking-tag {
+  display: flex; align-items: center; gap: 7px; flex: none; padding: 0 12px;
+  background: #c8102e; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.breaking-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: breaking-pulse 1.6s ease-in-out infinite; }
+@keyframes breaking-pulse { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .breaking-dot { animation: none; } }
+.breaking-body {
+  display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 10px 14px;
+  border-left: 3px solid #fff;
+}
+.breaking-body strong { font-size: 1rem; line-height: 1.25; }
+.breaking-body span { font-size: 0.8rem; color: #c3c8d2; }
+@media (prefers-color-scheme: dark) {
+  .breaking { background: #f4f5f7; color: #111418; }
+  .breaking-tag { color: #fff; }
+  .breaking-body { border-left-color: #111418; }
+  .breaking-body span { color: #4a5160; }
+}
+
 header.brand {
   position: relative; overflow: hidden; margin-bottom: 12px; padding: 18px 16px 16px;
   min-height: 96px; border-radius: 14px; background: var(--navy); color: var(--cream);
