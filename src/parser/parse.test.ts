@@ -84,6 +84,12 @@ describe("edge cases", () => {
     expect(wk03.standings).toHaveLength(8);
     expect(wk03.standings[5]).toMatchObject({ rank: 5, team: "Projectile Dysfunction" });
   });
+
+  it("ranks a clinched team whose rank cell is blank by position (wk12)", () => {
+    const wk12 = parse("fixtures/Fa26wk12.xlsx", TEAM);
+    expect(wk12.standings.map((s) => s.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(wk12.standings[0]).toEqual({ rank: 1, team: "Area 501", wins: 11, losses: 0, points: 171 });
+  });
 });
 
 describe("division players (scouting)", () => {

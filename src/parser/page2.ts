@@ -15,13 +15,23 @@ export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; las
   const standings: Standing[] = [];
   const blockRows: number[] = [];
   // A blank rank means tied with the row above, so the block runs on team name.
+  // Late in the season column B marks clinched teams (G champion, C top two,
+  // D bottom two) and those rows drop their rank, so rank them by position
+  // unless their points tie the row above.
   for (let r = top; r <= ws.maxRow && !isBlank(ws.get("D", r)); r++) {
+    const prev = standings.at(-1);
+    const points = ws.get("H", r) as number;
+    let rank = ws.get("C", r) as number;
+    if (isBlank(rank)) {
+      if (!isBlank(ws.get("B", r)) && (!prev || prev.points !== points)) rank = standings.length + 1;
+      else rank = prev ? prev.rank : (ws.get("C", r) as number);
+    }
     standings.push({
-      rank: isBlank(ws.get("C", r)) && standings.length ? standings.at(-1)!.rank : (ws.get("C", r) as number),
+      rank,
       team: str(ws.get("D", r)).trim(),
       wins: ws.get("F", r) as number,
       losses: ws.get("G", r) as number,
-      points: ws.get("H", r) as number,
+      points,
     });
     blockRows.push(r);
   }
