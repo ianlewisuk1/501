@@ -96,9 +96,21 @@ main {
 .breaking-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: breaking-pulse 1.6s ease-in-out infinite; }
 @keyframes breaking-pulse { 50% { opacity: 0.25; } }
 @media (prefers-reduced-motion: reduce) { .breaking-dot { animation: none; } }
-.breaking-body { margin: 0; min-width: 0; font-size: 0.85rem; line-height: 1.3; }
-.breaking-body strong { font-weight: 700; }
-.breaking-body span { color: #ffd9de; white-space: nowrap; }
+/* The message scrolls right to left like a TV ticker. Two copies sit end to end and the row
+   slides by half its width, so the loop is seamless. */
+.breaking-track { flex: 1; min-width: 0; overflow: hidden; }
+.breaking-scroll {
+  display: flex; width: max-content; margin: 0; font-size: 0.85rem; line-height: 1.3; white-space: nowrap;
+  animation: breaking-ticker 18s linear infinite;
+}
+.breaking-item { padding-right: 3rem; }
+.breaking-item strong { font-weight: 700; }
+@keyframes breaking-ticker { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .breaking-scroll { width: auto; white-space: normal; animation: none; }
+  .breaking-item { padding-right: 0; }
+  .breaking-item[aria-hidden] { display: none; }
+}
 main.under-banner { padding-top: 12px; }
 
 header.brand {

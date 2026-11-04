@@ -96,13 +96,18 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
   );
 }
 
-/** A slim news-style strip announcing a clinched title or top-two finish. */
+/** A slim news ticker strip announcing a clinched title or top-two finish. */
 function ClinchBanner({ news }: { news: { headline: string; detail: string } }) {
   return (
     <aside className="breaking" role="status">
       <div className="breaking-inner">
         <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
-        <p className="breaking-body"><strong>{news.headline}</strong> <span>{news.detail}</span></p>
+        <div className="breaking-track">
+          <p className="breaking-scroll">
+            <span className="breaking-item"><strong>{news.headline}</strong> · {news.detail}</span>
+            <span className="breaking-item" aria-hidden="true"><strong>{news.headline}</strong> · {news.detail}</span>
+          </p>
+        </div>
       </div>
     </aside>
   );
