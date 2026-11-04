@@ -35,14 +35,16 @@ export function App() {
   return <Page key={team} week={week} history={issues} onTeam={pick} />;
 }
 
-/** Swap to the team's palette (themes.css) and tint the phone's status bar to match its header. */
+/** Swap to the team's palette (themes.css) and tint the phone's status bar to match the top of the page:
+ *  the breaking news strip when it shows, otherwise the header. */
 function useTeamTheme(team: string) {
   useEffect(() => {
     const root = document.documentElement;
     if (team === TEAM.name) delete root.dataset.team;
     else root.dataset.team = teamSlug(team);
     const header = getComputedStyle(root).getPropertyValue("--navy").trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", header);
+    const top = document.querySelector(".breaking") ? "#c8102e" : header;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", top);
   }, [team]);
 }
 
@@ -66,9 +68,12 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
   const maps = (venue: string) => mapsUrl(venue, schedule, ios);
   const today = todayIso();
 
+  const news = clinchNews(week, teamSchedule?.weeks.length ?? 0);
+
   return (
-    <main>
-      <ClinchBanner week={week} seasonWeeks={teamSchedule?.weeks.length ?? 0} />
+    <>
+    {news && <ClinchBanner news={news} />}
+    <main className={news ? "under-banner" : undefined}>
       <header className="brand">
         <TeamArt team={week.team.name} />
         <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
@@ -87,19 +92,17 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
         Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
       </footer>
     </main>
+    </>
   );
 }
 
-/** A news-style strip announcing a clinched title or top-two finish. */
-function ClinchBanner({ week, seasonWeeks }: { week: TeamWeek; seasonWeeks: number }) {
-  const news = clinchNews(week, seasonWeeks);
-  if (!news) return null;
+/** A slim news-style strip announcing a clinched title or top-two finish. */
+function ClinchBanner({ news }: { news: { headline: string; detail: string } }) {
   return (
     <aside className="breaking" role="status">
-      <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
-      <div className="breaking-body">
-        <strong>{news.headline}</strong>
-        <span>{news.detail}</span>
+      <div className="breaking-inner">
+        <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
+        <p className="breaking-body"><strong>{news.headline}</strong> <span>{news.detail}</span></p>
       </div>
     </aside>
   );
