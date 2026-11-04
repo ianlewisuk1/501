@@ -396,13 +396,20 @@ header.brand h1 { --ink: var(--team); }
 @supports not (mask-image: none) { .chalk-title .ch { mask-image: none; } }
 
 /*
- * Division page: every other row carries a faint wash of chalk, so long tables and lists can be
- * read across at a glance. The pinned name column takes the same wash over its solid slate.
+ * Every other row carries a faint wash of chalk, so long tables and lists read across at a
+ * glance. The pinned name column takes the same wash over its solid slate. Highlights (our row,
+ * this week's fixture) sit on top.
  */
-.division-page { --stripe: rgb(236 232 220 / 0.055); }
-.division-page tbody tr:nth-child(even) td,
-.division-page tbody tr:nth-child(even) th,
-.division-page .matches li:nth-child(even) { background-color: var(--stripe); }
-.division-page table.wide tbody tr:nth-child(even) .sticky { background: linear-gradient(var(--stripe), var(--stripe)), var(--slate); }
-.division-page .matches li { padding-left: 8px; padding-right: 8px; }
-.division-page tbody td:first-child { padding-left: 8px; }
+:root { --stripe: rgb(236 232 220 / 0.055); }
+section tbody tr:nth-child(even) td,
+section tbody tr:nth-child(even) th,
+.matches li:nth-child(even),
+.fixtures li:nth-child(even),
+.team-list li:nth-child(even) a,
+.key-dates li:nth-child(even),
+.cricket-row:nth-of-type(even) { background-color: var(--stripe); }
+table.wide tbody tr:nth-child(even) .sticky { background: linear-gradient(var(--stripe), var(--stripe)), var(--slate); }
+.fixtures li.current { background: rgb(243 211 107 / 0.1); }
+.matches li, .key-dates li { padding-left: 8px; padding-right: 8px; }
+section tbody td:first-child { padding-left: 8px; }
+.team-list a { padding-left: 8px; padding-right: 8px; }
