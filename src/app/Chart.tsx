@@ -69,7 +69,7 @@ function Breakdown({ player }: { player: Player }) {
         );
       })}
       <p className="small">
-        All-star points <b>{player.allStarPoints}</b> in {player.gamesPlayed} games · average{" "}
+        All-star points <b>{player.allStarPoints}</b> in {player.gamesPlayed} games, an average of{" "}
         <b>{player.aspAverage?.toFixed(2) ?? "–"}</b>
       </p>
     </div>
@@ -125,11 +125,11 @@ function WinChart({ title, note, metric, shown, team }: { title: string; note: s
     pts.forEach((p, i) => { const v = p[metric]; if (v !== null) d += `${d && pts[i - 1]?.[metric] != null ? "L" : "M"}${x(i)},${y(v)}`; });
     return d;
   };
-  const label = (p: FormPoint) => p.won === null ? "–" : p[metric] === null ? "didn't play" : metric === "night" ? `${p.won}–${p.lost} · ${fmtPct(p.night)}` : fmtPct(p.season);
+  const label = (p: FormPoint) => p.won === null ? "–" : p[metric] === null ? "didn't play" : metric === "night" ? `${p.won}–${p.lost}, ${fmtPct(p.night)}` : fmtPct(p.season);
 
   return (
     <figure className="chart">
-      <figcaption>{title} <span className="muted">· {note}</span></figcaption>
+      <figcaption>{title} <span className="muted">{note}</span></figcaption>
       <div className="legend" aria-hidden>
         <span><i className="sw line-season" /> Whole team</span>
       </div>

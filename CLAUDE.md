@@ -333,7 +333,8 @@ The site is opening up to the whole league: every division, every team, from its
 
 - Keep `area501.lol` for now; a new, league-neutral domain comes later.
 - A league lander at `/` that isn't tied to any team. Then division, team and player pages, still one SPA with real URLs (`/c`, `/c/area-501`, `/records`, `/player/...`; Vercel rewrites every path to `index.html`).
-- A generated look for every team (palette from the team name, accent per division). The hand-drawn mascots are retired.
+- The whole site looks like a pub darts chalkboard (decided 2026-11-04): green slate, wooden frame (the breadcrumb bar), chalk-textured titles in Cabin Sketch, body in Patrick Hand set large, areas ruled off with hand-drawn chalk lines instead of cards, wins ringed in chalk, losses in pink chalk. Dark in light and dark mode alike. Each team writes in its own chalk colour, picked from its name (`chalkFor` in `src/app/ui.tsx`). The hand-drawn mascots and per-team palettes are retired. Avoid template tells: no all-caps labels, no "A · B · C" strings, no arrows on links.
+- The RDL logo (from the newsletter workbook, made chalk-white as `public/rdl-logo.png`) sits on the lander. It carries a ™: get the league's OK before publishing.
 - The editor's prediction is removed everywhere, Area 501 included. The site should read as official and neutral.
 - Personal records: each division's trophy darts (Page 3), Perfect Throws and Hot Darts, shown on division, team and player pages.
 - Player pages are in scope: season line, rank in division, week-by-week form, honors (records, perfect throws, hot darts), game breakdown.

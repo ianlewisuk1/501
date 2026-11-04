@@ -4,8 +4,7 @@ import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold } from "./Fold";
-import { TeamArt } from "./TeamArt";
-import { divisionWeeks, scheduleFor } from "./league";
+import { divisionWeeks, scheduleFor, seasonLabel } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow, type SeasonSchedule,
@@ -30,9 +29,8 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
       {news && <ClinchBanner news={news} />}
       <main className={news ? "under-banner" : undefined}>
         <header className="brand">
-          <TeamArt team={week.team.name} />
           <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
-          <p className="meta">{division} Division · Week {week.week}</p>
+          <p className="meta">{division} Division, week {week.week} of the {seasonLabel(week.season).toLowerCase().replace(/ \d+$/, "")} season</p>
           <TeamPicker team={week.team.name} division={division} names={week.standings.map((s) => s.team)} />
         </header>
         <Tonight week={week} fixture={current} today={today} schedule={data.schedule} />
@@ -71,8 +69,8 @@ function ClinchBanner({ news }: { news: { headline: string; detail: string } }) 
         <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
         <div className="breaking-track">
           <p className="breaking-scroll">
-            <span className="breaking-item"><strong>{news.headline}</strong>{news.detail && ` · ${news.detail}`}</span>
-            <span className="breaking-item" aria-hidden="true"><strong>{news.headline}</strong>{news.detail && ` · ${news.detail}`}</span>
+            <span className="breaking-item"><strong>{news.headline}</strong>{news.detail && `. ${news.detail}`}</span>
+            <span className="breaking-item" aria-hidden="true"><strong>{news.headline}</strong>{news.detail && `. ${news.detail}`}</span>
           </p>
         </div>
       </div>
@@ -89,10 +87,10 @@ function Tonight({ week, fixture, today, schedule }: { week: TeamWeek; fixture: 
   const opp = findStanding(fixture.opponent, week.standings);
   return (
     <section className="card hero" aria-labelledby="tonight">
-      <h2 id="tonight">{heading} <span className="muted">· {shortDate(fixture.date)}</span></h2>
+      <h2 id="tonight">{heading} <span className="muted">{shortDate(fixture.date)}</span></h2>
       <p className="big">vs <Link to={teamPath(week.team.division, fixture.opponent)}>{fixture.opponent}</Link></p>
-      {opp && <p className="muted">{ordinal(opp.rank)} in {week.team.division} · {opp.wins}–{opp.losses} · {opp.points} pts</p>}
-      <p>{fixture.home ? "Home" : "Away"} · {fixture.venue}</p>
+      {opp && <p className="muted">They're {ordinal(opp.rank)} in {week.team.division} at {opp.wins}–{opp.losses}, {opp.points} points</p>}
+      <p>{fixture.home ? "Home" : "Away"}, at {fixture.venue}</p>
       <Directions venue={fixture.venue} schedule={schedule} />
     </section>
   );
@@ -137,7 +135,7 @@ function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: Fixtu
   if (!report?.rows.length) return null;
   return (
     <section aria-labelledby="scouting">
-      <h2 id="scouting">This Week's Opponent (Week {fixture!.week}) <span className="muted">· {report.team}</span></h2>
+      <h2 id="scouting">This Week's Opponent (Week {fixture!.week}) <span className="muted">{report.team}</span></h2>
       <div className="scroll-x" tabIndex={0} role="region" aria-label="Opponent player stats, scrolls sideways">
         <table className="players wide scout">
           <thead>
@@ -184,9 +182,9 @@ function Standings({ week }: { week: TeamWeek }) {
     : `${leader.points - us.points} pts behind 1st`;
   return (
     <section aria-labelledby="standings">
-      <h2 id="standings">Standings {gap && <span className="muted">· {gap}</span>}</h2>
+      <h2 id="standings">Standings {gap && <span className="muted">{gap}</span>}</h2>
       <StandingsTable standings={week.standings} division={week.team.division} highlight={week.team.name} />
-      <p className="more-link"><Link to={divisionPath(week.team.division)}>{week.team.division} Division: results, matches and leaderboard</Link></p>
+      <p className="more-link"><Link to={divisionPath(week.team.division)}>All of {week.team.division} Division: results, matches and the player leaderboard</Link></p>
     </section>
   );
 }
@@ -213,7 +211,7 @@ function Fixtures({ rows, maps, names, division }: { rows: FixtureRow[]; maps: (
                 <span className="fwhere">
                   {f.home ? "Home" : "Away"}
                   {f.status !== "past" && (
-                    <> · <a className="fvenue" href={maps(f.venue)} target="_blank" rel="noopener"><Pin size={14} />{f.venue}</a></>
+                    <>, <a className="fvenue" href={maps(f.venue)} target="_blank" rel="noopener"><Pin size={14} />{f.venue}</a></>
                   )}
                 </span>
               )}
@@ -242,9 +240,9 @@ function Players({ week }: { week: TeamWeek }) {
 
   return (
     <section aria-labelledby="players">
-      <h2 id="players">Players <span className="muted">· through week {week.week - 1}</span></h2>
+      <h2 id="players">Players <span className="muted">through week {week.week - 1}</span></h2>
       <Fold show="Show player stats" hide="Hide player stats"
-        summary={<>{week.players.length} players · team {fmtWL(team.total)} ({fmtPct(pct(team.total))} of games won)</>}>
+        summary={<>{week.players.length} players. The team is {fmtWL(team.total)} in games, {fmtPct(pct(team.total))} won.</>}>
         <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">
           <table className="players wide">
             <thead>
@@ -294,7 +292,7 @@ function KeyDates({ today, schedule }: { today: string; schedule: SeasonSchedule
   return (
     <section aria-labelledby="dates">
       <h2 id="dates">Key dates</h2>
-      <ul className="plain">{dates.map((d) => <li key={d.date}><b>{shortDate(d.date)}</b> · {d.label}</li>)}</ul>
+      <ul className="plain">{dates.map((d) => <li key={d.date}><b>{shortDate(d.date)}</b>: {d.label}</li>)}</ul>
     </section>
   );
 }

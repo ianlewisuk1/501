@@ -4,6 +4,16 @@ import type { Player, Standing, WL } from "../parser/types";
 import { fmtPct, fmtWL, pct } from "./model";
 import { Link, teamPath } from "./route";
 
+/** Sticks of chalk a team can be written in. Losses keep the pink, so it isn't here. */
+const CHALKS = ["#f3d36b", "#8fc7e8", "#f2a3b6", "#9fdcb8", "#f4b26b", "#c3a8ec", "#b9d97a", "#7fd6d0"];
+
+/** A team's own chalk colour, the same every visit: picked from its name. */
+export function chalkFor(team: string): string {
+  let h = 0;
+  for (const ch of team.toLowerCase()) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return CHALKS[h % CHALKS.length];
+}
+
 export const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
 
 export const Pin = ({ size = 18 }: { size?: number }) => (

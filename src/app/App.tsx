@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
-import { TEAM } from "../parser/team";
 import { DivisionPage } from "./DivisionPage";
 import { HomePage } from "./HomePage";
 import { TeamPage } from "./TeamPage";
 import { divisionIn, teamBySlug, teamHistory } from "./league";
-import { teamSlug } from "./model";
 import { divisionPath, Link, navigate, teamPath, useRoute, type Route } from "./route";
 import { useSeason, type SeasonData } from "./store";
+
+import { chalkFor } from "./ui";
 
 export { ClinchBadge, PLAYER_COLUMNS } from "./ui";
 
@@ -48,7 +48,7 @@ export function Screen({ data, route, myTeam = null }: { data: SeasonData; route
 
   useTheme(team);
   useEffect(() => {
-    document.title = team ? `${team} · ${division!.division} Division · RDL` : division ? `${division.division} Division · RDL` : "Raleigh Dart League";
+    document.title = team ? `${team}, ${division!.division} Division | RDL` : division ? `${division.division} Division | RDL` : "Raleigh Dart League";
     if (team && division) saveMyTeam({ division: division.division, team });
   }, [team, division]);
 
@@ -89,14 +89,11 @@ function NotFound() {
   );
 }
 
-/** A team page wears that team's palette (themes.css); other pages use the default. The phone's
- *  status bar follows the top of the page. */
+/** A team page writes that team's name and highlights in its own chalk colour. */
 function useTheme(team: string | undefined) {
   useEffect(() => {
     const root = document.documentElement;
-    if (!team || team === TEAM.name) delete root.dataset.team;
-    else root.dataset.team = teamSlug(team);
-    const top = getComputedStyle(root).getPropertyValue("--navy").trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", top);
+    if (team) root.style.setProperty("--team", chalkFor(team));
+    else root.style.removeProperty("--team");
   }, [team]);
 }

@@ -15,7 +15,7 @@ export function DivisionPage({ issue, division }: { issue: LeagueWeek; division:
     <main>
       <header className="page-head">
         <h1>{d} Division</h1>
-        <p className="meta">{seasonLabel(issue.season)} · Week {issue.week}</p>
+        <p className="meta">{seasonLabel(issue.season)}, week {issue.week}</p>
         <label className="pick-inline">
           <span className="sr-only">Division</span>
           <select value={d} onChange={(e) => navigate(divisionPath(e.target.value))}>
@@ -29,24 +29,24 @@ export function DivisionPage({ issue, division }: { issue: LeagueWeek; division:
       </section>
       {division.thisWeek && (
         <section aria-labelledby="matches">
-          <h2 id="matches">Week {division.thisWeek.week} matches <span className="muted">· {shortDate(issue.issueDate)}</span></h2>
+          <h2 id="matches">Week {division.thisWeek.week} matches <span className="muted">{shortDate(issue.issueDate)}</span></h2>
           <ul className="matches">
             {division.thisWeek.matches.map((m) => (
               <li key={m.home}>
                 <span className="teams"><Link to={teamPath(d, m.away)}>{m.away}</Link> <span className="muted">at</span> <Link to={teamPath(d, m.home)}>{m.home}</Link></span>
-                <span className="muted small">{m.venue}{m.date ? ` · ${shortDate(m.date)}` : ""}</span>
+                <span className="muted small">{m.venue}{m.date ? `, played ${shortDate(m.date)}` : ""}</span>
               </li>
             ))}
-            {division.thisWeek.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">· bye</span></span></li>)}
+            {division.thisWeek.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">has a bye</span></span></li>)}
           </ul>
         </section>
       )}
       {division.results && (
         <section aria-labelledby="results">
-          <h2 id="results">Week {division.results.week} results <span className="muted">· {shortDate(division.results.date)}</span></h2>
+          <h2 id="results">Week {division.results.week} results <span className="muted">{shortDate(division.results.date)}</span></h2>
           <ul className="matches">
             {division.results.matches.map((m) => <Result key={m.home.team} match={m} division={d} />)}
-            {division.results.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">· bye</span></span></li>)}
+            {division.results.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">has a bye</span></span></li>)}
           </ul>
           <p className="muted small">Home team second. Out of 24 games.</p>
         </section>
@@ -76,8 +76,8 @@ function Result({ match, division }: { match: Match; division: string }) {
           ? <span className="muted small">{match.note ?? "no score yet"}</span>
           : <>
               {away.score}–{home.score}
-              {away.score === home.score && <span className="muted small"> · won on the 1001</span>}
-              {match.note && <span className="muted small"> · {match.note}</span>}
+              {away.score === home.score && <span className="muted small">, won on the 1001</span>}
+              {match.note && <span className="muted small">, {match.note}</span>}
             </>}
       </span>
     </li>
@@ -114,7 +114,7 @@ export function Leaderboard({ week, division, players }: { week: number; divisio
 
   return (
     <section aria-labelledby="division">
-      <h2 id="division">Leaderboard <span className="muted">· through week {week - 1}</span></h2>
+      <h2 id="division">Leaderboard <span className="muted">through week {week - 1}</span></h2>
       <Fold show="Show leaderboard" hide="Hide leaderboard"
         summary={<>Top {TOP} of {all.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
         <label className="rank-by">

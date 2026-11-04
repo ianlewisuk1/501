@@ -50,7 +50,7 @@ describe("routes", () => {
   it("renders any team in the league", () => {
     const html = at("/h/calm-under-pressure");
     expect(html).toContain("Calm Under Pressure");
-    expect(html).toContain("H Division · Week");
+    expect(html).toContain("H Division, week");
     expect(html).toContain('id="fixtures"');
   });
 
@@ -124,8 +124,8 @@ describe("team page", () => {
     const html = at("/c/area-501");
     expect(html).toContain('aria-expanded="false">Show player stats</button>');
     expect(html).toContain('aria-expanded="false">Show charts</button>');
-    expect(html).toMatch(/\d+ players · team \d+–\d+/);
-    expect(html).toContain('href="/c">C Division: results, matches and leaderboard</a>');
+    expect(html).toMatch(/\d+ players. The team is \d+–\d+ in games/);
+    expect(html).toContain('href="/c">All of C Division: results, matches and the player leaderboard</a>');
   });
 });
 

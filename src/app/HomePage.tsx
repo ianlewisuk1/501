@@ -7,6 +7,7 @@ import type { LeagueWeek } from "../parser/types";
 import { divisionIn, seasonLabel } from "./league";
 import { shortDate } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
+import { ordinal as ordinalRank } from "./ui";
 
 export function HomePage({ issue, myTeam }: { issue: LeagueWeek; myTeam: { division: string; team: string } | null }) {
   const [open, setOpen] = useState<string | null>(null);
@@ -14,15 +15,18 @@ export function HomePage({ issue, myTeam }: { issue: LeagueWeek; myTeam: { divis
   const shown = open ? divisionIn(issue, open) : undefined;
   return (
     <main>
-      <header className="page-head">
-        <h1>Raleigh Dart League</h1>
-        <p className="meta">{seasonLabel(issue.season)} · Week {issue.week} · {shortDate(issue.issueDate)}</p>
+      <header className="page-head lander-head">
+        <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={92} height={92} />
+        <div>
+          <h1>Raleigh Dart League</h1>
+          <p className="meta">{seasonLabel(issue.season)}, week {issue.week}: {shortDate(issue.issueDate)}</p>
+        </div>
       </header>
       {mine && myTeam && (
         <Link className="my-team" to={teamPath(myTeam.division, myTeam.team)}>
           <span className="muted small">Your team</span>
           <span className="my-name">{myTeam.team}</span>
-          <span className="muted small">{myTeam.division} Division · {mine.wins}–{mine.losses} · {mine.points} pts</span>
+          <span className="muted small">{myTeam.division} Division, {ordinalRank(mine.rank)} at {mine.wins}–{mine.losses}</span>
         </Link>
       )}
       <h2 className="find">{mine ? "Find another team" : "Find your team"}</h2>
