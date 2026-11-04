@@ -1,17 +1,19 @@
 import { divisionHeader, isUs, norm } from "./names";
 import { dash, isBlank, isoDate, str, type Sheet } from "./sheet";
 import type { TeamConfig } from "./team";
-import type { LastResult, MatchResult, Standing } from "./types";
+import { resolveTeam } from "./resolve";
+import type { LastResult, Match, MatchResult, MatchSide, Standing } from "./types";
 
-/** Division standings and our result from last week. */
-export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; lastResult: LastResult } {
-  const title = str(ws.get("A", 1));
-  const m = title.match(/WEEK (\d+) \((\d+)\/(\d+)\/(\d+)\)/);
-  const top = ws.findRow("A", (v) => norm(v) === divisionHeader(team.division));
-  if (!m || top === null) return { standings: [], lastResult: null };
-  const week = Number(m[1]);
-  const date = isoDate(m[2], m[3], m[4]);
+/** The results week in A1 ("... FROM WEEK 6 (9/16/26)"). */
+function resultsHeader(ws: Sheet): { week: number; date: string } | null {
+  const m = str(ws.get("A", 1)).match(/WEEK (\d+) \((\d+)\/(\d+)\/(\d+)\)/);
+  return m ? { week: Number(m[1]), date: isoDate(m[2], m[3], m[4]) } : null;
+}
 
+/** A division's standings and the sheet rows its block covers. */
+function standingsBlock(ws: Sheet, division: string): { standings: Standing[]; blockRows: number[] } {
+  const top = ws.findRow("A", (v) => norm(v) === divisionHeader(division));
+  if (top === null) return { standings: [], blockRows: [] };
   const standings: Standing[] = [];
   const blockRows: number[] = [];
   // A blank rank means tied with the row above, so the block runs on team name.
@@ -37,6 +39,70 @@ export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; las
     });
     blockRows.push(r);
   }
+
+  return { standings, blockRows };
+}
+
+/** Rows of the results column (K..T) paired into matches, home team second, plus BYE rows. */
+function resultPairs(ws: Sheet, blockRows: number[]): { pairs: [number, number][]; byes: number[] } {
+  const byes = blockRows.filter((r) => norm(ws.get("M", r)) === "(bye)" && !isBlank(ws.get("K", r)));
+  const rows = blockRows.filter((r) => norm(ws.get("M", r)) !== "(bye)" && !isBlank(ws.get("K", r)));
+  const pairs: [number, number][] = [];
+  for (let i = 0; i + 1 < rows.length; i += 2) pairs.push([rows[i], rows[i + 1]]);
+  return { pairs, byes };
+}
+
+function side(ws: Sheet, r: number, names: string[], played: boolean): MatchSide {
+  const short = str(ws.get("K", r)).trim();
+  const score = ws.get("L", r);
+  return {
+    team: resolveTeam(short, names) ?? short,
+    short,
+    score: typeof score === "number" ? score : null,
+    gamesWon: !played ? null : {
+      singles301: ws.get("M", r) as number,
+      singlesCricket: ws.get("N", r) as number,
+      doublesCricket: ws.get("O", r) as number,
+      doubles501: ws.get("P", r) as number,
+    },
+    tiebreaker1001: dash(ws.get("Q", r)) as MatchSide["tiebreaker1001"],
+    allStarPoints: ws.get("R", r) as number,
+    shortHanded: dash(ws.get("S", r)) as string | null,
+    penalties: dash(ws.get("T", r)) as string | null,
+  };
+}
+
+/** One division's standings and every result from last week, team names resolved to the standings. */
+export function page2Division(ws: Sheet, division: string): {
+  standings: Standing[];
+  results: { week: number; date: string; matches: Match[]; byes: string[] } | null;
+} {
+  const { standings, blockRows } = standingsBlock(ws, division);
+  const hdr = resultsHeader(ws);
+  if (!hdr || !standings.length) return { standings, results: null };
+  const names = standings.map((s) => s.team);
+  const { pairs, byes } = resultPairs(ws, blockRows);
+  return {
+    standings,
+    results: {
+      ...hdr,
+      matches: pairs.map(([a, h]) => {
+        // A forfeit or missing scoresheet replaces the game counts with a note split over both rows.
+        const played = typeof ws.get("M", a) === "number" && typeof ws.get("M", h) === "number";
+        const note = played ? undefined : `${str(ws.get("M", a))} ${str(ws.get("M", h))}`.replace(/[()]/g, "").replace(/\s+/g, " ").trim();
+        return { away: side(ws, a, names, played), home: side(ws, h, names, played), ...(note ? { note } : {}) };
+      }),
+      byes: byes.map((r) => { const t = str(ws.get("K", r)).trim(); return resolveTeam(t, names) ?? t; }),
+    },
+  };
+}
+
+/** Division standings and our result from last week. */
+export function page2(ws: Sheet, team: TeamConfig): { standings: Standing[]; lastResult: LastResult } {
+  const hdr = resultsHeader(ws);
+  const { standings, blockRows } = standingsBlock(ws, team.division);
+  if (!hdr || !blockRows.length) return { standings: [], lastResult: null };
+  const { week, date } = hdr;
 
   // Results share the block's rows but not its order. Consecutive non-BYE rows
   // pair into one match, with the home team listed second.

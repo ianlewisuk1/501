@@ -112,3 +112,88 @@ export interface DivisionWeek {
   division: string;
   teams: DivisionTeam[];
 }
+
+// ---- League-wide issue (every division), one file per newsletter ----
+
+/** One team's line in a page 2 result. */
+export interface MatchSide {
+  team: string; // full standings name, or page 2's text when it can't be resolved
+  short: string; // page 2's short name ("Pints")
+  score: number | null; // null when the scoresheet hadn't arrived
+  gamesWon: MatchResult["gamesWon"] | null; // null for a forfeit or a missing scoresheet
+  tiebreaker1001: "W" | "L" | null;
+  allStarPoints: number;
+  shortHanded: string | null;
+  penalties: string | null;
+}
+
+export interface Match {
+  away: MatchSide;
+  home: MatchSide;
+  /** Page 2's note in place of game counts: "match forfeited", "scoresheet not received by press time". */
+  note?: string;
+}
+
+export interface Matchup {
+  away: string;
+  home: string;
+  venue: string;
+  /** A make-up match on another day ("Still Hump'N @ Darty Little Secrets (Aug. 30th, Brass Tap 5&6)"). */
+  date?: string;
+}
+
+/** One week's matches for a division, as page 5 lists them. */
+export interface Round {
+  week: number;
+  matches: Matchup[];
+  byes: string[];
+}
+
+/** One holder of a divisional trophy dart record. Ties list several. */
+export interface RecordHolder {
+  players: string[];
+  team: string;
+  date: string | null;
+}
+
+export interface TrophyRecord {
+  category: string; // "Fast Singles 301"
+  value: string; // "9 darts"
+  holders: RecordHolder[];
+}
+
+export interface DivisionHotDart {
+  players: string[]; // a whole-team feat lists the newsletter's short names ("Mike J.")
+  team: string;
+  feat: string; // "15-dart 301", "6.5 ASPs"
+}
+
+export interface PerfectThrow {
+  kind: string; // "9-Marks", "Ton-80s", "6-Bulls"
+  player: string;
+  team: string;
+  division: string | null;
+  dates: string[];
+}
+
+export interface LeagueDivision {
+  division: string;
+  headline: string | null;
+  standings: Standing[];
+  /** Page 2's results; null in the week 1 issue. */
+  results: { week: number; date: string; matches: Match[]; byes: string[] } | null;
+  thisWeek: Round | null;
+  nextWeek: Round | null;
+  teams: DivisionTeam[];
+  records: TrophyRecord[];
+  hotDarts: DivisionHotDart[];
+}
+
+export interface LeagueWeek {
+  season: string;
+  week: number;
+  issueDate: string;
+  issue: string;
+  divisions: LeagueDivision[];
+  perfectThrows: PerfectThrow[];
+}

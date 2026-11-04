@@ -10,14 +10,11 @@ import { isBlank, Sheet, str } from "./sheet";
 import type { TeamConfig } from "./team";
 import type { AspRow, DivisionWeek, TeamWeek, WinPctRow } from "./types";
 import { loadWorkbook } from "./workbook";
+import { issueOf } from "./issue";
 
-export type { DivisionWeek, TeamWeek } from "./types";
+export { parseLeague, teamWeekOf, divisionOf } from "./league";
 
-function issueOf(wb: XLSX.WorkBook): { season: string; week: number } {
-  const m = wb.SheetNames[0]?.match(/^(\w+?)-Wk(\d+)-Pg/);
-  if (!m) throw new Error(`Unrecognised sheet name: ${wb.SheetNames[0]}`);
-  return { season: m[1], week: Number(m[2]) };
-}
+export type { DivisionWeek, LeagueWeek, TeamWeek } from "./types";
 
 /** Every team's player stats in our division, for scouting. Empty in the week 1 issue. */
 export function parseDivisionWorkbook(wb: XLSX.WorkBook, team: TeamConfig): DivisionWeek {

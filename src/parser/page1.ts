@@ -14,7 +14,7 @@ export function issueInfo(ws: Sheet): { issueDate: string; issue: string } {
 }
 
 /** Our division's line under RDL HEADLINES, with its indented continuation lines. */
-export function headline(ws: Sheet, team: TeamConfig): string | null {
+export function headline(ws: Sheet, team: Pick<TeamConfig, "division">): string | null {
   const prefix = `"${team.division}" Division:`;
   let r = ws.findRow("H", (v) => typeof v === "string" && v.startsWith(prefix));
   if (r === null) return null;

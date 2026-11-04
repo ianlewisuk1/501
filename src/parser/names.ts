@@ -16,6 +16,9 @@ export function firstLast(lastFirst: Value): string {
   return `${s.slice(i + 1).trim()} ${s.slice(0, i).trim()}`;
 }
 
+/** A player name for matching: no quoted nickname ('Denny "Wood" Williams' -> "denny williams"). */
+export const playerKey = (name: Value | undefined): string => norm(String(name ?? "").replace(/\s*["“][^"”]*["”]\s*/g, " "));
+
 /** `"C" Division` header text for a division letter. */
 export const divisionHeader = (division: string): string => `"${division.toLowerCase()}" division`;
 

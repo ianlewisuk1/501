@@ -34,7 +34,7 @@ raleighdartleague.org (WordPress)
 inbox/Fa26wk07.xlsx
    │  scripts/parse.ts   pure parser: (workbook, teamConfig) -> TeamWeek JSON
    ▼
-data/Fa26/week-07.json  +  division-week-07.json (every C team's players, for Scouting)  +  teams-week-07.json (every C team's TeamWeek, for the team picker)  +  data/latest.json  +  data/manifest.json (processed files)
+data/Fa26/week-07.json  +  division-week-07.json (every C team's players, for Scouting)  +  teams-week-07.json (every C team's TeamWeek, for the team picker)  +  league-week-07.json (every division, see section 10)  +  data/latest.json  +  data/manifest.json (processed files)
    │  git commit, then Pages deploy
    ▼
 Static React page reads data/latest.json
@@ -266,7 +266,7 @@ Keep it fast and plain: system fonts, no heavy UI kit, dark mode via `prefers-co
 
 **Removed at the owner's request (2026-09-23):** the Bragging rights and From the newsletter sections. Also removed (2026-10-15): the 1001 tiebreaker everywhere on the page (too rarely played to be worth a column; the parser still extracts `tiebreaker` and `tiebreaker1001`), and the Last result card; last week's W/L and score still show in Fixtures, and the parser still extracts `lastResult`. The parser still extracts `leaderboards`, `hotDarts`, `trophyDarts`, `perfectThrows` and `headline`, so either can come back.
 
-**Out of scope for v1:** other divisions, other teams beyond the Scouting table, the Page 9 team comparison, venue addresses and maps, and the prose pages apart from our headline and prediction.
+**Out of scope for v1 (superseded by section 10):** other divisions, other teams beyond the Scouting table, the Page 9 team comparison, venue addresses and maps, and the prose pages apart from our headline and prediction.
 
 ---
 
@@ -297,12 +297,12 @@ Spot checks worth their own tests (they cover the tricky paths):
 ## Weekly routine (as built)
 
 1. Download the new `FaNNwkNN.xlsx` from the newsletter post and put it in `inbox/`.
-2. Current routine: the owner sends Claude the file each week. Claude puts it in `inbox/`, runs `npm run update` (which parses only files not in `data/manifest.json`), checks the result, commits `inbox/` and `data/`, and pushes after the owner approves. Vercel rebuilds and publishes `area501.lol`. If a file is pushed to `inbox/` without being parsed, the **Update data** workflow (`.github/workflows/update.yml`) parses it and commits `data/`, and Vercel rebuilds again.
+2. Current routine: the owner sends Claude the file each week. Claude puts it in `inbox/`, runs `npm run update` (which parses only files not in `data/manifest.json`), runs `npm run validate` and reads any new failures or warnings, checks the result, commits `inbox/` and `data/`, and pushes after the owner approves. Vercel rebuilds and publishes `area501.lol`. If a file is pushed to `inbox/` without being parsed, the **Update data** workflow (`.github/workflows/update.yml`) parses it and commits `data/`, and Vercel rebuilds again.
 3. Or run it locally with `npm run update && npm run dev`, then push.
 
 There is no cron, because the league site blocks automated downloads (section 3). If fallback C gets us a stable link, add `scripts/fetch.ts` and a `schedule:` trigger to `update.yml`.
 
-Commands: `npm test`, `npm run dev`, `npm run build`, `npm run parse -- <file.xlsx>` (re-parse even if already seen), `npm run update`.
+Commands: `npm test`, `npm run dev`, `npm run build`, `npm run parse -- <file.xlsx>` (re-parse even if already seen), `npm run update`, `npm run validate` (parse every `inbox/` file league-wide and cross-check it).
 
 Code map: the parser is in `src/parser/` (one module per page, `index.ts` is the entry point). The page is in `src/app/`: `model.ts` holds the pure view logic and is tested, `data.ts` bundles `data/*/week-*.json` and `schedule.json` at build time, `App.tsx` builds the sections, and `Chart.tsx` draws the performance chart as hand-rolled SVG.
 
@@ -324,3 +324,34 @@ Code map: the parser is in `src/parser/` (one module per page, `index.ts` is the
 - A short AI summary of the prose pages. This costs API money, so keep it optional.
 - A match-day reminder (for example, a Wednesday afternoon message with tonight's opponent and venue).
 - Edge cases not seen yet: the week 1 issue (no results yet), tournament and playoff weeks, forfeits, and unreported matches. For all of these, fail soft: `null` sections, never a crash.
+
+---
+
+## 10. League-wide redesign (started 2026-11-04)
+
+The site is opening up to the whole league: every division, every team, from its own point of view. Decisions from the owner:
+
+- Keep `area501.lol` for now; a new, league-neutral domain comes later.
+- A league lander at `/` that isn't tied to any team. Then division, team and player pages, still one SPA with real URLs (`/c`, `/c/area-501`, `/records`, `/player/...`; Vercel rewrites every path to `index.html`).
+- A generated look for every team (palette from the team name, accent per division). The hand-drawn mascots are retired.
+- The editor's prediction is removed everywhere, Area 501 included. The site should read as official and neutral.
+- Personal records: each division's trophy darts (Page 3), Perfect Throws and Hot Darts, shown on division, team and player pages.
+- Player pages are in scope: season line, rank in division, week-by-week form, honors (records, perfect throws, hot darts), game breakdown.
+
+Phases: 1. league data model, records parser, validator (done). 2. routing and nav (lander, division, team pages). 3. records page and badges. 4. redesign pass. 5. player pages. 6. remove the old per-team files and parsers once nothing reads them.
+
+### League data (`src/parser/league.ts`)
+
+`parseLeague(workbook)` gives one `LeagueWeek` per issue, written as `data/{season}/league-week-NN.json` (compact, about 30 KB gzipped). Each fact is stored once: per division the standings, page 2 results (both sides of every match), page 5 rounds for weeks N and N+1, page 10 teams and players, trophy-dart records and hot darts, plus the league-wide Perfect Throws. `teamWeekOf(league, team)` derives the old `TeamWeek` shape (tests check it against the team parser for every C team).
+
+Newsletter facts learned from all 13 Fa26 issues (the validator checks these):
+
+- Team names are shortened differently on every page (`Element`, `Inflation. Element`, `…Element (10/21)`, `Projetile`, `We're Sexy / Throw It`). `resolveTeam` (`src/parser/resolve.ts`) tries exact, whole-word, word-prefix, then letters-in-order, and gives up if more than one team fits. Page 10 capitalization can drift from the standings (`Wing & a Plaque`); the standings name wins.
+- Divisions with an odd team count have a bye every week (A, B, E, F, G in Fa26).
+- Player numbers are unique within a division only, so a player's id is division + number. Page 10 can include quoted nicknames (`Denny "Wood" Williams`); `playerKey` strips them for matching.
+- A 12-12 match is decided by the 1001 tiebreaker (page 2 column Q). Wk5 D has page 2's tiebreaker disagreeing with the standings: a newsletter error, reported as a warning.
+- Forfeits and missing scoresheets replace the game counts with a note across both rows (`(match` / `forfeited)`, `(scoresheet not received` / `by press time)`). Scores are then null (missing) or 0/16 (forfeit). The late points show up in a later issue's standings, sometimes in pieces.
+- A make-up match on page 5 is a single cell: `Still Hump'N @ Darty Little Secrets   (Aug. 30th, Brass Tap 5&6)`.
+- Page 3 records: tied holders stack in one column, each with its own date on the team line. Team names and pairs wrap across lines. A record holder can be a sub from another division. The value line can wrap (`Ton-12 (twice! -` / `8/19/26 & 9/16/26)`).
+- Page 3 hot darts flow through three column groups under `"X" Division` headers. Doubles and team names wrap. Whole-team feats look like `Jonesing for Mugs (Mike J., ...)`. The editor's notes sit in the same columns.
+- Perfect Throws: sections (`9-Marks`, `Ton-80s`, `6-Bulls`) flow down one column into the next; a long entry wraps onto the next row a few columns to the right.

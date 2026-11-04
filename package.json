@@ -10,7 +10,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "parse": "tsx scripts/parse.ts",
-    "update": "tsx scripts/update.ts"
+    "update": "tsx scripts/update.ts",
+    "validate": "tsx scripts/validate.ts"
   },
   "engines": {
     "node": ">=20"
