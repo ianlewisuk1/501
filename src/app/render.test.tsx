@@ -25,12 +25,12 @@ describe("routes", () => {
     expect(parseRoute("/", "?team=menace-2-sobriety")).toEqual({ page: "team", division: "C", team: "menace-2-sobriety" });
   });
 
-  it("lands on every division's table, with each team linked", () => {
+  it("lands on a button per division, each naming its leader", () => {
     const html = at("/");
     expect(html).toContain("Raleigh Dart League");
-    for (const d of "ABCDEFGH") expect(html).toContain(`href="/${d.toLowerCase()}">${d} Division</a>`);
-    expect(html).toContain('href="/c/area-501">Area 501</a>');
-    expect(html).toContain('href="/g/rippin-darts">Rippin Darts</a>');
+    expect(html).toContain("Find your team");
+    expect(html.match(/class="div-btn"/g)).toHaveLength(8);
+    expect(html).toContain("1st: Area 501");
     expect(html).not.toContain("Your team");
   });
 

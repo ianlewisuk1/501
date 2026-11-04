@@ -359,18 +359,30 @@ footer { margin-top: 20px; text-align: center; }
 .my-team .muted { color: inherit; opacity: 0.8; }
 .my-name { font: 400 1.4rem/1.15 "Alfa Slab One", Georgia, serif; color: var(--alien); }
 
-.divisions section { margin: 12px 0; }
-.divisions h2 a { color: inherit; text-decoration: none; }
-.divisions h2 a::after { content: " ›"; color: var(--accent); }
-table.mini td { padding: 5px 4px; }
-table.mini td.rank { width: 1.8rem; color: var(--text-2); }
-table.mini a, section table a { color: inherit; text-decoration: none; }
-table.mini a:hover, section table a:hover { text-decoration: underline; }
-@media (min-width: 900px) {
-  main:has(> .divisions) { max-width: 62rem; }
-  main:has(> .divisions) .crumbs ol { max-width: 62rem; }
-  .divisions { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+h2.find { margin: 18px 0 10px; }
+.div-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .div-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.div-btn {
+  all: unset; box-sizing: border-box; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 0 8px;
+  min-height: 84px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface); color: var(--text); cursor: pointer;
 }
+.div-btn[aria-expanded="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+.div-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.div-letter { grid-row: span 2; font: 400 2.4rem/1 "Alfa Slab One", Georgia, serif; color: var(--accent); }
+.div-label { font-weight: 700; }
+.div-leader { grid-column: 2; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.team-list { list-style: none; margin: 0; padding: 0; }
+.team-list a {
+  display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 4px;
+  border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; font-size: 1.05rem;
+}
+.team-list li:last-child a { border-bottom: 0; }
+.team-list a::after { content: "›"; color: var(--accent); font-size: 1.3rem; }
+.team-rank { width: 1.4rem; text-align: right; color: var(--text-2); font-size: 0.9rem; }
+.team-name { flex: 1; font-weight: 600; }
+section table a { color: inherit; text-decoration: none; }
+section table a:hover { text-decoration: underline; }
 
 .matches { list-style: none; margin: 0; padding: 0; }
 .matches li {
@@ -384,6 +396,3 @@ table.mini a:hover, section table a:hover { text-decoration: underline; }
 table.wide .sticky a.team { color: var(--text-2); text-decoration: none; }
 .loading { min-height: 60vh; }
 .fopp a, .hero .big a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
-@media (min-width: 900px) {
-  body:has(.divisions) .crumbs ol { max-width: 62rem; }
-}
