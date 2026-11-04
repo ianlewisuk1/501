@@ -181,8 +181,8 @@ describe("division leaderboard", () => {
   });
 
   it("counts regulars as half the weeks played so far", () => {
-    expect(regularMatches(wk07)).toBe(3);
-    expect(regularMatches({ ...wk07, week: 1 })).toBe(1);
+    expect(regularMatches(wk07.week)).toBe(3);
+    expect(regularMatches(1)).toBe(1);
   });
 });
 

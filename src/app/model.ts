@@ -354,7 +354,7 @@ export function teamSchedule(team: string, issues: TeamWeek[], base: SeasonSched
   for (const { week, date } of base.weeks) {
     let g = games.get(week);
     const mirror = Number.isInteger(half) ? games.get(week > half ? week - half : week + half) : undefined;
-    if (!g && mirror && mirror !== "bye") g = { home: !mirror.home, opponent: mirror.opponent };
+    if (!g && mirror) g = mirror === "bye" ? "bye" : { home: !mirror.home, opponent: mirror.opponent };
     if (!g) continue;
     if (g === "bye") {
       weeks.push({ week, date, bye: true });
@@ -378,4 +378,4 @@ export function divisionPlayers(current: TeamWeek, divisions: DivisionWeek[]): D
 }
 
 /** "Regulars": played at least half the weeks so far, so a 2–0 sub doesn't top the win % table. */
-export const regularMatches = (current: TeamWeek): number => Math.max(1, Math.ceil((current.week - 1) / 2));
+export const regularMatches = (issueWeek: number): number => Math.max(1, Math.ceil((issueWeek - 1) / 2));

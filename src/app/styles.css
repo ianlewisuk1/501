@@ -328,3 +328,62 @@ select {
 }
 
 footer { margin-top: 20px; text-align: center; }
+
+/* ---- League pages: breadcrumbs, page headers, lander, division page ---- */
+.crumbs {
+  background: var(--navy); color: var(--cream);
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+}
+.crumbs ol {
+  display: flex; flex-wrap: wrap; align-items: center; max-width: 40rem; margin: 0 auto; padding: 0; list-style: none;
+  font-size: 0.9rem;
+}
+.crumbs li { display: flex; align-items: center; min-width: 0; }
+.crumbs li + li::before { content: "›"; padding: 0 8px; opacity: 0.6; }
+.crumbs a { display: inline-block; padding: 10px 0; color: inherit; text-decoration: none; font-weight: 600; }
+.crumbs a[aria-current] { color: var(--alien); }
+.crumbs li:last-child { overflow: hidden; }
+.crumbs li:last-child a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.page-head { margin: 4px 0 12px; }
+.page-head h1 { font: 400 2rem/1.05 "Alfa Slab One", Georgia, serif; letter-spacing: 0.01em; }
+.page-head .meta { margin: 6px 0 0; color: var(--text-2); font-weight: 600; }
+.pick-inline select { margin-top: 10px; min-height: 44px; font-size: 1rem; font-weight: 600; padding: 8px 10px; }
+.more-link { margin: 10px 0 0; font-size: 0.95rem; }
+.more-link a { display: inline-block; padding: 6px 0; }
+
+.my-team {
+  display: flex; flex-direction: column; gap: 2px; margin: 12px 0; padding: 14px 16px; border-radius: 12px;
+  background: var(--navy); color: var(--cream); text-decoration: none;
+}
+.my-team .muted { color: inherit; opacity: 0.8; }
+.my-name { font: 400 1.4rem/1.15 "Alfa Slab One", Georgia, serif; color: var(--alien); }
+
+.divisions section { margin: 12px 0; }
+.divisions h2 a { color: inherit; text-decoration: none; }
+.divisions h2 a::after { content: " ›"; color: var(--accent); }
+table.mini td { padding: 5px 4px; }
+table.mini td.rank { width: 1.8rem; color: var(--text-2); }
+table.mini a, section table a { color: inherit; text-decoration: none; }
+table.mini a:hover, section table a:hover { text-decoration: underline; }
+@media (min-width: 900px) {
+  main:has(> .divisions) { max-width: 62rem; }
+  main:has(> .divisions) .crumbs ol { max-width: 62rem; }
+  .divisions { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+}
+
+.matches { list-style: none; margin: 0; padding: 0; }
+.matches li {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.matches li:last-child { border-bottom: 0; }
+.matches .teams a { color: inherit; text-decoration: none; }
+.matches .won a { font-weight: 700; }
+.matches .score { white-space: nowrap; font-weight: 600; }
+table.wide .sticky a.team { color: var(--text-2); text-decoration: none; }
+.loading { min-height: 60vh; }
+.fopp a, .hero .big a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
+@media (min-width: 900px) {
+  body:has(.divisions) .crumbs ol { max-width: 62rem; }
+}

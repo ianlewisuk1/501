@@ -1,21 +1,73 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
-import { App, ClinchBadge, PLAYER_COLUMNS } from "./App";
+import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
 import { CompareChart } from "./Chart";
 import { buildFixtures, form, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { parseRoute } from "./route";
+import { loadSeason, type SeasonData } from "./store";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 
-describe("rendering", () => {
+let data: SeasonData;
+beforeAll(async () => { data = (await loadSeason())!; });
+const at = (path: string) => renderToStaticMarkup(<Screen data={data} route={parseRoute(path)} />);
+const section = (html: string, id: string) => html.slice(html.indexOf(`id="${id}"`), html.indexOf("</section>", html.indexOf(`id="${id}"`)));
+
+describe("routes", () => {
+  it("parses league, division and team paths, and old ?team= links", () => {
+    expect(parseRoute("/")).toEqual({ page: "home" });
+    expect(parseRoute("/c")).toEqual({ page: "division", division: "C" });
+    expect(parseRoute("/c/area-501/")).toEqual({ page: "team", division: "C", team: "area-501" });
+    expect(parseRoute("/", "?team=menace-2-sobriety")).toEqual({ page: "team", division: "C", team: "menace-2-sobriety" });
+  });
+
+  it("lands on every division's table, with each team linked", () => {
+    const html = at("/");
+    expect(html).toContain("Raleigh Dart League");
+    for (const d of "ABCDEFGH") expect(html).toContain(`href="/${d.toLowerCase()}">${d} Division</a>`);
+    expect(html).toContain('href="/c/area-501">Area 501</a>');
+    expect(html).toContain('href="/g/rippin-darts">Rippin Darts</a>');
+    expect(html).not.toContain("Your team");
+  });
+
+  it("offers a shortcut to the team last opened", () => {
+    const html = renderToStaticMarkup(<Screen data={data} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
+    expect(html).toContain("Your team");
+  });
+
+  it("shows a division's standings, matches, results and leaderboard", () => {
+    const html = at("/g");
+    expect(html).toContain("G Division");
+    for (const id of ["standings", "matches", "results", "division"]) expect(html).toContain(`id="${id}"`);
+    expect(section(html, "matches")).toContain("bye");
+    expect(html).toContain('aria-expanded="false">Show leaderboard</button>');
+  });
+
+  it("renders any team in the league", () => {
+    const html = at("/h/calm-under-pressure");
+    expect(html).toContain("Calm Under Pressure");
+    expect(html).toContain("H Division · Week");
+    expect(html).toContain('id="fixtures"');
+  });
+
+  it("says so for an unknown page", () => {
+    expect(at("/c/nobody")).toContain("Page not found");
+    expect(at("/z")).toContain("Page not found");
+  });
+});
+
+describe("team page", () => {
   it("renders the whole page from data/", () => {
-    const html = renderToStaticMarkup(<App />);
+    const html = at("/c/area-501");
     for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "This Week&#x27;s Opponent (Week ", "Fixtures", "Players", "Performance"]) {
       expect(html).toContain(text);
     }
+    expect(html).not.toContain("Editor&#x27;s pick"); // no predictions anywhere
+    expect(html).not.toContain("Ian&#x27;s pick");
   });
 
   it("badges clinched teams in the standings, but not bottom-two clinches", () => {
@@ -38,7 +90,7 @@ describe("rendering", () => {
   });
 
   it("shows last, this and next week's fixtures until expanded", () => {
-    const html = renderToStaticMarkup(<App />);
+    const html = at("/c/area-501");
     const list = html.slice(html.indexOf('<ol class="fixtures">'), html.indexOf("</ol>", html.indexOf('<ol class="fixtures">')));
     expect(list.match(/<li /g)).toHaveLength(3);
     expect(list).toContain('class="current"');
@@ -46,7 +98,7 @@ describe("rendering", () => {
   });
 
   it("shows every category in the players table", () => {
-    const html = renderToStaticMarkup(<App />);
+    const html = at("/c/area-501");
     for (const label of ["Singles", "Doubles", "301", "501", "Cricket", "All-star", "Matches", "Team total"]) {
       expect(html).toContain(label);
     }
@@ -61,31 +113,26 @@ describe("rendering", () => {
   });
 
   it("groups scouting columns as season stats, then the recent weeks on their own, all sortable", () => {
-    const html = renderToStaticMarkup(<App />);
-    const scout = html.slice(html.indexOf('id="scouting"'), html.indexOf("</section>", html.indexOf('id="scouting"')));
+    const scout = section(at("/c/area-501"), "scouting");
     const groups = [...scout.matchAll(/class="group">([^<]+)</g)].map((m) => m[1]);
     expect(groups).toEqual(["Season", "Last 3 wks"]);
     expect(scout.match(/<button>|<button /g)?.length).toBe(7); // player + 6 stat columns
     expect(scout).toContain('aria-sort="descending"');
   });
-});
 
-describe("folded sections", () => {
   it("starts Players and Performance folded behind big buttons, with a one-line summary", () => {
-    const html = renderToStaticMarkup(<App />);
+    const html = at("/c/area-501");
     expect(html).toContain('aria-expanded="false">Show player stats</button>');
     expect(html).toContain('aria-expanded="false">Show charts</button>');
     expect(html).toMatch(/\d+ players · team \d+–\d+/);
-    expect(html).toContain('aria-expanded="false">Show leaderboard</button>');
+    expect(html).toContain('href="/c">C Division: results, matches and leaderboard</a>');
   });
 });
 
 it("ranks the division's top 25 in a chosen category, with a button for everyone", () => {
-  const html = renderToStaticMarkup(<App />);
-  const board = html.slice(html.indexOf('id="division"'), html.indexOf("</section>", html.indexOf('id="division"')));
+  const board = section(at("/c"), "division");
   expect(board).toContain("<option value=\"aspAvg\">All-star points per game</option>");
   const body = board.slice(board.indexOf("<tbody>"), board.indexOf("</tbody>"));
   expect(body.match(/<tr[ >]/g)).toHaveLength(25);
-  expect(body).toContain('class="us"'); // our players stand out
   expect(board).toMatch(/Show all \d+ players/);
 });
