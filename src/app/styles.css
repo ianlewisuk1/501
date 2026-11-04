@@ -266,6 +266,12 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .board-logo { display: block; width: 96px; height: 96px; margin: 0 auto 4px; }
 .board-when { margin: 0 0 6px; text-align: center; font-size: 1.2rem; }
 .board-when .muted { display: block; font-size: 1rem; }
+.key-dates { margin-top: 22px; padding-top: 16px; border-top: 1.5px solid var(--chalk-line); }
+.key-dates h2 { text-align: center; }
+.key-dates ul { list-style: none; margin: 0; padding: 0; }
+.key-dates li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 7px 2px; border-bottom: 1px solid var(--chalk-faint); }
+.key-dates li:last-child { border-bottom: 0; }
+.kd-date { font: 700 1.1rem/1.3 var(--sketch); color: var(--yellow); white-space: nowrap; }
 .board-foot { margin: 16px 0 0; text-align: center; }
 
 .team-list { list-style: none; margin: 0; padding: 0; }

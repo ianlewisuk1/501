@@ -39,7 +39,6 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
         <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} />
         <Players week={week} />
         <PerformanceChart current={week} history={history} fixtures={fixtures} />
-        <KeyDates today={today} schedule={data.schedule} />
         <footer className="muted small">
           Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
         </footer>
@@ -286,16 +285,6 @@ function Players({ week }: { week: TeamWeek }) {
   );
 }
 
-function KeyDates({ today, schedule }: { today: string; schedule: SeasonSchedule | undefined }) {
-  const dates = (schedule?.keyDates ?? []).filter((d) => d.date >= today);
-  if (!dates.length) return null;
-  return (
-    <section aria-labelledby="dates">
-      <h2 id="dates">Key dates</h2>
-      <ul className="plain">{dates.map((d) => <li key={d.date}><b>{shortDate(d.date)}</b>: {d.label}</li>)}</ul>
-    </section>
-  );
-}
 
 /** W or L, with a 12–12 night going to whoever won the 1001 tiebreaker. */
 function Outcome({ f }: { f: FixtureRow }) {

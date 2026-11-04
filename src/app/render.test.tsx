@@ -5,7 +5,7 @@ import { TEAM } from "../parser/team";
 import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
 import { CompareChart } from "./Chart";
-import { buildFixtures, form, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { buildFixtures, form, todayIso, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 import { parseRoute } from "./route";
 import { loadSeason, type SeasonData } from "./store";
 
@@ -30,6 +30,9 @@ describe("routes", () => {
     expect(html).toContain('aria-label="Raleigh Dart League"');
     expect(html).toContain('class="board-logo"');
     expect(html).toMatch(/Fall 2026, week \d+ of 14/);
+    // Key dates sit at the bottom of the lander now, while any are still ahead.
+    const ahead = (schedule as SeasonSchedule).keyDates.some((d) => d.date >= todayIso());
+    expect(html.includes("Coming up")).toBe(ahead);
     expect(html.match(/class="cricket-row"/g)).toHaveLength(8);
     expect(html).toContain(">Division</span>");
     expect(html).toMatch(/Area 501<span class="mark" title="Clinched"> ⊗<\/span>/);
@@ -72,6 +75,7 @@ describe("team page", () => {
     }
     expect(html).not.toContain("Editor&#x27;s pick"); // no predictions anywhere
     expect(html).not.toContain("Ian&#x27;s pick");
+    expect(html).not.toContain("Key dates");
   });
 
   it("badges clinched teams in the standings, but not bottom-two clinches", () => {

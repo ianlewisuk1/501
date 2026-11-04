@@ -7,7 +7,7 @@ import { Fragment, useState } from "react";
 import type { LeagueDivision, LeagueWeek, Standing } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
 import { divisionIn, seasonLabel, teamHistory } from "./league";
-import { shortDate } from "./model";
+import { shortDate, todayIso } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 
@@ -40,6 +40,7 @@ export function HomePage({ data, issue, myTeam }: { data?: SeasonData; issue: Le
             </Fragment>
           ))}
         </div>
+        <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
         <p className="board-foot muted small">⊗ clinched. Unofficial, from the RDL newsletter, issue #{issue.issue}.</p>
       </div>
     </main>
@@ -106,5 +107,22 @@ function Corners() {
         <svg key={c} className={`corner ${c}`} viewBox="0 0 32 32" aria-hidden="true">{curl}</svg>
       ))}
     </>
+  );
+}
+
+/** Tournaments and the banquet, written along the bottom of the board. Past dates drop off. */
+function KeyDates({ dates }: { dates: { date: string; label: string }[] }) {
+  const today = todayIso();
+  const ahead = dates.filter((d) => d.date >= today);
+  if (!ahead.length) return null;
+  return (
+    <div className="key-dates">
+      <h2>Coming up</h2>
+      <ul>
+        {ahead.map((d) => (
+          <li key={d.date}><span className="kd-date">{shortDate(d.date)}</span><span>{d.label}</span></li>
+        ))}
+      </ul>
+    </div>
   );
 }
