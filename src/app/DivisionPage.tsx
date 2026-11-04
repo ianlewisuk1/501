@@ -12,7 +12,7 @@ export function DivisionPage({ issue, division }: { issue: LeagueWeek; division:
   const players = useMemo<DivisionPlayer[]>(
     () => division.teams.flatMap((t) => t.players.map((p) => ({ ...p, team: t.name, code: t.code }))), [division]);
   return (
-    <main>
+    <main className="division-page">
       <header className="page-head">
         <h1>{d} Division</h1>
         <p className="meta">{seasonLabel(issue.season)}, week {issue.week}</p>
