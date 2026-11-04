@@ -25,18 +25,20 @@ describe("routes", () => {
     expect(parseRoute("/", "?team=menace-2-sobriety")).toEqual({ page: "team", division: "C", team: "menace-2-sobriety" });
   });
 
-  it("lands on a button per division, each naming its leader", () => {
+  it("lands on a cricket board: 1st | division | 2nd, A to H down the middle", () => {
     const html = at("/");
-    expect(html).toContain("Raleigh Dart League");
-    expect(html).toContain("Find your team");
-    expect(html.match(/class="div-btn"/g)).toHaveLength(8);
-    expect(html).toContain("1st: Area 501");
-    expect(html).not.toContain("Your team");
+    expect(html).toContain('aria-label="Raleigh Dart League"');
+    expect(html.match(/class="cricket-row"/g)).toHaveLength(8);
+    expect(html).toContain(">Division</span>");
+    expect(html).toMatch(/Area 501<span class="mark" title="Clinched"> ⊗<\/span>/);
   });
 
-  it("offers a shortcut to the team last opened", () => {
+  it("puts your team against this week's opponent on the vs line", () => {
     const html = renderToStaticMarkup(<Screen data={data} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    expect(html).toContain("Your team");
+    const vs = html.slice(html.indexOf('class="vs-line"'), html.indexOf("</p>", html.indexOf('class="vs-line"')));
+    expect(vs).toContain(">Area 501</a>");
+    expect(vs).toContain(">vs</span>");
+    expect(vs).toContain(">Pints and Points</a>");
   });
 
   it("shows a division's standings, matches, results and leaderboard", () => {

@@ -53,7 +53,7 @@ export function Screen({ data, route, myTeam = null }: { data: SeasonData; route
   }, [team, division]);
 
   let page;
-  if (route.page === "home") page = <HomePage issue={issue} myTeam={myTeam} />;
+  if (route.page === "home") page = <HomePage data={data} issue={issue} myTeam={myTeam} />;
   else if (!division) page = <NotFound />;
   else if (route.page === "division") page = <DivisionPage issue={issue} division={division} />;
   else if (!team || !week) page = <NotFound />;
