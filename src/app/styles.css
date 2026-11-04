@@ -187,6 +187,9 @@ table.wide { width: max-content; min-width: 100%; font-size: 1.05rem; }
 table.wide th, table.wide td { padding: 7px 9px; }
 table.wide .sticky { position: sticky; left: 0; z-index: 1; background: var(--slate); text-align: left; white-space: nowrap; box-shadow: 1.5px 0 0 var(--chalk-line); padding-left: 18px; }
 table.wide thead .sticky { z-index: 2; vertical-align: bottom; }
+/* "Player" spans both header rows; carry the heading's underline across it, drawn like its right edge
+   so it stays put while the table scrolls sideways. */
+table.wide tr.groups th.sticky { border-bottom: 0; box-shadow: 1.5px 0 0 var(--chalk-line), inset 0 -1.5px 0 var(--chalk-line); }
 table.wide tr > :last-child { padding-right: 18px; }
 table.wide tr.groups th { border-bottom: 0; padding-bottom: 0; }
 table.wide th.group { text-align: center; font: 700 1rem/1.2 var(--sketch); color: var(--chalk); border-left: 1.5px solid var(--chalk-line); }
