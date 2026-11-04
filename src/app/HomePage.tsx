@@ -85,6 +85,7 @@ function DivisionRow({ d, open, onToggle }: { d: LeagueDivision; open: boolean; 
 function TeamList({ d }: { d: LeagueDivision }) {
   return (
     <div className="cricket-teams">
+      <p className="tap-hint">Tap a team for its matches, players and stats.</p>
       <ul className="team-list">
         {d.standings.map((s) => (
           <li key={s.team}>
@@ -92,6 +93,7 @@ function TeamList({ d }: { d: LeagueDivision }) {
               <span className="team-rank">{s.rank}</span>
               <span className="team-name">{s.team}</span>
               <span className="muted small">{s.wins}–{s.losses}</span>
+              <span className="go" aria-hidden="true">›</span>
             </Link>
           </li>
         ))}

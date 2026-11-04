@@ -280,6 +280,10 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .team-list li:last-child a { border-bottom: 0; }
 .team-rank { width: 1.4rem; text-align: right; color: var(--chalk-2); font-size: 1rem; }
 .team-name { flex: 1; }
+.tap-hint { margin: 6px 0 2px; color: var(--chalk-2); font-size: 1rem; text-align: center; }
+.team-list .go { font: 700 1.6rem/1 var(--sketch); color: var(--yellow); padding-left: 4px; }
+.team-list a:hover, .team-list a:active { background: rgb(236 232 220 / 0.06); }
+.team-list a:hover .team-name { text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 4px; }
 
 /* ---- Division page: matches and results ---- */
 .matches { list-style: none; margin: 0; padding: 0; }
