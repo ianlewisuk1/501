@@ -14,6 +14,17 @@ export function chalkFor(team: string): string {
   return CHALKS[h % CHALKS.length];
 }
 
+/** A worn stick of chalk lying where it stopped writing: rounded, worn to a slant at the tip, with dust beneath. */
+export const ChalkStick = () => (
+  <svg className="chalk-stick" viewBox="0 0 60 24" aria-hidden="true">
+    <ellipse cx="14" cy="21" rx="13" ry="1.6" fill="#ece8dc" opacity=".18" />
+    <path d="M9 7.5 L50 4.2 Q55 3.9 55.6 9 Q56 14.2 51 14.6 L10.6 17.4 Q6.5 17.8 4.6 13.4 L3.4 10.6 Q4.4 8 9 7.5 Z" fill="#f2efe6" />
+    <path d="M10.6 17.4 L51 14.6 Q55.4 14.2 55.8 10.6 Q54.6 13.3 50.8 13.5 L11 16 Z" fill="#c9c4b6" />
+    <path d="M9 7.5 Q4.4 8 3.4 10.6 L4.6 13.4 Q6.5 17.8 10.6 17.4 Q7.8 13 9 7.5 Z" fill="#dcd7ca" />
+    <path d="M18 7.2 L24 6.7 M30 6.4 L41 5.5" stroke="#fff" strokeOpacity=".7" strokeWidth=".9" strokeLinecap="round" />
+  </svg>
+);
+
 export const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
 
 export const Pin = ({ size = 18 }: { size?: number }) => (
