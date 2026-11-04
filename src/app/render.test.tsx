@@ -28,6 +28,8 @@ describe("routes", () => {
   it("lands on a cricket board: 1st | division | 2nd, A to H down the middle", () => {
     const html = at("/");
     expect(html).toContain('aria-label="Raleigh Dart League"');
+    expect(html).toContain('class="board-logo"');
+    expect(html).toMatch(/Fall 2026, week \d+ of 14/);
     expect(html.match(/class="cricket-row"/g)).toHaveLength(8);
     expect(html).toContain(">Division</span>");
     expect(html).toMatch(/Area 501<span class="mark" title="Clinched"> ⊗<\/span>/);

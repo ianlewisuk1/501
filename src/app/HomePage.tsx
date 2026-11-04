@@ -14,12 +14,19 @@ import type { SeasonData } from "./store";
 export function HomePage({ data, issue, myTeam }: { data?: SeasonData; issue: LeagueWeek; myTeam: { division: string; team: string } | null }) {
   const [open, setOpen] = useState<string | null>(null);
   const mine = myTeam && divisionIn(issue, myTeam.division)?.standings.find((s) => s.team === myTeam.team);
+  // The regular season's length, from the hand-entered schedule.
+  const seasonWeeks = data?.schedule?.season === issue.season ? data.schedule.weeks.length : null;
   return (
     <main className="lander">
       <div className="board">
         <Corners />
+        <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={96} height={96} />
         <ChalkTitle text="Raleigh Dart League" />
-        <VsLine issue={issue} data={data} mine={mine && myTeam ? { ...myTeam, standing: mine } : null} />
+        <p className="board-when">
+          {seasonLabel(issue.season)}, week {issue.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}
+          <span className="muted">{shortDate(issue.issueDate)}</span>
+        </p>
+        {mine && myTeam && <VsLine data={data} mine={{ ...myTeam, standing: mine }} />}
         <div className="cricket" role="table" aria-label="Divisions: the top two teams in each">
           <div className="cricket-head" role="row">
             <span role="columnheader">1st</span>
@@ -33,27 +40,15 @@ export function HomePage({ data, issue, myTeam }: { data?: SeasonData; issue: Le
             </Fragment>
           ))}
         </div>
-        <div className="board-foot">
-          <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="RDL" width={44} height={44} />
-          <span className="muted small">⊗ clinched. Unofficial, from the RDL newsletter, issue #{issue.issue}.</span>
-        </div>
+        <p className="board-foot muted small">⊗ clinched. Unofficial, from the RDL newsletter, issue #{issue.issue}.</p>
       </div>
     </main>
   );
 }
 
-/** "Area 501 vs Pints and Points" for your team this week; otherwise the season and week. */
-function VsLine({ issue, data, mine }: { issue: LeagueWeek; data?: SeasonData; mine: { division: string; team: string; standing: Standing } | null }) {
-  const now = mine && data ? teamHistory(data, mine.team).at(-1)?.thisWeek : null;
-  if (!mine) {
-    return (
-      <p className="vs-line">
-        <span className="vs-name">{seasonLabel(issue.season)}</span>
-        <span className="vs">week {issue.week}</span>
-        <span className="vs-name">{shortDate(issue.issueDate, false)}</span>
-      </p>
-    );
-  }
+/** "Area 501 vs Pints and Points": your team and this week's opponent, on the board's vs line. */
+function VsLine({ data, mine }: { data?: SeasonData; mine: { division: string; team: string; standing: Standing } }) {
+  const now = data ? teamHistory(data, mine.team).at(-1)?.thisWeek : null;
   const opponent = now && !("bye" in now) ? now.opponent : null;
   return (
     <p className="vs-line">

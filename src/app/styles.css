@@ -234,7 +234,7 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .corner.tr { top: 5px; right: 5px; transform: scaleX(-1); }
 .corner.bl { bottom: 5px; left: 5px; transform: scaleY(-1); }
 .corner.br { bottom: 5px; right: 5px; transform: scale(-1); }
-.board .chalk-title { text-align: center; font-size: 2.35rem; margin: 6px 18px 10px; }
+.board .chalk-title { text-align: center; font-size: 2.35rem; margin: 2px 18px 6px; }
 
 /* "___ vs ___": the two blank lines at the top of the board. */
 .vs-line { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 10px; margin: 6px 0 18px; text-align: center; }
@@ -263,8 +263,10 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .mark { color: var(--yellow); white-space: nowrap; }
 .cricket-teams { padding: 4px 0 12px; border-top: 1px dashed var(--chalk-faint); border-bottom: 1px dashed var(--chalk-faint); }
 .cricket-teams > * { grid-column: 1 / -1; }
-.board-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
-.board-foot img { width: 44px; height: 44px; flex: none; }
+.board-logo { display: block; width: 96px; height: 96px; margin: 0 auto 4px; }
+.board-when { margin: 0 0 6px; text-align: center; font-size: 1.2rem; }
+.board-when .muted { display: block; font-size: 1rem; }
+.board-foot { margin: 16px 0 0; text-align: center; }
 
 .team-list { list-style: none; margin: 0; padding: 0; }
 .team-list a { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 2px; border-bottom: 1px solid var(--chalk-faint); text-decoration: none; font-size: 1.2rem; }
