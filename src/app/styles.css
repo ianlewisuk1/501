@@ -355,16 +355,25 @@ header.brand h1 { --ink: var(--team); }
 }
 
 /*
- * The one moment of motion: on the lander the title chalks itself on, left to right, then the
- * stick is set down at the end of the last word. Reduced motion shows it finished.
+ * The one moment of motion: on the lander the title is written a letter at a time while the
+ * chalk travels along (ChalkTitle.tsx), then the stick is laid down. Reduced motion shows it finished.
  */
-/* The chalk fill moves onto the animated span so the mask can hide it until it's written. */
-h1:has(> .chalk-write) { background: none; }
-.chalk-write { background: var(--grain), var(--ink); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.chalk-write { mask-image: linear-gradient(100deg, #000 42%, transparent 58%); mask-size: 280% 100%; mask-position: 0 0; animation: chalk-on 1.5s cubic-bezier(.45, .05, .55, .95) both; }
-@keyframes chalk-on { from { mask-position: 100% 0; } }
-.chalk-stick { display: inline-block; width: 1.25em; height: 0.5em; margin-left: 0.18em; vertical-align: 0.05em; overflow: visible; transform: rotate(-16deg); transform-origin: left center; animation: stick-down 0.45s 1.35s ease-out both; }
-@keyframes stick-down { from { opacity: 0; transform: translate(-0.35em, -0.45em) rotate(-34deg); } }
-@media (prefers-reduced-motion: reduce) {
-  .chalk-write, .chalk-stick { animation: none; }
+.chalk-title { position: relative; background: none; }
+.chalk-title .ch {
+  background: var(--grain), var(--ink); -webkit-background-clip: text; background-clip: text; color: transparent;
+  /* Each letter is wiped on left to right as the chalk passes. Until the fonts are in, nothing shows. */
+  mask-image: linear-gradient(100deg, #000 40%, transparent 60%); mask-size: 300% 100%; mask-position: 100% 0;
+  white-space: pre-wrap; /* spaces stay, and the title can still wrap between words */
 }
+.chalk-title.go .ch { animation: chalk-on linear both; }
+.chalk-title.done .ch { mask-position: 0 0; animation: none; }
+@keyframes chalk-on { from { mask-position: 100% 0; } to { mask-position: 0 0; } }
+.chalk-stick {
+  position: absolute; left: 0; top: 0; width: 1.25em; height: 0.5em; overflow: visible; pointer-events: none;
+  opacity: 0; transform-origin: 6% 50%; /* the worn tip touches the board */
+}
+@media (prefers-reduced-motion: reduce) {
+  .chalk-title .ch { mask-position: 0 0; }
+}
+/* No script (or no mask support): just show the title. */
+@supports not (mask-image: none) { .chalk-title .ch { mask-image: none; } }
