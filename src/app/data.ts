@@ -1,10 +1,11 @@
 import { norm } from "../parser/names";
 import { TEAM } from "../parser/team";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
-import { sortWeeks, teamSchedule, type SeasonSchedule } from "./model";
+import { sortWeeks, teamSchedule, type NewsItem, type SeasonSchedule } from "./model";
 
 // Bundled at build time: every division team's parsed weeks and every season's schedule.
 const teamFiles = import.meta.glob<TeamWeek[]>("../../data/*/teams-week-*.json", { eager: true, import: "default" });
+const newsFiles = import.meta.glob<NewsItem[]>("../../data/news.json", { eager: true, import: "default" });
 const scheduleFiles = import.meta.glob<SeasonSchedule>("../../data/*/schedule.json", { eager: true, import: "default" });
 
 /** Every team's week from every parsed issue. */
@@ -33,3 +34,6 @@ export const divisions: DivisionWeek[] = Object.values(teamFiles).filter((teams)
   division: teams[0].team.division,
   teams: teams.filter((t) => t.team.code).map((t) => ({ code: t.team.code, name: t.team.name, players: t.players })),
 }));
+
+/** Hand-entered breaking news (data/news.json). Each item shows only for its team in its issue week. */
+export const news: NewsItem[] = Object.values(newsFiles).flat();

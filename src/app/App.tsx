@@ -5,9 +5,9 @@ import type { Player, Standing, TeamWeek, WL } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold } from "./Fold";
 import { TeamArt } from "./TeamArt";
-import { current, divisions, historyOf, schedule, scheduleOf, teamNames } from "./data";
+import { current, divisions, historyOf, schedule, scheduleOf, teamNames, news as newsItems } from "./data";
 import {
-  buildFixtures, clinchNews, divisionPlayers, editorPick, regularMatches, type DivisionPlayer, findStanding, teamSlug, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
+  breakingNews, buildFixtures, divisionPlayers, editorPick, regularMatches, type DivisionPlayer, findStanding, teamSlug, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso, type FixtureRow, type ScoutRow,
 } from "./model";
 
 const ordinal = (n: number) => `${n}${["th", "st", "nd", "rd"][n % 100 >> 3 ^ 1 && n % 10] || "th"}`;
@@ -68,7 +68,7 @@ function Page({ week, history, onTeam }: { week: TeamWeek; history: TeamWeek[]; 
   const maps = (venue: string) => mapsUrl(venue, schedule, ios);
   const today = todayIso();
 
-  const news = clinchNews(week, teamSchedule?.weeks.length ?? 0);
+  const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, newsItems);
 
   return (
     <>
@@ -104,8 +104,8 @@ function ClinchBanner({ news }: { news: { headline: string; detail: string } }) 
         <span className="breaking-tag"><span className="breaking-dot" aria-hidden="true" />Breaking</span>
         <div className="breaking-track">
           <p className="breaking-scroll">
-            <span className="breaking-item"><strong>{news.headline}</strong> · {news.detail}</span>
-            <span className="breaking-item" aria-hidden="true"><strong>{news.headline}</strong> · {news.detail}</span>
+            <span className="breaking-item"><strong>{news.headline}</strong>{news.detail && ` · ${news.detail}`}</span>
+            <span className="breaking-item" aria-hidden="true"><strong>{news.headline}</strong>{news.detail && ` · ${news.detail}`}</span>
           </p>
         </div>
       </div>

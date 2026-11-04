@@ -5,7 +5,7 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { breakingNews, buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -198,5 +198,17 @@ describe("clinch news", () => {
       headline: "Area 501 clinches a top-two finish in C Division",
       detail: "11–0 record · 14 pts clear · 3 weeks still to play",
     });
+  });
+});
+
+describe("breakingNews", () => {
+  const wk12 = parse("fixtures/Fa26wk12.xlsx", TEAM);
+  const item = { season: wk12.season, week: wk12.week, team: wk12.team.name, headline: "Hand-entered headline" };
+  it("prefers a hand-entered item for the shown team and week", () => {
+    expect(breakingNews(wk12, 14, [item])).toEqual({ headline: "Hand-entered headline", detail: "" });
+  });
+  it("falls back to clinch news when the item is for another week or team", () => {
+    expect(breakingNews(wk12, 14, [{ ...item, week: 99 }])).toEqual(clinchNews(wk12, 14));
+    expect(breakingNews(wk12, 14, [{ ...item, team: "Someone Else" }])).toEqual(clinchNews(wk12, 14));
   });
 });

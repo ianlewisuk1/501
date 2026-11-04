@@ -53,6 +53,16 @@ export function findStanding(name: string, standings: Standing[]): Standing | un
   return standings.find((s) => norm(s.team) === norm(full));
 }
 
+/** A hand-entered news item from data/news.json, tied to one team and one issue week. */
+export interface NewsItem { season: string; week: number; team: string; headline: string; detail?: string }
+
+/** The banner for this issue: a hand-entered item for the shown team wins over clinch news. */
+export function breakingNews(current: TeamWeek, seasonWeeks: number, items: NewsItem[]): { headline: string; detail: string } | null {
+  const item = items.find((n) => n.season === current.season && n.week === current.week && norm(n.team) === norm(current.team.name));
+  if (item) return { headline: item.headline, detail: item.detail ?? "" };
+  return clinchNews(current, seasonWeeks);
+}
+
 /** Breaking news for a team that has clinched a title or a top-two finish; null otherwise. */
 export function clinchNews(current: TeamWeek, seasonWeeks: number): { headline: string; detail: string } | null {
   const me = findStanding(current.team.name, current.standings);
