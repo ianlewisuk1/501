@@ -261,6 +261,7 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .side-name { font-size: 1rem; line-height: 1.15; overflow-wrap: anywhere; }
 .side-pts { font: 700 1.2rem/1 var(--sketch); color: var(--chalk-2); }
 .mark { color: var(--yellow); white-space: nowrap; }
+.cricket-legend { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; margin: 0; padding: 10px 0 2px; border-top: 1.5px solid var(--chalk-line); color: var(--chalk-2); font-size: 1rem; }
 .cricket-teams { padding: 4px 0 12px; border-top: 1px dashed var(--chalk-faint); border-bottom: 1px dashed var(--chalk-faint); }
 .cricket-teams > * { grid-column: 1 / -1; }
 .board-logo { display: block; width: 96px; height: 96px; margin: 0 auto 4px; }

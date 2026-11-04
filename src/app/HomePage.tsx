@@ -39,9 +39,10 @@ export function HomePage({ data, issue, myTeam }: { data?: SeasonData; issue: Le
               {open === d.division && <TeamList d={d} />}
             </Fragment>
           ))}
+          <Legend issue={issue} />
         </div>
         <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
-        <p className="board-foot muted small">⊗ clinched. Unofficial, from the RDL newsletter, issue #{issue.issue}.</p>
+        <p className="board-foot muted small">Unofficial, from the RDL newsletter, issue #{issue.issue}.</p>
       </div>
     </main>
   );
@@ -60,13 +61,15 @@ function VsLine({ data, mine }: { data?: SeasonData; mine: { division: string; t
   );
 }
 
-const closed = (s?: Standing) => s?.clinched === "C" || s?.clinched === "G";
+/** Page 2's clinch marker as a chalk mark: a tick for a top-two finish, a star for the title. */
+const MARKS = { C: { mark: "✓", says: "clinched a top-two finish" }, G: { mark: "★", says: "division champion" } } as const;
+const markOf = (s?: Standing) => (s?.clinched === "C" || s?.clinched === "G" ? MARKS[s.clinched] : null);
 
 function DivisionRow({ d, open, onToggle }: { d: LeagueDivision; open: boolean; onToggle: () => void }) {
   const [first, second] = d.standings;
   const side = (s: Standing | undefined) => s && (
     <span className="side-team">
-      <span className="side-name">{s.team}{closed(s) && <span className="mark" title="Clinched"> ⊗</span>}</span>
+      <span className="side-name">{s.team}{markOf(s) && <span className="mark" title={markOf(s)!.says}> {markOf(s)!.mark}</span>}</span>
       <span className="side-pts">{s.wins}–{s.losses}</span>
     </span>
   );
@@ -124,5 +127,16 @@ function KeyDates({ dates }: { dates: { date: string; label: string }[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+/** What the marks mean, under the last division. Only the marks on the board are listed. */
+function Legend({ issue }: { issue: LeagueWeek }) {
+  const shown = (["G", "C"] as const).filter((k) => issue.divisions.some((d) => d.standings.slice(0, 2).some((s) => s.clinched === k)));
+  if (!shown.length) return null;
+  return (
+    <p className="cricket-legend">
+      {shown.map((k) => <span key={k}><span className="mark">{MARKS[k].mark}</span> {MARKS[k].says}</span>)}
+    </p>
   );
 }

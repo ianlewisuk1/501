@@ -35,7 +35,9 @@ describe("routes", () => {
     expect(html.includes("Coming up")).toBe(ahead);
     expect(html.match(/class="cricket-row"/g)).toHaveLength(8);
     expect(html).toContain(">Division</span>");
-    expect(html).toMatch(/Area 501<span class="mark" title="Clinched"> ⊗<\/span>/);
+    expect(html).toMatch(/Area 501<span class="mark" title="clinched a top-two finish"> ✓<\/span>/);
+    expect(html).not.toContain("⊗");
+    expect(html).toContain('class="cricket-legend"');
   });
 
   it("puts your team against this week's opponent on the vs line", () => {
