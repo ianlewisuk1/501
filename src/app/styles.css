@@ -297,6 +297,18 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
   min-height: max(520px, 100vh); min-height: max(520px, 100svh);
   padding: max(10px, env(safe-area-inset-top)) 0 10px;
 }
+/*
+ * iPhone Safari's toolbars shrink and hide, so the screen can be taller than the "small" viewport
+ * the board is sized to, and the search below would peek in. The block fills the largest the screen
+ * can be; the gap between the two sits empty at the bottom, so the board and the arrow still fit
+ * the screen with the toolbars showing.
+ */
+@supports (height: 100lvh) {
+  .lander-fold {
+    min-height: max(520px, 100lvh);
+    padding-bottom: calc(10px + 100lvh - 100svh);
+  }
+}
 .lander-fold > * { flex: none; }
 /* Light or dark, in the top right corner of the lander. */
 .lander { position: relative; }
