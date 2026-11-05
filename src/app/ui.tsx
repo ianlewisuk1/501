@@ -1,27 +1,45 @@
 /** Pieces shared by the league, division and team pages. */
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Player, Standing, WL } from "../parser/types";
 import { fmtPct, fmtWL, pct } from "./model";
-import { Link, teamPath } from "./route";
+import { ChalkTitle } from "./ChalkTitle";
+import { syncStatusBar } from "./theme";
 
-/** Sticks of chalk a team can be written in. Losses keep the pink, so it isn't here. */
-const CHALKS = ["#f3d36b", "#8fc7e8", "#f2a3b6", "#9fdcb8", "#f4b26b", "#c3a8ec", "#b9d97a", "#7fd6d0"];
+/** How many team colours there are: --c0 to --c7 in styles.css, a chalk on the chalkboard and a marker on the whiteboard. */
+const TEAM_COLOURS = 8;
 
-/** A team's own chalk colour, the same every visit: picked from its name. */
+/** A team's own colour, the same every visit: picked from its name, as a CSS colour that follows the theme. */
 export function chalkFor(team: string): string {
   let h = 0;
   for (const ch of team.toLowerCase()) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return CHALKS[h % CHALKS.length];
+  return `var(--c${h % TEAM_COLOURS})`;
 }
 
-/** A worn stick of chalk lying where it stopped writing: rounded, worn to a slant at the tip, with dust beneath. */
+/**
+ * What writes the title: on the chalkboard, a worn stick of chalk (rounded, worn to a slant at
+ * the tip, dust beneath); on the whiteboard, a dry-erase marker with its cap posted on the end.
+ * Both are drawn tip-left; the theme shows one (styles.css).
+ */
 export const ChalkStick = () => (
   <svg className="chalk-stick" viewBox="0 0 60 24" aria-hidden="true">
-    <ellipse cx="14" cy="21" rx="13" ry="1.6" fill="#ece8dc" opacity=".18" />
-    <path d="M9 7.5 L50 4.2 Q55 3.9 55.6 9 Q56 14.2 51 14.6 L10.6 17.4 Q6.5 17.8 4.6 13.4 L3.4 10.6 Q4.4 8 9 7.5 Z" fill="#f2efe6" />
-    <path d="M10.6 17.4 L51 14.6 Q55.4 14.2 55.8 10.6 Q54.6 13.3 50.8 13.5 L11 16 Z" fill="#c9c4b6" />
-    <path d="M9 7.5 Q4.4 8 3.4 10.6 L4.6 13.4 Q6.5 17.8 10.6 17.4 Q7.8 13 9 7.5 Z" fill="#dcd7ca" />
-    <path d="M18 7.2 L24 6.7 M30 6.4 L41 5.5" stroke="#fff" strokeOpacity=".7" strokeWidth=".9" strokeLinecap="round" />
+    <g className="stick-chalk">
+      <ellipse cx="14" cy="21" rx="13" ry="1.6" fill="#ece8dc" opacity=".18" />
+      <path d="M9 7.5 L50 4.2 Q55 3.9 55.6 9 Q56 14.2 51 14.6 L10.6 17.4 Q6.5 17.8 4.6 13.4 L3.4 10.6 Q4.4 8 9 7.5 Z" fill="#f2efe6" />
+      <path d="M10.6 17.4 L51 14.6 Q55.4 14.2 55.8 10.6 Q54.6 13.3 50.8 13.5 L11 16 Z" fill="#c9c4b6" />
+      <path d="M9 7.5 Q4.4 8 3.4 10.6 L4.6 13.4 Q6.5 17.8 10.6 17.4 Q7.8 13 9 7.5 Z" fill="#dcd7ca" />
+      <path d="M18 7.2 L24 6.7 M30 6.4 L41 5.5" stroke="#fff" strokeOpacity=".7" strokeWidth=".9" strokeLinecap="round" />
+    </g>
+    <g className="stick-marker">
+      <ellipse cx="30" cy="21.5" rx="24" ry="1.4" fill="#1f2328" opacity=".12" />
+      {/* Felt tip, then the grey collar, the white barrel with its ink-colour band, and the cap posted at the back. */}
+      <path d="M2.5 12 L8.5 9.8 L8.5 14.2 Z" fill="#1f2328" />
+      <path d="M8.5 9.2 L13.5 7.4 L13.5 16.6 L8.5 14.8 Z" fill="#c9ccd0" stroke="#8a8f95" strokeWidth=".5" />
+      <rect x="13.5" y="6.6" width="31" height="10.8" rx="1.6" fill="#f4f5f6" stroke="#8a8f95" strokeWidth=".6" />
+      <rect x="17" y="6.6" width="7" height="10.8" fill="#1f2328" />
+      <path d="M26 8.6 L43 8.6" stroke="#fff" strokeWidth="1" strokeLinecap="round" opacity=".9" />
+      <rect x="44" y="5.4" width="13" height="13.2" rx="2.4" fill="#1f2328" />
+      <rect x="46" y="7" width="9" height="1.4" rx=".7" fill="#4a4f55" />
+    </g>
   </svg>
 );
 
@@ -40,24 +58,6 @@ export function ClinchBadge({ mark }: { mark: Standing["clinched"] }) {
   return null;
 }
 
-/** A division's standings. Team names link to their pages; one team can be highlighted. */
-export function StandingsTable({ standings, division, highlight }: { standings: Standing[]; division: string; highlight?: string }) {
-  return (
-    <table>
-      <thead><tr><th className="num">#</th><th>Team</th><th className="num">W–L</th><th className="num">Pts</th></tr></thead>
-      <tbody>
-        {standings.map((s) => (
-          <tr key={s.team} className={s.team === highlight ? "us" : undefined}>
-            <td className="num">{s.rank}</td>
-            <td><Link to={teamPath(division, s.team)}>{s.team}</Link><ClinchBadge mark={s.clinched} /></td>
-            <td className="num">{s.wins}–{s.losses}</td>
-            <td className="num">{s.points}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
 
 export interface Column<T = Player> {
   key: string;
@@ -123,14 +123,39 @@ export const GROUPS = groupSpans(PLAYER_COLUMNS);
  * (division or season, and the week), and a switcher to another division or team beside them.
  * A team's name is written in that team's own chalk.
  */
-export function PageHead({ title, meta, team = false, children }: { title: string; meta: string; team?: boolean; children?: ReactNode }) {
+/** Long names get smaller lettering so they stay on one or two lines ("Dirty Darts (Done Dirt Cheap)"). */
+const titleSize = (title: string) => (title.length > 20 ? "longer" : title.length > 12 ? "long" : undefined);
+
+export function PageHead({ title, meta, team = false, chalk = false, children }: {
+  title: string; meta: string; team?: boolean; chalk?: boolean; children?: ReactNode;
+}) {
   return (
     <header className={team ? "page-head team-head" : "page-head"}>
       <div>
-        <h1 className={title.length > 10 ? "long" : undefined}>{title}</h1>
+        {/* chalk: written on letter by letter as the page opens, like the lander's title (keyed so a new page writes again). */}
+        {chalk ? <ChalkTitle key={title} text={title} className={titleSize(title)} /> : <h1 className={titleSize(title)}>{title}</h1>}
         <p className="meta">{meta}</p>
       </div>
       {children}
     </header>
   );
 }
+
+/** The phone's status bar matches the page: black or whiteboard on the lander and division pages, slate elsewhere. */
+export function useBlackStatusBar() {
+  useEffect(() => {
+    syncStatusBar();
+    return () => syncStatusBar(); // the next page has rendered by the next frame
+  }, []);
+}
+
+
+/** A chalk-drawn arrow for stepping between divisions, or between the teams in one. */
+export function Arrow({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <path d={dir === "left" ? "M15 4 L7 12 L15 20" : "M9 4 L17 12 L9 20"} />
+    </svg>
+  );
+}
+

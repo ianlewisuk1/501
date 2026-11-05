@@ -11,6 +11,8 @@ import { join } from "node:path";
 import { parseLeague } from "../src/parser/league";
 import { playerKey } from "../src/parser/names";
 import { loadWorkbook } from "../src/parser/workbook";
+import { parseVenueDirectory } from "../src/parser/venues";
+import { resolveVenue, type Venue } from "../src/parser/venueMatch";
 import type { LeagueWeek, Round } from "../src/parser/types";
 
 const files = process.argv.slice(2).length
@@ -22,7 +24,20 @@ const warnings: string[] = [];
 const fail = (where: string, msg: string) => problems.push(`${where}: ${msg}`);
 const warn = (where: string, msg: string) => warnings.push(`${where}: ${msg}`);
 
-const issues: LeagueWeek[] = files.map((f) => parseLeague(loadWorkbook(f))).sort((a, b) => a.issueDate.localeCompare(b.issueDate));
+const books = files.map((f) => loadWorkbook(f));
+const issues: LeagueWeek[] = books.map((wb) => parseLeague(wb)).sort((a, b) => a.issueDate.localeCompare(b.issueDate));
+// The league's directory of host bars (a season's first issue prints it): every venue must match exactly one.
+const directory: Venue[] | null = books.map((wb) => parseVenueDirectory(wb)).find((d) => d) ?? null;
+if (!directory) warn("venues", "no issue here has the WHERE WE PLAY directory, so venues can't be checked");
+else {
+  for (const v of directory) {
+    if (!/^\d+\s/.test(v.street)) fail("venues", `${v.name}: street "${v.street}" doesn't start with a number`);
+    if (!v.city) fail("venues", `${v.name}: no town`);
+  }
+  const venueNames = new Set<string>();
+  for (const L of issues) for (const d of L.divisions) for (const r of [d.thisWeek, d.nextWeek]) for (const m of r?.matches ?? []) if (m.venue) venueNames.add(m.venue);
+  for (const n of venueNames) if (!resolveVenue(n, directory)) fail("venues", `"${n}" matches no single bar in the league's directory, so its map link would be a guess`);
+}
 
 for (const L of issues) {
   const wk = `${L.season} wk${L.week}`;
@@ -86,6 +101,9 @@ for (const L of issues) {
         if (c !== 1) fail(at, `${n} appears ${c} times in ${label} (week ${round.week})`);
       }
       for (const m of round.matches) if (!m.venue) fail(at, `${label}: ${m.away} @ ${m.home} has no venue`);
+      // The editor picks every one of this week's matches on page 5.
+      if (label === "this week" && L.week > 1)
+        for (const m of round.matches) if (!d.picks?.some((p) => p.away === m.away && p.home === m.home)) warn(at, `no newsletter pick found for ${m.away} @ ${m.home}`);
     }
 
     // Records, hot darts.

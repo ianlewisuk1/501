@@ -10,7 +10,7 @@ const LETTER_MS = 125; // time to chalk one letter
 const SPACE_MS = 70; // lifting the chalk between words
 const SETTLE_MS = 450; // laying the stick down
 
-export function ChalkTitle({ text }: { text: string }) {
+export function ChalkTitle({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
   const timings = [...text].reduce<{ start: number; ms: number }[]>((acc, ch) => {
     const prev = acc.at(-1);
@@ -62,7 +62,7 @@ export function ChalkTitle({ text }: { text: string }) {
   }, [text]);
 
   return (
-    <h1 ref={ref} className="chalk-title" aria-label={text}>
+    <h1 ref={ref} className={className ? `chalk-title ${className}` : "chalk-title"} aria-label={text}>
       {[...text].map((ch, i) => (
         <span key={i} className="ch" aria-hidden="true" style={{ animationDelay: `${timings[i].start}ms`, animationDuration: `${timings[i].ms}ms` }}>
           {ch}

@@ -2,7 +2,7 @@ import { escapeRe, isUs, norm } from "./names";
 import { str, type Sheet } from "./sheet";
 import type { TeamConfig } from "./team";
 import { resolveTeam } from "./resolve";
-import type { Fixture, Round } from "./types";
+import type { Fixture, Pick, Round } from "./types";
 
 const PREDICTIONS = "predictions for the week";
 
@@ -105,18 +105,24 @@ export function leagueRounds(
   }]));
 }
 
-/** The editor's pick for our match: a featured write-up, or our entry in the "remaining matches" list. */
-export function prediction(ws: Sheet, team: TeamConfig): { featured: boolean; text: string } | null {
+/** The editor's predictions as one run of text: down column A, then down column H, to the "Page N" footer. */
+function predictionText(ws: Sheet): string | null {
   const start = predictionsRow(ws);
   if (start > ws.maxRow) return null;
-  // The text runs down column A, then down column H, until the "Page N" footer.
   const footer = (r: number) => ws.row(r).some((v) => typeof v === "string" && /^Page \d+$/.test(v.trim()));
   let end = start;
   while (end <= ws.maxRow && !footer(end)) end++;
   const lines: string[] = [];
   for (let r = start + 1; r < end; r++) lines.push(str(ws.get("A", r)).trim());
   for (let r = start; r < end; r++) lines.push(str(ws.get("H", r)).trim());
-  const text = lines.join(" ").replace(/\s+/g, " ");
+  // A "Page 5" footer can land mid-sentence where column A's text runs on into column H's.
+  return lines.join(" ").replace(/\bPage \d+\b/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** The editor's pick for our match: a featured write-up, or our entry in the "remaining matches" list. */
+export function prediction(ws: Sheet, team: TeamConfig): { featured: boolean; text: string } | null {
+  const text = predictionText(ws);
+  if (text === null) return null;
 
   // Featured write-ups lead with "Away @ Home."; the remaining list reads "Team 15, Other 9".
   const names = [team.name, ...team.aliases].map(norm);
@@ -137,4 +143,87 @@ export function prediction(ws: Sheet, team: TeamConfig): { featured: boolean; te
     }
   }
   return null;
+}
+
+/** "Have to go Element, 13-11." The sentence that makes the call, with the one before it when it's only a score. */
+function closingCall(body: string): string {
+  const sentences = body.split(/(?<=[.!?…])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
+  // Take sentences from the end until there are some words, so "13-11." or "barely. 13-11." brings
+  // the sentence it finishes ("No small task, but they do…. barely. 13-11.").
+  let call = "";
+  for (let i = sentences.length - 1; i >= 0; i--) {
+    call = call ? `${sentences[i]} ${call}` : sentences[i];
+    if (call.replace(/[\d\s+\-–.,…]/g, "").length >= 10) break;
+  }
+  return call;
+}
+
+/**
+ * The fixture a pick is about, from the two names the editor wrote. Names get shortened and
+ * misspelled ("Only Darts", "Fight Club", "Main St Mayhew"), so when only one of them is
+ * recognised the fixture still is: each team plays once a week.
+ */
+function fixtureFor(a: string, b: string, names: string[], matches: { away: string; home: string }[]) {
+  const ra = resolveTeam(a, names);
+  const rb = resolveTeam(b, names);
+  const has = (m: { away: string; home: string }, t: string | null) => !!t && (m.away === t || m.home === t);
+  return matches.find((m) => has(m, ra) && has(m, rb))
+    ?? matches.find((m) => (ra && !rb && has(m, ra)) || (rb && !ra && has(m, rb)))
+    ?? null;
+}
+
+/**
+ * The editor's pick for every match this week, by division, matched to page 5's fixtures. Featured
+ * matches ("Match #4: (C Div.) Menace 2 Sobriety @ Area 501. …") keep the write-up and its closing
+ * call in the editor's words; no winner is read into the prose. The "remaining matches" list
+ * ("C Division: Mulligans Mafia 15, Still Hump'N 9; …") is a plain score line, with the names
+ * resolved to the standings'. "12+" means that side takes a 12–12 on the 1001.
+ */
+export function leaguePicks(
+  ws: Sheet,
+  divisions: { division: string; names: string[]; matches: { away: string; home: string }[] }[],
+): Map<string, Pick[]> {
+  const out = new Map<string, Pick[]>(divisions.map((d) => [d.division, []]));
+  const text = predictionText(ws);
+  if (!text) return out;
+  const add = (division: string, away: string, home: string, pick: Omit<Pick, "away" | "home">) => {
+    const list = out.get(division);
+    if (list && !list.some((p) => p.away === away && p.home === home)) list.push({ away, home, ...pick });
+  };
+
+  const featured = /(Match(?:es)? #[\d #&,]+|Match of the week):\s*\(([A-H]) Div\.\)\s*(.*?)(?=Match(?:es)? #\d|Match of the week:|And the remaining|$)/g;
+  for (const m of text.matchAll(featured)) {
+    const d = divisions.find((x) => x.division === m[2]);
+    if (!d) continue;
+    const body = m[3].trim();
+    // The lead names the match(es): "Away @ Home." or "A @ B; C @ D; E @ F."
+    const lead = body.slice(0, 240);
+    const found = [...lead.matchAll(/(?:^|;\s*)([^;@]+?)\s+@\s+([^;]+?)(?=;|[.?!]\s|$)/g)]
+      .map((pair) => fixtureFor(pair[1], pair[2], d.names, d.matches))
+      .filter((f): f is { away: string; home: string } => !!f);
+    // A write-up covering several matches ends on a call about only one of them, so it has no call of its own.
+    const call = found.length === 1 ? closingCall(body) : null;
+    for (const f of found) add(d.division, f.away, f.home, { featured: true, text: body, call, together: found.length });
+  }
+
+  const i = text.indexOf("And the remaining");
+  if (i >= 0) {
+    const rest = text.slice(i);
+    for (const sec of rest.matchAll(/([A-H]) Division:\s*(.*?)(?=\s[A-H] Division:|$)/g)) {
+      const d = divisions.find((x) => x.division === sec[1]);
+      if (!d) continue;
+      for (const part of sec[2].split(";")) {
+        const pm = part.trim().replace(/\.$/, "").match(/^(.+?)\s+(\d+)(\+?),\s*(.+?)\s+(\d+)(\+?)$/);
+        if (!pm) continue;
+        const f = fixtureFor(pm[1], pm[4], d.names, d.matches);
+        if (!f) continue;
+        // Written with the standings' names, whichever spelling the editor used.
+        const full = (raw: string) => resolveTeam(raw, d.names) ?? ([f.away, f.home].find((t) => t !== resolveTeam(raw === pm[1] ? pm[4] : pm[1], d.names)) ?? raw);
+        const side = (raw: string, n: string, plus: string) => `${full(raw)} ${n}${plus ? " (wins the 1001)" : ""}`;
+        const line = `${side(pm[1], pm[2], pm[3])}, ${side(pm[4], pm[5], pm[6])}`;
+        add(d.division, f.away, f.home, { featured: false, text: line, call: line, together: 1 });
+      }
+    }
+  }
+  return out;
 }

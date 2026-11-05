@@ -4,13 +4,12 @@ import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
 import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
-import { CompareChart } from "./Chart";
-import { buildFixtures, form, todayIso, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
-import { divisionRounds } from "./league";
+import { todayIso, type SeasonSchedule } from "./model";
+import { divisionBest, playerLine, teamLine, verdict } from "./form";
+import { divisionIn, divisionRounds, divisionWeeks } from "./league";
 import { parseRoute } from "./route";
 import { loadSeason, type SeasonData } from "./store";
 
-const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 
 let data: SeasonData;
@@ -51,7 +50,10 @@ describe("routes", () => {
     const html = renderToStaticMarkup(<Screen data={data} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
     const mine = html.slice(html.indexOf('class="your-team"'), html.indexOf('class="aim"'));
     expect(mine).toContain('href="/c/area-501"');
-    expect(mine).toMatch(/This week: (home to|away at) Pints and Points/);
+    // Says what the box is, and names the next match: this issue's, or the week after once that night has passed.
+    expect(mine).toContain("Your team</span>");
+    expect(mine).toContain("You picked this team.");
+    expect(mine).toMatch(/Next: \w{3} \d+, (home to|away at) (Pints and Points|Menace 2 Sobriety)/);
     expect(html).toContain('class="seg" aria-label="C Division, 8 teams"'); // nothing chalked in from last time
   });
 
@@ -74,9 +76,14 @@ describe("routes", () => {
     expect(home(null, { division: "C", team: "Gone Team" })).not.toContain("Last looked at");
   });
 
-  it("lets a team page be picked as my team", () => {
-    expect(at("/c/menace-2-sobriety")).toContain('<button type="button" class="my-team-pick">');
-    expect(at("/c/menace-2-sobriety")).toContain("This is my team");
+  it("lets a team page be picked as my team, and steps through the division's teams with arrows", () => {
+    const html = at("/c/menace-2-sobriety");
+    expect(html).toContain('class="my-team-btn" aria-pressed="false"');
+    expect(html).toContain("This is my team");
+    // Standings order, wrapping: Menace is 2nd, so Area 501 (1st) before and Darty Little Secrets (3rd) after.
+    expect(html).toContain('aria-label="Previous team: Area 501" href="/c/area-501"');
+    expect(html).toContain('aria-label="Next team: Darty Little Secrets" href="/c/darty-little-secrets"');
+    expect(html).not.toContain("Show another team in the division"); // the team dropdown is gone
   });
 
   it("puts the same black site bar and page heading on division and team pages", () => {
@@ -92,15 +99,35 @@ describe("routes", () => {
     expect(team).toContain('<header class="page-head team-head">');
   });
 
-  it("puts a division in tabs: standings, matches and leaderboard", () => {
+  it("puts a division in tabs: standings, matches, players and records", () => {
     const html = at("/g");
     expect(html).toContain("G Division");
     for (const id of ["standings", "matches", "division"]) expect(html).toContain(`id="${id}"`);
     expect(section(html, "matches")).toContain('<span class="card-status">Bye</span>');
     const tabs = html.slice(html.indexOf('role="tablist"'), html.indexOf("</div>", html.indexOf('role="tablist"')));
-    expect([...tabs.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(["Standings", "Matches", "Leaderboard"]);
+    expect([...tabs.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(["Standings", "Matches", "Players", "Records"]);
     expect(html).toContain('id="tab-standings" role="tab" aria-selected="true"'); // opens on the standings
     expect(html).not.toContain("Show leaderboard"); // the tab is the fold
+    // Arrows to the divisions either side, instead of a dropdown.
+    expect(html).toContain('aria-label="Previous: F Division" href="/f"');
+    expect(html).toContain('aria-label="Next: H Division" href="/h"');
+  });
+
+  it("writes a division's standings up as a chalk ladder, leader ringed, and lists its records", () => {
+    const html = at("/c");
+    const ladder = html.slice(html.indexOf('class="ladder"'), html.indexOf("</ol>", html.indexOf('class="ladder"')));
+    expect(ladder.match(/<li/g)).toHaveLength(8);
+    expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
+    expect(ladder).toContain("12–0, 17 points clear");
+    // Says the rows can be tapped.
+    expect(html).toContain('<p class="tab-note">Tap a team to see its page: fixtures, players and form</p>');
+    // The arrows wrap round: before A comes H.
+    expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
+    const rec = html.slice(html.indexOf('id="panel-records"'));
+    expect(rec).toContain("Fast singles 301");
+    expect(rec).toContain("Ian Lewis, Area 501, Aug 12");
+    expect(rec).toContain("Perfect throws");
+    expect(rec).toContain("Hot darts last week");
   });
 
   it("renders any team in the league", () => {
@@ -119,7 +146,7 @@ describe("routes", () => {
 describe("team page", () => {
   it("renders the whole page from data/", () => {
     const html = at("/c/area-501");
-    for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "This Week&#x27;s Opponent (Week ", "Fixtures", "Players", "Performance"]) {
+    for (const text of ["Area 501", "Menace 2 Sobriety", "This Week&#x27;s Opponent (Week ", "Fixtures", "Players", "All games"]) {
       // Titles live on in the tabs and, for screen readers, in hidden headings.
       expect(html).toContain(text);
     }
@@ -135,17 +162,46 @@ describe("team page", () => {
     expect(renderToStaticMarkup(<ClinchBadge mark={undefined} />)).toBe("");
   });
 
-  it("compares Russell Riley alone by default, on a nightly and a season chart", () => {
-    const rows = buildFixtures(wk07, [wk06, wk07], schedule as SeasonSchedule);
-    const players = wk07.players.map((p) => ({ name: p.name, pts: form(weeklyGames(wk07, [wk06, wk07], rows, p.name)) }));
-    const team = form(weeklyGames(wk07, [wk06, wk07], rows, WHOLE_TEAM));
-    const html = renderToStaticMarkup(<CompareChart players={players} team={team} />);
-    expect(html).toContain("Win % each night");
-    expect(html).toContain("Season win % so far");
-    expect(html.match(/class="pline /g)).toHaveLength(2); // one line per chart
-    expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
-    expect(html).toContain('aria-pressed="true" aria-label="Russell Riley"');
+  it("charts a player's season-so-far win % in one game, week by week", () => {
+    const divs = divisionWeeks(data, "C");
+    const latest = data.issues.at(-1)!;
+    const ian = divisionIn(latest, "C")!.teams.flatMap((t) => t.players).find((p) => p.name === "Ian Lewis")!;
+    const line = playerLine(divs, "Fa26", ian.number, "singles301");
+    // One point per issue after week 1, each at the week its stats run through.
+    expect(line.map((p) => p.week)).toEqual(Array.from({ length: latest.week - 1 }, (_, i) => i + 1));
+    expect(line.at(-1)!.wl).toEqual(ian.singles301);
+    // The season record only ever grows.
+    for (let i = 1; i < line.length; i++) if (line[i].wl && line[i - 1].wl) expect(line[i].wl!.w + line[i].wl!.l).toBeGreaterThanOrEqual(line[i - 1].wl!.w + line[i - 1].wl!.l);
+    // The team line adds up every player.
+    const area = divisionIn(latest, "C")!.teams.find((t) => t.name === "Area 501")!;
+    const total = area.players.reduce((a, p) => ({ w: a.w + p.total.w, l: a.l + p.total.l }), { w: 0, l: 0 });
+    expect(teamLine(divs, "Fa26", area.code, "total").at(-1)!.wl).toEqual(total);
+    // The division's best is a regular, not a sub with two games.
+    const best = divisionBest(divs, "Fa26", "singlesCricket")!;
+    expect(best.singlesCricket.w + best.singlesCricket.l).toBeGreaterThanOrEqual(6);
   });
+
+  it("says hot, cold or steady only on enough recent games, against everything before", () => {
+    const pts = (rows: [number, number][]) => rows.map(([w, l], i) => ({ week: i + 1, wl: { w, l }, pct: w + l ? w / (w + l) : null }));
+    // 3–3 through week 3, then 4 straight wins: hot.
+    expect(verdict(pts([[1, 1], [2, 2], [3, 3], [4, 3], [5, 3], [6, 3], [7, 3]])).kind).toBe("hot");
+    // 6–0, then 0–3: cold.
+    expect(verdict(pts([[2, 0], [4, 0], [6, 0], [6, 1], [6, 2], [6, 3]])).kind).toBe("cold");
+    // Only 2 recent games: too few to call.
+    expect(verdict(pts([[1, 0], [2, 0], [3, 0], [3, 0], [4, 0], [4, 1]])).kind).toBe("few");
+  });
+
+  it("opens the Form tab on one player and all games, with the team average on", () => {
+    const html = at("/c/area-501");
+    const panel = html.slice(html.indexOf('id="panel-form"'));
+    expect(panel).toContain('aria-pressed="true">All games</button>');
+    expect(panel).toContain(">Whole team</button>");
+    expect(panel.match(/class="form-pick"/g)).toHaveLength(1);
+    expect(panel).toMatch(/class="form-verdict (hot|cold|steady|few)"/);
+    expect(panel).toContain('class="ref-team" aria-pressed="true"');
+    expect(panel).toContain('class="ref-best" aria-pressed="false"');
+  });
+
 
   it("lists every week of the season in the Fixtures tab, this week highlighted", () => {
     const html = at("/c/area-501");
@@ -178,20 +234,20 @@ describe("team page", () => {
     expect(scout).toContain('aria-sort="descending"');
   });
 
-  it("puts the sections in tabs under tonight's match, the opponent open first", () => {
+  it("puts the sections in tabs under tonight's match, the players open first", () => {
     const html = at("/c/area-501");
     const tabs = [...html.matchAll(/role="tab" aria-selected="(true|false)"[^>]*>([^<]+)</g)].map((m) => [m[2], m[1]]);
-    expect(tabs).toEqual([["Opponent", "true"], ["Standings", "false"], ["Fixtures", "false"], ["Players", "false"], ["Form", "false"]]);
-    expect(html).toMatch(/id="panel-opponent" role="tabpanel"[^>]*class="tab-panel"/);
-    expect(html).toMatch(/id="panel-players" role="tabpanel"[^>]*hidden=""/);
+    // No Standings tab: the division page has the same table, a tap away in the site bar.
+    expect(tabs).toEqual([["Players", "true"], ["Form", "false"], ["Opponent", "false"], ["Fixtures", "false"]]);
+    expect(html).toMatch(/id="panel-players" role="tabpanel"[^>]*class="tab-panel"/);
+    expect(html).toMatch(/id="panel-opponent" role="tabpanel"[^>]*hidden=""/);
     // Inside a tab, sections open flat: no fold buttons.
     expect(html).not.toContain("Show player stats");
     expect(html).not.toContain("Show charts");
     expect(html).toContain("Team total"); // the players table is there, unfolded
     // No title repeated inside a tab; details like the gap to 2nd stay as a line.
     expect(html).toContain('<h2 id="fixtures" class="sr-only">Fixtures</h2>');
-    expect(html).toMatch(/<p class="tab-note">\d+ pts clear of 2nd<\/p>/);
-    expect(html).toContain('href="/c">All of C Division: results, matches and the player leaderboard</a>');
+    expect(html).toContain('href="/c"'); // the division (and its standings) from the site bar
   });
 
 });
@@ -214,7 +270,7 @@ it("filters the leaderboard by games played: all, more than 5, more than 20", ()
 
 it("writes each team's place in the standings small in front of its name, with a chalk crest", () => {
   const matches = section(at("/c"), "matches");
-  expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="side-name">Area 501</span><span class="card-rec">12–0</span>');
+  expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="card-line"><span class="side-name">Area 501</span></span><span class="card-rec">12–0</span>');
   expect(matches).toContain('aria-hidden="true">PP</span>'); // Pints and Points' chalk crest
 });
 
@@ -231,13 +287,16 @@ describe("matches, every week", () => {
     expect(rounds.at(-1)!.date).toBe("2026-11-11");
   });
 
-  it("opens on this week, with a week picker either side", () => {
+  it("opens on the next match night still to come, with a week picker either side", () => {
     const html = section(at("/c"), "matches");
-    const week = data.issues.at(-1)!.week;
+    const rounds = divisionRounds(data, "C");
+    // The week just played shows no scores until the next newsletter, so the tab looks ahead.
+    const start = rounds.find((r) => !r.played && r.date >= todayIso())?.week ?? data.issues.at(-1)!.week;
     expect(html).toContain('aria-label="Previous week"');
     expect(html).toContain('aria-label="Next week"');
-    expect(html).toMatch(new RegExp(`<option value="${week}" selected="">Week ${week} \\(this week\\)</option>`));
-    expect(html.match(/<option /g)).toHaveLength(week + 1);
-    expect(html).toContain(": this week&#x27;s matches");
+    expect(html).toMatch(new RegExp(`<option value="${start}" selected="">Week ${start} \\(next\\)</option>`));
+    expect(html.match(/<option /g)).toHaveLength(rounds.length);
+    expect(html).toContain(": next match night");
   });
+
 });

@@ -1,0 +1,210 @@
+[
+  {
+    "name": "American Legion Fuquay-Varina",
+    "street": "6400 Johnson Pond Road",
+    "area": "Fuquay-Varina",
+    "city": "Fuquay-Varina",
+    "landmark": "about 0.2 miles from Fuquay Elementary School",
+    "maps": "6400 Johnson Pond Road, Fuquay-Varina, NC"
+  },
+  {
+    "name": "Backstage Pub",
+    "street": "401 Ashville Avenue",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "behind Jiffy Lube right off Tryon Road",
+    "maps": "401 Ashville Avenue, Cary, NC"
+  },
+  {
+    "name": "Benny's Billiards",
+    "street": "932 NE Maynard Road",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "in Reedy Creek Square, at opposite end from Food Lion",
+    "maps": "932 NE Maynard Road, Cary, NC"
+  },
+  {
+    "name": "Brass Tap & Billiards",
+    "street": "3316 Capital Boulevard",
+    "area": "north Raleigh",
+    "city": "Raleigh",
+    "landmark": "in Starmount shopping center",
+    "maps": "3316 Capital Boulevard, Raleigh, NC"
+  },
+  {
+    "name": "Break Time Billiards",
+    "street": "6442 Tryon Road",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "left of Lowe's Foods, at inter. w/ Cary Parkway",
+    "maps": "6442 Tryon Road, Cary, NC"
+  },
+  {
+    "name": "Buffalo Brothers - Capital Blvd",
+    "street": "3111 Capital Blvd",
+    "area": "Raleigh",
+    "city": "Raleigh",
+    "landmark": "in Capital Square, a little north of I-440",
+    "maps": "3111 Capital Blvd, Raleigh, NC"
+  },
+  {
+    "name": "Cleveland Draft House - Garner",
+    "street": "6101 NC Highway 42 West",
+    "area": "Garner",
+    "city": "Garner",
+    "landmark": "0.7 mile west of I-40 on NC Highway 42",
+    "maps": "6101 NC Highway 42 West, Garner, NC"
+  },
+  {
+    "name": "D's Bottle Shop",
+    "street": "13200 Falls of Neuse Rd, Suite 115",
+    "area": "north Raleigh",
+    "city": "Raleigh",
+    "landmark": "in Wakefield Crossing Plaza, next to Dante's Italian",
+    "maps": "13200 Falls of Neuse Rd, Raleigh, NC"
+  },
+  {
+    "name": "Dugout Tavern",
+    "street": "1413 Kelly Road",
+    "area": "Apex",
+    "city": "Apex",
+    "landmark": "at the north end of the Publix shopping center",
+    "maps": "1413 Kelly Road, Apex, NC"
+  },
+  {
+    "name": "The Flying Saucer",
+    "street": "328 West Morgan Street",
+    "area": "Raleigh",
+    "city": "Raleigh",
+    "landmark": "at the corner of Morgan and South Harrington St.",
+    "maps": "328 West Morgan Street, Raleigh, NC"
+  },
+  {
+    "name": "High Park Bar & Grille",
+    "street": "625 E. Whitaker Mill Road",
+    "area": "Raleigh",
+    "city": "Raleigh",
+    "landmark": "near intersection of Whitaker Mill & Wake Forest Rd.",
+    "maps": "625 E. Whitaker Mill Road, Raleigh, NC"
+  },
+  {
+    "name": "Hot Shots Billiards & Pub",
+    "street": "107 Edinburgh South Drive",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "in MacGregor Village",
+    "maps": "107 Edinburgh South Drive, Cary, NC"
+  },
+  {
+    "name": "Lonerider Wake Forest",
+    "street": "1839 South Main Street, Suite 600",
+    "area": "Wake Forest",
+    "city": "Wake Forest",
+    "landmark": "next to the Polar Ice skating rinks",
+    "maps": "1839 South Main Street, Wake Forest, NC"
+  },
+  {
+    "name": "Mackey's Pub",
+    "street": "2101 South Main Street",
+    "area": "Wake Forest",
+    "city": "Wake Forest",
+    "landmark": "right next to Asuka Asian Bistro",
+    "maps": "2101 South Main Street, Wake Forest, NC"
+  },
+  {
+    "name": "Mac's Tavern",
+    "street": "1014 Ryan Road",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "in Village Market Shopping Center",
+    "maps": "1014 Ryan Road, Cary, NC"
+  },
+  {
+    "name": "Main Street Taps (was Walley's Tavern)",
+    "street": "1110 Kentworth Drive",
+    "area": "Holly Springs",
+    "city": "Holly Springs",
+    "landmark": "off NC-55, half a mile from S. Main Street",
+    "maps": "1110 Kentworth Drive, Holly Springs, NC"
+  },
+  {
+    "name": "Main Street Tavern",
+    "street": "411 South Main Street",
+    "area": "Rolesville",
+    "city": "Rolesville",
+    "landmark": "in the Food Lion plaza",
+    "maps": "411 South Main Street, Rolesville, NC"
+  },
+  {
+    "name": "Mulligans Arcade and Tavern",
+    "street": "176 Bratton Drive",
+    "area": "Garner",
+    "city": "Garner",
+    "landmark": "near Highway 55 Burgers, near inter. of NC-42 & I-40",
+    "maps": "176 Bratton Drive, Garner, NC"
+  },
+  {
+    "name": "Natural Science",
+    "street": "2409 Crabtree Boulevard",
+    "area": "Raleigh",
+    "city": "Raleigh",
+    "landmark": "in Gateway Plaza, down the alley behind Mordecai Bev.",
+    "maps": "2409 Crabtree Boulevard, Raleigh, NC"
+  },
+  {
+    "name": "The Pickled Onion #2",
+    "street": "8511 Cantilever Way",
+    "area": "north Raleigh",
+    "city": "Raleigh",
+    "landmark": "off Glenwood, in plaza behind CarMax",
+    "maps": "8511 Cantilever Way, Raleigh, NC"
+  },
+  {
+    "name": "Rally Point Sport Grill",
+    "street": "837 Bass Pro Lane (formerly 1837 N. Harrison Ave.)",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "in the Bass Pro Shops plaza near I-40, behind Wendy's",
+    "maps": "837 Bass Pro Lane, Cary, NC"
+  },
+  {
+    "name": "Scooters",
+    "street": "1911 Sego Court",
+    "area": "N. Raleigh",
+    "city": "Raleigh",
+    "landmark": "near Atlantic/Millbrook inter., behind Batteries Plus",
+    "maps": "1911 Sego Court, Raleigh, NC"
+  },
+  {
+    "name": "Sharky's Place",
+    "street": "5800 Duraleigh Road",
+    "area": "NW Raleigh",
+    "city": "Raleigh",
+    "landmark": "in the Yuppie Center near US 70 intersection",
+    "maps": "5800 Duraleigh Road, Raleigh, NC"
+  },
+  {
+    "name": "Snooker's-RW",
+    "street": "3520 Wade Avenue",
+    "area": "NW Raleigh",
+    "city": "Raleigh",
+    "landmark": "in Ridgewood Shopping Center",
+    "maps": "3520 Wade Avenue, Raleigh, NC"
+  },
+  {
+    "name": "The Taproom - Knightdale",
+    "street": "861 Old Knight Rd, Suite 104",
+    "area": "Knightdale",
+    "city": "Knightdale",
+    "landmark": "corner unit behind Bojangles",
+    "maps": "861 Old Knight Rd, Knightdale, NC"
+  },
+  {
+    "name": "The Upper Deck",
+    "street": "329 N. Harrison Avenue",
+    "area": "Cary",
+    "city": "Cary",
+    "landmark": "near intersection. of N. Harrison & Highway 54",
+    "maps": "329 N. Harrison Avenue, Cary, NC"
+  }
+]

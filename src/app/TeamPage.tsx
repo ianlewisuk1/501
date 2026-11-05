@@ -1,5 +1,5 @@
-/** One team's page: tonight's match, the opponent, standings, fixtures, players and charts. */
-import { useMemo, useState } from "react";
+/** One team's page: tonight's match, then the opponent, fixtures, players and form. (The standings are on the division page.) */
+import { useEffect, useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
@@ -7,13 +7,14 @@ import { Fold, SectionHead } from "./Fold";
 import { divisionWeeks, scheduleFor } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
-  type FixtureRow, type ScoutRow, type SeasonSchedule,
+  type FixtureRow, type ScoutRow,
 } from "./model";
-import { divisionPath, Link, navigate, teamPath } from "./route";
+import { Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
+import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
-import { groupSpans, GROUPS, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, StandingsTable, useSort, wlCol, type Column } from "./ui";
+import { Arrow, groupSpans, GROUPS, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
   const division = week.team.division;
@@ -21,29 +22,35 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const divisions = useMemo(() => divisionWeeks(data, division), [data, division]);
   const fixtures = useMemo(() => buildFixtures(week, history, teamSchedule), [week, history, teamSchedule]);
   const ios = useMemo(() => isIOS(), []);
-  const maps = (venue: string) => mapsUrl(venue, data.schedule, ios);
+  const maps = (venue: string) => mapsUrl(venue, data.venues, ios);
   const today = todayIso();
   const current = fixtures.find((f) => f.status === "current");
   const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, data.news);
   const scout = current && !current.bye ? scoutReport(current.opponent, week, divisions) : null;
+  useBlackStatusBar();
+  // The teams either side in the standings, wrapping round, for the arrows by the name.
+  const order = week.standings.map((s) => s.team);
+  const at = order.indexOf(week.team.name);
+  const prev = order[(at - 1 + order.length) % order.length];
+  const next = order[(at + 1) % order.length];
 
   return (
     <>
       {news && <ClinchBanner news={news} />}
-      <main className={news ? "under-banner" : undefined}>
-        <PageHead team title={week.team.name} meta={`${division} Division, week ${week.week}${teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}`}>
-          <div className="page-tools">
+      <main className={news ? "team-page under-banner" : "team-page"}>
+        <div className="div-head">
+          {order.length > 1 && <Link className="div-step" to={teamPath(division, prev)} aria-label={`Previous team: ${prev}`}><Arrow dir="left" /></Link>}
+          <PageHead team chalk title={week.team.name} meta={`${division} Division, week ${week.week}${teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}`}>
             <MyTeamButton team={week.team.name} division={division} />
-            <TeamPicker team={week.team.name} division={division} names={week.standings.map((s) => s.team)} />
-          </div>
-        </PageHead>
-        <Tonight week={week} fixture={current} today={today} schedule={data.schedule} />
+          </PageHead>
+          {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
+        </div>
+        <Tonight week={week} fixture={current} today={today} venues={data.venues} />
         <Tabs label="Team sections" tabs={[
-          { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
-          { id: "standings", label: "Standings", show: true, body: <Standings week={week} /> },
-          { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
           { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
-          { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} history={history} fixtures={fixtures} /> },
+          { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
+          { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
+          { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
         ]} />
         <footer className="muted small">
           Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
@@ -60,18 +67,13 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
 function MyTeamButton({ team, division }: { team: string; division: string }) {
   const { picked } = useMyTeams();
   const me = { division, team };
-  if (sameTeam(picked, me)) {
-    return (
-      <div className="my-team is-mine">
-        <span className="my-team-on"><Star filled />My team</span>
-        <button type="button" className="my-team-undo" onClick={() => pickTeam(null)}>Not my team</button>
-      </div>
-    );
-  }
+  const mine = sameTeam(picked, me);
   return (
-    <div className="my-team">
-      <button type="button" className="my-team-pick" onClick={() => pickTeam(me)}><Star />This is my team</button>
-    </div>
+    <button type="button" className={mine ? "my-team-btn is-mine" : "my-team-btn"} aria-pressed={mine}
+      title={mine ? "Tap to stop following this team" : "Show this team first on the front page"}
+      onClick={() => pickTeam(mine ? null : me)}>
+      <Star filled={mine} />{mine ? "My team" : "This is my team"}
+    </button>
   );
 }
 
@@ -84,18 +86,6 @@ function Star({ filled = false }: { filled?: boolean }) {
   );
 }
 
-/** A big plain dropdown of every team in the division, A to Z. */
-function TeamPicker({ team, division, names }: { team: string; division: string; names: string[] }) {
-  if (names.length < 2) return null;
-  return (
-    <label className="page-pick">
-      <span className="sr-only">Show another team in the division</span>
-      <select value={team} onChange={(e) => navigate(teamPath(division, e.target.value))}>
-        {[...names].sort((a, b) => a.localeCompare(b)).map((t) => <option key={t} value={t}>{t}</option>)}
-      </select>
-    </label>
-  );
-}
 
 /** A slim news ticker strip announcing a clinched title or top-two finish. */
 function ClinchBanner({ news }: { news: { headline: string; detail: string } }) {
@@ -114,27 +104,36 @@ function ClinchBanner({ news }: { news: { headline: string; detail: string } }) 
   );
 }
 
-function Tonight({ week, fixture, today, schedule }: { week: TeamWeek; fixture: FixtureRow | undefined; today: string; schedule: SeasonSchedule | undefined }) {
+function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: FixtureRow | undefined; today: string; venues: Venue[] | undefined }) {
   if (!fixture) return null;
   const heading = fixture.date === today ? "Tonight" : fixture.date > today ? "Next match" : "This week";
   if (fixture.bye) {
     return <section className="card hero"><h2>{heading}</h2><p className="big">Bye week</p></section>;
   }
   const opp = findStanding(fixture.opponent, week.standings);
+  // Compact: who, where and the two map buttons, so the tabs still show on the first screen.
   return (
     <section className="card hero" aria-labelledby="tonight">
       <h2 id="tonight">{heading} <span className="muted">{shortDate(fixture.date)}</span></h2>
       <p className="big">vs <Link to={teamPath(week.team.division, fixture.opponent)}>{fixture.opponent}</Link></p>
-      {opp && <p className="muted">They're {ordinal(opp.rank)} in {week.team.division} at {opp.wins}–{opp.losses}, {opp.points} points</p>}
-      <p>{fixture.home ? "Home" : "Away"}, at {fixture.venue}</p>
-      <Directions venue={fixture.venue} schedule={schedule} />
+      {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
+      <p className="hero-where">{fixture.home ? "Home" : "Away"} at {fixture.venue}</p>
+      <VenueAddress venue={fixture.venue} venues={venues} />
+      <Directions venue={fixture.venue} venues={venues} />
     </section>
   );
 }
 
+/** The street address and the league's how-to-find-it note, so the map pin can be checked by eye. */
+function VenueAddress({ venue, venues }: { venue: string; venues: Venue[] | undefined }) {
+  const v = resolveVenue(venue, venues ?? []);
+  if (!v) return null;
+  return <p className="venue-addr muted">{v.street}, {v.area}{v.landmark && <span className="venue-landmark">, {v.landmark}</span>}</p>;
+}
+
 /** Directions buttons styled after each maps app's own buttons (no logos: they're trademarks). */
-function Directions({ venue, schedule }: { venue: string; schedule: SeasonSchedule | undefined }) {
-  const urls = mapsUrls(venue, schedule);
+function Directions({ venue, venues }: { venue: string; venues: Venue[] | undefined }) {
+  const urls = mapsUrls(venue, venues);
   return (
     <div className="maps">
       <a className="map-btn apple" href={urls.apple} target="_blank" rel="noopener">
@@ -147,7 +146,22 @@ function Directions({ venue, schedule }: { venue: string; schedule: SeasonSchedu
   );
 }
 
-const scoutColumns = (recentLabel: string | null): Column<ScoutRow>[] => {
+/** True on a phone-width screen; false in the server-rendered tests and on wider screens. */
+function useNarrow(width = 480): boolean {
+  const query = `(max-width: ${width}px)`;
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const m = matchMedia(query);
+    setNarrow(m.matches);
+    const on = () => setNarrow(m.matches);
+    m.addEventListener("change", on);
+    return () => m.removeEventListener("change", on);
+  }, [query]);
+  return narrow;
+}
+
+/** On a phone the opponent table keeps record, win % and the last few weeks, so it fits without scrolling sideways. */
+const scoutColumns = (recentLabel: string | null, narrow = false): Column<ScoutRow>[] => {
   const season: Column<ScoutRow>[] = [
     wlCol("record", "Record", "Season", (p) => p.total),
     // Ties on win % go to whoever has played more, so "best record first" holds by default.
@@ -156,16 +170,18 @@ const scoutColumns = (recentLabel: string | null): Column<ScoutRow>[] => {
     { ...pctCol("doubles", "Season", (p) => p.doubles), label: "Doubles" },
     { key: "matches", label: "Matches", group: "Season", sort: (p) => p.matches, show: (p) => String(p.matches) },
   ];
-  if (!recentLabel) return season;
+  const shown = narrow ? season.filter((c) => c.key === "record" || c.key === "pct") : season;
+  if (!recentLabel) return shown;
   const recent = wlCol<ScoutRow>("recent", "W–L", recentLabel, (p) => p.recent ?? { w: 0, l: 0 });
-  return [...season, { ...recent, show: (p) => (p.recent ? fmtWL(p.recent) : "–") }];
+  return [...shown, { ...recent, show: (p) => (p.recent ? fmtWL(p.recent) : "–") }];
 };
 
 /** Tonight's opponent's players, so we know who to watch for. */
 function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: FixtureRow | undefined; divisions: DivisionWeek[] }) {
   const report = fixture && !fixture.bye ? scoutReport(fixture.opponent, week, divisions) : null;
   const [from, to] = report?.recentWeeks ?? [0, 0];
-  const columns = scoutColumns(report?.recentWeeks ? `Last ${to - from + 1} wks` : null);
+  const narrow = useNarrow();
+  const columns = scoutColumns(report?.recentWeeks ? `Last ${to - from + 1} wks` : null, narrow);
   const { rows, sortKey, toggle, arrow, ariaSort } = useSort(report?.rows ?? [], columns, "pct");
   const start = (i: number) => i > 0 && columns[i - 1].group !== columns[i].group;
   if (!report?.rows.length) return null;
@@ -205,22 +221,6 @@ function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: Fixtu
         Season stats through week {report.through}
         {report.recentWeeks && <>; "Last {to - from + 1} wks" is weeks {from}–{to} only</>}. Tap a heading to sort.
       </p>
-    </section>
-  );
-}
-
-function Standings({ week }: { week: TeamWeek }) {
-  const us = week.standings.find((s) => s.team === week.team.name);
-  const leader = week.standings[0];
-  const second = week.standings[1];
-  const gap = !us || !leader ? null
-    : us === leader ? (second ? `${us.points - second.points} pts clear of 2nd` : null)
-    : `${leader.points - us.points} pts behind 1st`;
-  return (
-    <section aria-labelledby="standings">
-      <SectionHead id="standings" title="Standings" detail={gap} />
-      <StandingsTable standings={week.standings} division={week.team.division} highlight={week.team.name} />
-      <p className="more-link"><Link to={divisionPath(week.team.division)}>All of {week.team.division} Division: results, matches and the player leaderboard</Link></p>
     </section>
   );
 }

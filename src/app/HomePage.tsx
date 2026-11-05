@@ -9,10 +9,13 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
 import { divisionIn, seasonLabel, teamHistory } from "./league";
-import { shortDate, todayIso } from "./model";
+import { addDays, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { sameTeam, type TeamRef } from "./myTeam";
+import { useBlackStatusBar } from "./ui";
+import { setTheme, useThemeSetting } from "./theme";
+import { promptInstall, useInstalled, useInstallPrompt, usePlatform } from "./install";
 
 /** A remembered team, if it is still in this season's standings (teams change between seasons). */
 const current = (issue: LeagueWeek, t: TeamRef | null) =>
@@ -29,6 +32,7 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
     <main className="lander">
       {/* Everything that matters fits on the first screen: the dartboard takes whatever height is left. */}
       <div className="lander-fold">
+      <ThemeToggle />
       <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={104} height={104} />
       <ChalkTitle text="Raleigh Dart League" />
       <p className="board-when">
@@ -55,8 +59,34 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
 
       <FindTeam issue={issue} />
 
+      <AddToHome />
+
       <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
     </main>
+  );
+}
+
+/**
+ * Light or dark, top right of the lander: the whiteboard or the chalkboard. It says what tapping
+ * does ("Light" on the chalkboard, "Dark" on the whiteboard), with a sun or a moon, and the choice
+ * is remembered on this device.
+ */
+function ThemeToggle() {
+  const theme = useThemeSetting();
+  const next = theme === "dark" ? "light" : "dark";
+  return (
+    <button type="button" className="theme-toggle" onClick={() => setTheme(next)} aria-label={`Switch to ${next} mode`}>
+      {next === "light" ? (
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <circle cx="12" cy="12" r="4.5" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+        </svg>
+      )}
+      <span>{next === "light" ? "Light" : "Dark"}</span>
+    </button>
   );
 }
 
@@ -91,29 +121,38 @@ function MoreBelow() {
   );
 }
 
-/** The phone's status bar goes black with the board, and back to slate when leaving it. */
-function useBlackStatusBar() {
-  useEffect(() => {
-    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (!meta) return;
-    const was = meta.content;
-    meta.content = "#000000";
-    return () => { meta.content = was; };
-  }, []);
-}
-
-/** The team picked with "This is my team", with this week's match, as one big link back to it. */
+/**
+ * The team picked with "This is my team", as one big link back to it, saying plainly that it's
+ * the visitor's pick and what its next match is. Once this issue's match night has passed (its
+ * result waits for the next newsletter), the next match is the following week's.
+ */
 function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
-  const now = teamHistory(data, mine.team).at(-1)?.thisWeek;
-  const tonight = !now ? null : "bye" in now ? "Bye this week" : `This week: ${now.home ? "home to" : "away at"} ${now.opponent}`;
+  const latest = teamHistory(data, mine.team).at(-1);
+  const played = !!latest && latest.issueDate < todayIso();
+  const fixture = latest ? (played ? latest.nextWeek : latest.thisWeek) : null;
+  const date = latest && (played ? addDays(latest.issueDate, 7) : latest.issueDate);
+  const next = !fixture || !date ? null
+    : "bye" in fixture ? `Next: a bye week, ${shortDate(date, false)}`
+    : `Next: ${shortDate(date, false)}, ${fixture.home ? "home to" : "away at"} ${fixture.opponent}`;
   return (
     <div className="your-team">
       <Link className="your-team-link" to={teamPath(mine.division, mine.team)}>
-        <span className="your-team-label">Your team</span>
-        <span className="your-team-name">{mine.team}</span>
-        {tonight && <span className="your-team-now">{tonight}</span>}
+        <span className="your-team-top">
+          <span className="your-team-name">{mine.team}</span>
+          <span className="your-team-label"><Star />Your team</span>
+        </span>
+        {next && <span className="your-team-now">{next}</span>}
+        <span className="your-team-why">You picked this team. Change it on any team's page.</span>
       </Link>
     </div>
+  );
+}
+
+function Star() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -270,6 +309,74 @@ function FindTeam({ issue }: { issue: LeagueWeek }) {
         </ul>
       ) : <p className="find-none muted">No team by that name this season.</p>)}
     </section>
+  );
+}
+
+/**
+ * "Add RDL to your home screen", on phones only (not computers), and not once it's already there. On Android it
+ * opens Chrome's own install prompt when Chrome offers one; otherwise (and always on an iPhone,
+ * where a website can't open it) it shows the few taps it takes, with the icon to look for.
+ */
+function AddToHome() {
+  const env = usePlatform();
+  const prompt = useInstallPrompt();
+  const installed = useInstalled();
+  const [steps, setSteps] = useState(false);
+  if (!env || env.standalone || installed) return null;
+  const { platform } = env;
+  // Phones only: a computer's browser has its own install button if it offers one.
+  if (platform === "other") return null;
+  // Only Android's Chrome has a prompt a page can open; everywhere else, the steps.
+  const native = platform === "android" ? prompt : null;
+  const go = async () => {
+    if (native) { if (!(await promptInstall())) setSteps(true); return; }
+    setSteps((s) => !s);
+  };
+  return (
+    <section className="add-home" aria-labelledby="add-home-h">
+      <h2 id="add-home-h">Keep RDL on your phone</h2>
+      <p className="add-home-why">Add it to your home screen and it opens like an app, straight to the league.</p>
+      <button type="button" className="add-home-btn" onClick={go} aria-expanded={native ? undefined : steps}>
+        <PhoneIcon />Add to your home screen
+      </button>
+      {steps && (platform === "ios" ? (
+        <ol className="add-home-steps">
+          <li>Tap the Share button <ShareIcon /> in Safari's toolbar, at the bottom of the screen (top right in Chrome).</li>
+          <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+          <li>Tap <b>Add</b>. RDL appears with the other apps.</li>
+        </ol>
+      ) : (
+        <ol className="add-home-steps">
+          <li>Tap the menu button <DotsIcon /> at the top right of Chrome.</li>
+          <li>Tap <b>Add to Home screen</b> (on some phones it says <b>Install app</b>).</li>
+          <li>Tap <b>Add</b> or <b>Install</b>. RDL appears with the other apps.</li>
+        </ol>
+      ))}
+    </section>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="6" y="2.5" width="12" height="19" rx="2.5" /><path d="M10.5 18.5h3" /><path d="M12 7v6M9 10h6" />
+    </svg>
+  );
+}
+/** The iPhone's Share icon: a box with an arrow out of the top. */
+function ShareIcon() {
+  return (
+    <svg className="inline-icon" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Share" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v12M8 7l4-4 4 4" /><path d="M8 11H6.5A1.5 1.5 0 0 0 5 12.5v7A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 17.5 11H16" />
+    </svg>
+  );
+}
+/** Chrome's menu: three dots stacked. */
+function DotsIcon() {
+  return (
+    <svg className="inline-icon" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="menu (three dots)" fill="currentColor">
+      <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
+    </svg>
   );
 }
 

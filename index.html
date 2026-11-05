@@ -3,17 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#2c3a33" />
-    <meta name="description" content="Area 501, C Division, Raleigh Dart League: tonight's match, results, standings and player stats." />
+    <script>
+      // Light (whiteboard) or dark (chalkboard), before anything paints: the visitor's choice, else dark.
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("rdl.theme"); } catch (e) {}
+        if (t !== "light") t = "dark";
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <meta name="description" content="Raleigh Dart League: standings, matches, players and records for every division and team." />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="apple-mobile-web-app-title" content="Area 501" />
+    <meta name="apple-mobile-web-app-title" content="RDL" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Area 501</title>
+    <title>Raleigh Dart League</title>
   </head>
   <body>
     <div id="root"></div>

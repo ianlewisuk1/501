@@ -2,16 +2,43 @@
  * The pub scoreboard: a green slate board in a wooden frame, written on in chalk.
  * Headings and names in sketchy chalk lettering (Cabin Sketch); everything else in plain,
  * very legible handwriting (Patrick Hand), set large for reading in a dim bar.
- * The board stays dark in light and dark mode, like the real thing.
+ * Two boards (decided 2026-11-05): the chalkboard (dark) and a whiteboard written in marker
+ * (light). <html data-theme> picks one; index.html sets it before first paint from the visitor's
+ * choice, else the phone's setting. Every colour below comes from these tokens.
  */
 :root {
   color-scheme: dark;
+  /* Colour channels, so any token can be used at any strength: rgb(var(--ink-rgb) / 0.3). */
+  --ink-rgb: 236 232 220;     /* chalk */
+  --hi-rgb: 243 211 107;      /* yellow chalk: you are here */
+  --loss-rgb: 241 154 142;    /* pink chalk: losses */
+  --red-rgb: 232 131 124;     /* dartboard's red ring */
+  --green-rgb: 143 209 158;   /* dartboard's green ring */
+  --blue-rgb: 143 199 232;
+  --smudge-rgb: 255 255 255;  /* wiped-chalk clouds on the board */
+  --chalk-bright: #f6f2e4;    /* freshly pressed chalk: big titles */
+  --hi-bright: #fff4c9;
+  --board-black: #070707;     /* the lander and division pages */
+  --board-black-hi: #1a1a1a;
+  --chalk-2-black: #b8b3a4;
+  --bar-bg: #000;             /* the site bar along the top */
+  --menu-bg: #26322c;
+  --panel: rgb(10 16 13 / 0.38);  /* scoreboard cards */
+  --on-hi: #111;              /* text on a yellow button */
+  --dart-1: #d9d4c4; --dart-2: #f3efe0; --dart-3: #b8b3a4; --dart-edge: #070707;
+  --logo-filter: none;
+  --glow: drop-shadow(0 0 0.8px rgb(var(--ink-rgb) / 0.5));
+  /* Team chalks, picked per team by name (chalkFor in ui.tsx). */
+  --c0: #f3d36b; --c1: #8fc7e8; --c2: #f2a3b6; --c3: #9fdcb8; --c4: #f4b26b; --c5: #c3a8ec; --c6: #b9d97a; --c7: #7fd6d0;
+  /* The chalk stick under the title. */
+  --stick-1: #f2efe6; --stick-2: #c9c4b6; --stick-3: #dcd7ca; --stick-shadow: #ece8dc;
+
   --slate: #2c3a33;
   --slate-hi: #34433b;      /* a freshly wiped patch */
   --chalk: #ece8dc;
   --chalk-2: #a7b1a9;       /* faded, half-rubbed-out chalk */
-  --chalk-line: rgb(236 232 220 / 0.28);
-  --chalk-faint: rgb(236 232 220 / 0.12);
+  --chalk-line: rgb(var(--ink-rgb) / 0.28);
+  --chalk-faint: rgb(var(--ink-rgb) / 0.12);
   --yellow: #f3d36b;        /* you are here: our row, tonight */
   --pink: #f19a8e;          /* losses */
   --team: var(--yellow);    /* the shown team's own chalk, set per page */
@@ -25,7 +52,7 @@
   --grid: var(--chalk-faint);
   --accent: var(--team);
   --won-bar: #d9d4c4;
-  --lost-bar: rgb(241 154 142 / 0.55);
+  --lost-bar: rgb(var(--loss-rgb) / 0.55);
   /* One chalk stick per player, in newsletter order. */
   --p0: #f3d36b;
   --p1: #8fc7e8;
@@ -45,6 +72,13 @@
 }
 
 * { box-sizing: border-box; }
+/*
+ * The page never moves sideways on a phone: anything poking past the edge (the dart flying in,
+ * a stray wide element) is cut off rather than letting the page drag left and right. "clip"
+ * keeps sticky headers working; older browsers get "hidden". Wide tables still scroll sideways
+ * inside their own boxes, and pinch-zoom is untouched.
+ */
+html, body { overflow-x: hidden; overflow-x: clip; overscroll-behavior-x: none; }
 html { -webkit-text-size-adjust: 100%; background: var(--slate); }
 body {
   margin: 0;
@@ -53,9 +87,9 @@ body {
   font-variant-numeric: tabular-nums;
   /* Slate, with the cloudy marks a board gets from years of wiping, and fine chalk dust. */
   background:
-    radial-gradient(38rem 16rem at 18% 8%, rgb(255 255 255 / 0.045), transparent 70%),
-    radial-gradient(30rem 22rem at 88% 42%, rgb(255 255 255 / 0.035), transparent 70%),
-    radial-gradient(26rem 14rem at 30% 86%, rgb(255 255 255 / 0.04), transparent 70%),
+    radial-gradient(38rem 16rem at 18% 8%, rgb(var(--smudge-rgb) / 0.045), transparent 70%),
+    radial-gradient(30rem 22rem at 88% 42%, rgb(var(--smudge-rgb) / 0.035), transparent 70%),
+    radial-gradient(26rem 14rem at 30% 86%, rgb(var(--smudge-rgb) / 0.04), transparent 70%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
     var(--slate);
   background-attachment: fixed;
@@ -85,9 +119,9 @@ section { margin: 0; padding: 22px 0 20px; background: var(--rule) top left / 24
 .page-head + section { background: none; }
 footer { margin-top: 24px; padding-top: 18px; text-align: center; background: var(--rule) top left / 240px 6px repeat-x; }
 
-/* ---- Site bar: a black strip across the top of every page but the lander ---- */
+/* ---- Site bar: a black strip across the top of every page but the lander; it stays put as the page scrolls ---- */
 /* Black like the lander, so walking in from it the top of the page carries straight on. */
-.site-bar { background: #000; padding: env(safe-area-inset-top) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); }
+.site-bar { position: sticky; top: 0; z-index: 20; background: var(--bar-bg); padding: env(safe-area-inset-top) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); }
 .site-bar-inner { display: flex; align-items: center; gap: 4px; max-width: 40rem; min-height: 52px; margin: 0 auto; font-size: 1.1rem; color: var(--chalk-2); }
 .site-home { display: flex; align-items: center; gap: 8px; flex: none; padding: 6px 4px 6px 0; text-decoration: none; color: var(--chalk); }
 .site-home img { display: block; width: 34px; height: 34px; }
@@ -132,32 +166,24 @@ select {
   font: inherit; font-size: 1.1rem; min-height: 48px; padding: 8px 12px; max-width: 100%;
   color: var(--chalk); background: var(--slate-hi); border: 1.5px solid var(--chalk-line); border-radius: 6px;
 }
-select option { background: #26322c; color: var(--chalk); }
-.page-pick { display: flex; flex-direction: column; flex: 0 1 14rem; max-width: 14rem; font-size: 1rem; color: var(--chalk-2); }
-.page-pick select { min-height: 44px; font-size: 1rem; }
-.page-tools { display: flex; flex-direction: column; gap: 8px; flex: 0 1 14rem; max-width: 14rem; }
-.page-tools .page-pick { flex: none; max-width: none; }
+select option { background: var(--menu-bg); color: var(--chalk); }
 
 /* "This is my team" on a team page. */
-.my-team { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
-.my-team svg { flex: none; }
-.my-team-pick {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 14px; cursor: pointer;
-  font: 400 1.1rem var(--hand); color: var(--yellow); background: none;
-  border: 1.5px dashed rgb(243 211 107 / 0.7); border-radius: 8px;
+.my-team-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; cursor: pointer;
+  font: 400 1.05rem var(--hand); color: var(--yellow); background: none;
+  border: 1.5px dashed rgb(var(--hi-rgb) / 0.6); border-radius: 20px;
 }
-.my-team-pick:hover { background: rgb(243 211 107 / 0.08); }
-.my-team-on { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 700 1.2rem var(--sketch); color: var(--yellow); }
-.my-team-undo { min-height: 44px; padding: 0 4px; border: 0; background: none; cursor: pointer; font: 400 1rem var(--hand); color: var(--chalk-2); text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 4px; }
-.my-team-undo:hover { color: var(--chalk); }
+.my-team-btn:hover { background: rgb(var(--hi-rgb) / 0.08); }
+.my-team-btn.is-mine { border-style: solid; background: rgb(var(--hi-rgb) / 0.1); font-weight: 700; }
 
 /* ---- Tonight: the one boxed thing on the board, chalked round by hand ---- */
 .hero {
   margin: 4px 0 8px; padding: 18px 18px 14px;
-  border: 2px solid rgb(243 211 107 / 0.85);
+  border: 2px solid rgb(var(--hi-rgb) / 0.85);
   border-radius: 255px 14px 225px 14px / 14px 225px 14px 255px;
-  box-shadow: 2px 3px 0 -1px rgb(243 211 107 / 0.3);
-  background: rgb(243 211 107 / 0.04);
+  box-shadow: 2px 3px 0 -1px rgb(var(--hi-rgb) / 0.3);
+  background: rgb(var(--hi-rgb) / 0.04);
 }
 .hero h2 { color: var(--yellow); }
 .hero .big { font-size: 2rem; }
@@ -165,13 +191,18 @@ select option { background: #26322c; color: var(--chalk); }
 
 .maps { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
 .map-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  flex: 1 1 9rem; min-height: 48px; padding: 0 16px; text-decoration: none; font-size: 1rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  flex: 1 1 8rem; min-height: 48px; padding: 0 12px; text-decoration: none; font-size: 1rem;
 }
 /* Apple: solid, rounded rectangle, SF. Google: pill, hairline border, red pin. Like their own dark-mode buttons. */
 .map-btn.apple { background: #fff; color: #000; border-radius: 10px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
 .map-btn.google { background: #131314; color: #e3e3e3; border: 1px solid #8e918f; border-radius: 999px; font-weight: 500; font-family: "Google Sans", Roboto, Arial, sans-serif; }
 .map-btn.google .gpin { display: inline-flex; color: #ea4335; }
+/* On a white card the white Apple button needs an edge. */
+:root[data-theme="light"] .map-btn.apple { border: 1px solid #c7c9cc; }
+
+/* The venue's street address and the league's how-to-find-it note, under "Home, at …". */
+.venue-addr { margin: -2px 0 8px; font-size: 1rem; }
 
 /* ---- Results, chalked like a scoreboard ---- */
 .badge { display: inline-grid; place-items: center; min-width: 1.75em; height: 1.75em; font: 700 1.05rem/1 var(--sketch); }
@@ -224,7 +255,7 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 .fixtures li { display: grid; grid-template-columns: 1.6rem 3.8rem 1fr auto; gap: 8px; align-items: baseline; padding: 9px 4px; border-bottom: 1px solid var(--chalk-faint); }
 .fixtures li:last-child { border-bottom: 0; }
 .fixtures li.past { color: var(--chalk-2); }
-.fixtures li.current { color: var(--yellow); background: rgb(243 211 107 / 0.07); }
+.fixtures li.current { color: var(--yellow); background: rgb(var(--hi-rgb) / 0.07); }
 .fwk { color: var(--chalk-2); font-size: 0.95rem; text-align: right; }
 .fdate { font-size: 1rem; white-space: nowrap; }
 .fopp { min-width: 0; }
@@ -235,10 +266,10 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 /* Big plain buttons, written on the board inside a dashed chalk outline. */
 .showall {
   font: 700 1.2rem/1.2 var(--sketch); width: 100%; min-height: 52px; margin-top: 10px; cursor: pointer;
-  color: var(--chalk); background: rgb(236 232 220 / 0.06);
+  color: var(--chalk); background: rgb(var(--ink-rgb) / 0.06);
   border: 1.5px dashed var(--chalk-line); border-radius: 8px;
 }
-.showall:hover { background: rgb(236 232 220 / 0.1); }
+.showall:hover { background: rgb(var(--ink-rgb) / 0.1); }
 
 .plain { list-style: none; padding: 0; margin: 0; }
 .plain li { padding: 4px 0; }
@@ -251,8 +282,10 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 
 /* ---- Lander: chalk on a black board, with a chalk dartboard to pick a division ---- */
 /* The lander alone is black, so the chalk stands out; every other page stays slate. */
-html:has(.lander), body:has(.lander) { background: #000; }
-.lander { padding-top: 0; --chalk-2: #b8b3a4; }
+html:has(.lander), body:has(.lander) { background: var(--board-black); }
+/* The division page is black too (decided 2026-11-05); team pages stay slate. */
+html:has(.division-page), body:has(.division-page), html:has(.team-page), body:has(.team-page) { background: var(--board-black); }
+.lander { padding-top: 0; --chalk-2: var(--chalk-2-black); }
 .lander section { padding: 0; background: none; }
 /*
  * The first screen: logo, title, dates, the "your team" shortcut and the dartboard, exactly one
@@ -265,7 +298,16 @@ html:has(.lander), body:has(.lander) { background: #000; }
   padding: max(10px, env(safe-area-inset-top)) 0 10px;
 }
 .lander-fold > * { flex: none; }
-.lander .chalk-title { text-align: center; font-size: clamp(1.9rem, 5.2svh, 2.6rem); margin: 2px 12px 2px; color: #f6f2e4; }
+/* Light or dark, in the top right corner of the lander. */
+.lander { position: relative; }
+.theme-toggle {
+  position: absolute; z-index: 2; top: max(10px, env(safe-area-inset-top)); right: max(4px, env(safe-area-inset-right));
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 12px; cursor: pointer;
+  font: 400 1.05rem var(--hand); color: var(--chalk); background: none;
+  border: 1.5px dashed var(--chalk-line); border-radius: 22px;
+}
+.theme-toggle:hover { background: rgb(var(--ink-rgb) / 0.07); }
+.lander .chalk-title { text-align: center; font-size: clamp(1.9rem, 5.2svh, 2.6rem); margin: 2px 12px 2px; color: var(--chalk-bright); }
 .board-logo { display: block; width: clamp(52px, 11svh, 104px); height: auto; aspect-ratio: 1; margin: 0 auto 2px; }
 .board-when { margin: 0; text-align: center; font-size: clamp(1.05rem, 2.6svh, 1.25rem); color: var(--chalk-2); }
 .board-updated { margin: 0 auto; max-width: 24rem; padding-bottom: clamp(8px, 1.8svh, 16px); text-align: center; font-size: 1rem; color: var(--chalk-2);
@@ -275,10 +317,14 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .your-team { margin: clamp(8px, 1.6svh, 14px) 0 0; }
 .your-team-link {
   display: grid; gap: 0; padding: clamp(6px, 1.2svh, 12px) 16px; text-decoration: none;
-  border: 2px dashed rgb(243 211 107 / 0.7); border-radius: 14px;
+  border: 2px dashed rgb(var(--hi-rgb) / 0.7); border-radius: 14px;
 }
-.your-team-link:hover { background: rgb(243 211 107 / 0.07); }
-.your-team-label { color: var(--chalk-2); font-size: 1rem; line-height: 1.15; }
+.your-team-link:hover { background: rgb(var(--hi-rgb) / 0.07); }
+/* Name on the left, "Your team" on the right of the same line, so the box says what it is without a line of its own. */
+.your-team-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.your-team-label { display: flex; flex: none; align-items: center; gap: 5px; color: var(--yellow); font-size: 1rem; line-height: 1.15; }
+.your-team-name { min-width: 0; }
+.your-team-why { margin-top: 2px; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.2; }
 .your-team-name { font: 700 clamp(1.5rem, 3.6svh, 1.9rem)/1.1 var(--sketch); color: var(--yellow); }
 .your-team-now { font-size: 1.1rem; }
 
@@ -288,7 +334,7 @@ html:has(.lander), body:has(.lander) { background: #000; }
 /* The dartboard: each segment a link to its division. */
 .lander-fold > .aim { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; margin-top: clamp(8px, 1.8svh, 20px); text-align: center; }
 /* One line at any width: a second line would come out of the board's height. */
-.aim h2 { margin: 0; font-size: min(clamp(1.5rem, 3.8svh, 1.9rem), 7.2vw); white-space: nowrap; color: #f6f2e4; }
+.aim h2 { margin: 0; font-size: min(clamp(1.5rem, 3.8svh, 1.9rem), 7.2vw); white-space: nowrap; color: var(--chalk-bright); }
 .aim-hint { margin: 0 0 4px; color: var(--chalk-2); font-size: 1.1rem; }
 .board-wrap { position: relative; flex: 1 1 0; min-height: 230px; max-height: 440px; }
 .dartboard { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -307,29 +353,30 @@ html:has(.lander), body:has(.lander) { background: #000; }
 /* Short phones: the hint goes (the letters on the board say it), and the top tightens up. */
 @media (max-height: 700px) {
   .aim-hint { display: none; }
-  /* The dashed yellow box already reads as "yours"; the label goes to leave the board its room. */
-  .your-team-label { display: none; }
+  /* The "you picked this team" line goes to leave the board its room; the "Your team" label stays. */
+  .your-team-why { display: none; }
   .board-logo { width: clamp(44px, 9svh, 104px); }
   .last-looked { margin-top: 4px; }
 }
-.dartboard .seg { cursor: pointer; outline: none; }
+.dartboard .seg { cursor: pointer; outline: none; text-decoration: none; }
+.seg-letter { text-decoration: none; }
 .seg-fill { fill: transparent; transition: fill 0.15s; }
-.seg-light .seg-fill { fill: rgb(236 232 220 / 0.2); }
+.seg-light .seg-fill { fill: rgb(var(--ink-rgb) / 0.2); }
 /* Highlight under a mouse or keyboard only: on a phone :hover sticks after a tap, so it's left out. */
-@media (hover: hover) { .seg:hover .seg-fill { fill: rgb(246 215 122 / 0.55); } .seg:hover .seg-letter { fill: #fff4c9; } }
-.seg:focus-visible .seg-fill { fill: rgb(246 215 122 / 0.55); }
-.seg-red { fill: rgb(232 131 124 / 0.72); }
-.seg-green { fill: rgb(143 209 158 / 0.68); }
-.bull { fill: rgb(232 131 124 / 0.75); }
-.seg-letter { font: 700 34px var(--sketch); fill: #f3efe0; }
-.seg:focus-visible .seg-letter { fill: #fff4c9; }
+@media (hover: hover) { .seg:hover .seg-fill { fill: rgb(var(--hi-rgb) / 0.55); } .seg:hover .seg-letter { fill: var(--hi-bright); } }
+.seg:focus-visible .seg-fill { fill: rgb(var(--hi-rgb) / 0.55); }
+.seg-red { fill: rgb(var(--red-rgb) / 0.72); }
+.seg-green { fill: rgb(var(--green-rgb) / 0.68); }
+.bull { fill: rgb(var(--red-rgb) / 0.75); }
+.seg-letter { font: 700 34px var(--sketch); fill: var(--chalk-bright); }
+.seg:focus-visible .seg-letter { fill: var(--hi-bright); }
 .seg-hit .seg-treble { fill: var(--yellow); }
 .dart { pointer-events: none; transform-box: view-box; }
-.dart-point { fill: #d9d4c4; }
-.dart-barrel { fill: #f3efe0; stroke: #070707; stroke-width: 0.8; }
-.dart-grip { stroke: #070707; stroke-width: 1.2; opacity: 0.6; }
-.dart-shaft { fill: #b8b3a4; stroke: #070707; stroke-width: 0.6; }
-.dart-flight { fill: rgb(143 199 232 / 0.85); stroke: #f3efe0; stroke-width: 1.2; stroke-linejoin: round; }
+.dart-point { fill: var(--dart-1); }
+.dart-barrel { fill: var(--dart-2); stroke: var(--dart-edge); stroke-width: 0.8; }
+.dart-grip { stroke: var(--dart-edge); stroke-width: 1.2; opacity: 0.6; }
+.dart-shaft { fill: var(--dart-3); stroke: var(--dart-edge); stroke-width: 0.6; }
+.dart-flight { fill: rgb(var(--blue-rgb) / 0.85); stroke: var(--dart-2); stroke-width: 1.2; stroke-linejoin: round; }
 .wires { fill: none; stroke: var(--chalk); stroke-width: 2; stroke-linecap: round; opacity: 0.85; pointer-events: none; }
 
 /* Find a team by name. */
@@ -337,16 +384,29 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .find label { display: block; margin-bottom: 8px; color: var(--chalk-2); font-size: 1.15rem; }
 .find-box {
   display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px;
-  border: 2px solid rgb(236 232 220 / 0.75); border-radius: 14px; color: var(--chalk);
+  border: 2px solid rgb(var(--ink-rgb) / 0.75); border-radius: 14px; color: var(--chalk);
 }
 .find-box:focus-within { border-color: var(--yellow); }
 .find-box input {
   flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent;
   color: var(--chalk); font: 400 1.35rem var(--hand);
 }
-.find-box input::placeholder { color: rgb(236 232 220 / 0.45); }
+.find-box input::placeholder { color: rgb(var(--ink-rgb) / 0.45); }
 .find .team-list { margin-top: 6px; }
 .find-none { margin: 10px 0 0; }
+
+/* "Add to your home screen", between the search and the key dates (phones only). */
+.add-home { margin-top: 28px; padding: 16px; border: 2px dashed rgb(var(--hi-rgb) / 0.6); border-radius: 14px; text-align: center; }
+.add-home h2 { margin: 0 0 4px; font-size: 1.5rem; color: var(--chalk-bright); }
+.add-home-why { margin: 0 0 12px; color: var(--chalk-2); font-size: 1.05rem; }
+.add-home-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 22rem; min-height: 52px; padding: 8px 18px;
+  border: 0; border-radius: 26px; cursor: pointer; background: var(--yellow); color: var(--on-hi); font: 700 1.2rem var(--hand);
+}
+.add-home-btn:hover { filter: brightness(1.06); }
+.add-home-steps { margin: 14px 0 0; padding-left: 1.4em; text-align: left; display: grid; gap: 8px; font-size: 1.1rem; }
+.add-home-steps b { color: var(--yellow); font-weight: 400; }
+.inline-icon { display: inline-block; vertical-align: -4px; margin: 0 2px; color: var(--yellow); }
 
 .key-dates { margin-top: 28px; padding-top: 18px; background: var(--rule) center top / 100% 6px no-repeat; }
 .key-dates h2 { text-align: center; }
@@ -360,8 +420,109 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .team-list li:last-child a { border-bottom: 0; }
 .team-name { flex: 1; }
 .team-div { color: var(--chalk-2); font-size: 1.05rem; white-space: nowrap; }
-.team-list a:hover, .team-list a:active { background: rgb(236 232 220 / 0.06); }
+.team-list a:hover, .team-list a:active { background: rgb(var(--ink-rgb) / 0.06); }
 .team-list a:hover .team-name { text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 4px; }
+
+/* ---- Division page: black, with the standings as a chalk ladder ---- */
+/* Anything that paints "slate" behind itself (sticky table columns, selects) paints black here. */
+.division-page, .team-page { --slate: var(--board-black); --slate-hi: var(--board-black-hi); --chalk-2: var(--chalk-2-black); }
+
+/* The division's name between two arrows to the divisions either side (wrapping round). */
+.div-head { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: 6px; }
+.div-head .page-head { justify-content: center; text-align: center; padding-inline: 0; }
+.div-head .page-head > div { display: grid; justify-items: center; }
+.div-step {
+  display: grid; place-items: center; width: 48px; height: 48px; text-decoration: none;
+  color: var(--yellow); border: 1.5px dashed var(--chalk-line); border-radius: 50%;
+}
+.div-step:hover { background: rgb(var(--ink-rgb) / 0.07); }
+/* Here the chalk (or marker) would come to rest on the right-hand arrow, so it's put away once the title is written. */
+.div-head .chalk-title.done .chalk-stick { opacity: 0 !important; transition: opacity 0.4s 0.3s; }
+.div-head .page-head { flex-direction: column; gap: 4px; }
+
+/*
+ * The ladder fits the first screen: each row takes an even share of the height left under the
+ * header, tabs and the "Tap a team" note (about 275px with the leader's ring), between 42px (still an easy tap) and 62px. The leader's row
+ * counts as 1.6 rows. --n is the number of teams, set on the list.
+ */
+.ladder {
+  --row: clamp(42px, calc((100vh - 275px) / (var(--n, 8) + 0.6)), 62px);
+  --row: clamp(42px, calc((100svh - 275px) / (var(--n, 8) + 0.6)), 62px);
+  list-style: none; margin: 0; padding: 0;
+}
+.ladder a {
+  display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto 3rem; align-items: center; gap: 10px;
+  min-height: var(--row); padding: 2px 12px; text-decoration: none; border-bottom: 1px dashed var(--chalk-line);
+}
+.ladder li:last-child a { border-bottom: 0; }
+.ladder li:nth-child(odd):not(.ladder-top) a { background: rgb(var(--ink-rgb) / 0.035); }
+.ladder a:hover { background: rgb(var(--ink-rgb) / 0.07); }
+.ladder-rank { font: 700 1.5rem/1 var(--sketch); color: var(--chalk-2); }
+.ladder-team { display: flex; flex-direction: column; min-width: 0; }
+.ladder-line { display: flex; align-items: baseline; min-width: 0; }
+.ladder-name { flex: 0 1 auto; min-width: 0; font-size: 1.3rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ladder-line .clinch { flex: none; font-size: 0.85rem; }
+.ladder-rec { font-size: 1.05rem; color: var(--chalk-2); white-space: nowrap; }
+.ladder-pts { font: 700 1.5rem/1 var(--sketch); text-align: right; }
+/* The leader, ringed in yellow chalk like it would be on the board. */
+.ladder-top a { min-height: calc(var(--row) * 1.6 - 6px); margin-bottom: 6px; border: 2.5px solid var(--yellow); border-radius: 40px 18px 34px 22px; padding: 4px 14px; }
+.ladder-top .ladder-rank { color: var(--yellow); font-size: 2rem; }
+.ladder-top a { grid-template-columns: 2rem minmax(0, 1fr) 3.4rem; }
+.ladder-top .ladder-name { font: 700 1.6rem/1.1 var(--sketch); }
+.ladder-top .ladder-pts { font-size: 1.9rem; }
+/* The picked team ("This is my team"): a yellow star by its name, and a faint yellow wash on its row. */
+.my-star { display: inline-flex; flex: none; margin-left: 6px; color: var(--yellow); align-self: center; }
+.ladder-mine:not(.ladder-top) a { background: rgb(var(--hi-rgb) / 0.09); }
+.card-line { display: flex; align-items: center; min-width: 0; }
+.card-line .side-name { min-width: 0; }
+.card-row.mine { background: rgb(var(--hi-rgb) / 0.08); }
+.ladder-clear { font-size: 1rem; line-height: 1.2; color: var(--chalk-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/*
+ * Fitting the first screen: the header and tabs tighten up so the ladder (and a week of match
+ * cards) have the room.
+ */
+.division-page, .team-page { padding-top: 8px; }
+.division-page .page-head, .team-page .page-head { padding: 2px 0 8px; align-items: center; }
+.division-page .page-head h1, .team-page .page-head h1 { font-size: clamp(2rem, 5.4svh, 2.9rem); }
+.team-page .page-head h1.long { font-size: clamp(1.7rem, 4.6svh, 2.3rem); }
+.team-page .page-head h1.longer { font-size: clamp(1.35rem, 3.8svh, 1.8rem); }
+.division-page .page-head .meta, .team-page .page-head .meta { margin-top: 2px; font-size: 1.05rem; }
+.division-page .tabs, .team-page .tabs { margin-top: 8px; }
+.division-page .tab-panel > section:first-child { padding-top: 8px; }
+.division-page .tab-note { margin-bottom: 6px; font-size: 1rem; }
+.division-page .week-step { margin-top: 2px; }
+/* A week's cards share the height left under the week picker, down to a 30px row. --k is the card count. */
+.division-page .cards {
+  --crow: clamp(30px, calc((100vh - 330px - var(--k, 4) * 42px) / (var(--k, 4) * 2)), 48px);
+  --crow: clamp(30px, calc((100svh - 330px - var(--k, 4) * 42px) / (var(--k, 4) * 2)), 48px);
+  gap: 8px;
+}
+.division-page .card-row { min-height: var(--crow); }
+@media (max-height: 760px) {
+  /* Short phones: one line a team on the cards (records are on the Standings tab), a slimmer strip. */
+  .division-page .card-rec { display: none; }
+  .division-page .card-name { padding: 0; }
+  .division-page .card-head { padding: 2px 10px; }
+  .division-page .matches-note { display: none; }
+  .division-page .cards { gap: 4px; }
+}
+
+/* Records: trophy darts, perfect throws, hot darts. */
+.rec-head { margin: 18px 0 6px; font: 700 1.4rem/1.2 var(--sketch); }
+.rec-head:first-of-type { margin-top: 0; }
+.rec-list, .rec-hot { list-style: none; margin: 0; padding: 0; }
+.rec-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 9px 4px; border-bottom: 1px solid var(--chalk-faint); }
+.rec-list li:nth-child(even), .rec-hot li:nth-child(even) { background: rgb(var(--ink-rgb) / 0.04); }
+.rec-list li:last-child, .rec-hot li:last-child { border-bottom: 0; }
+.rec-cat { font-size: 1.15rem; }
+.rec-val { font: 700 1.15rem/1.3 var(--sketch); color: var(--yellow); white-space: nowrap; }
+.rec-who { grid-column: 1 / -1; color: var(--chalk-2); font-size: 1rem; }
+.rec-throws { margin: 0 0 6px; font-size: 1.1rem; line-height: 1.45; }
+.rec-kind { color: var(--yellow); }
+.rec-hot li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; padding: 8px 4px; border-bottom: 1px solid var(--chalk-faint); }
+.rec-hot .rec-who { grid-column: 1; grid-row: 2; }
+.rec-hot .rec-val { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
 
 /* ---- Division page: matches and results ---- */
 .matches { list-style: none; margin: 0; padding: 0; }
@@ -371,9 +532,9 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .week-step { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 8px; align-items: center; margin: 14px 0 4px; }
 .week-step button {
   height: 52px; cursor: pointer; font: 700 2rem/1 var(--sketch); color: var(--yellow);
-  background: rgb(236 232 220 / 0.06); border: 1.5px dashed var(--chalk-line); border-radius: 8px;
+  background: rgb(var(--ink-rgb) / 0.06); border: 1.5px dashed var(--chalk-line); border-radius: 8px;
 }
-.week-step button:hover:not(:disabled) { background: rgb(236 232 220 / 0.1); }
+.week-step button:hover:not(:disabled) { background: rgb(var(--ink-rgb) / 0.1); }
 .week-step button:disabled { color: var(--chalk-faint); cursor: default; }
 .week-step select { width: 100%; }
 /*
@@ -382,13 +543,13 @@ html:has(.lander), body:has(.lander) { background: #000; }
  */
 .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .card {
-  background: rgb(10 16 13 / 0.38); border: 1px solid var(--chalk-faint); border-radius: 6px; overflow: hidden; padding-bottom: 4px;
+  background: var(--panel); border: 1px solid var(--chalk-faint); border-radius: 6px; overflow: hidden; padding-bottom: 4px;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-variant-numeric: tabular-nums;
 }
 /* The strip along the top: status on the left (Final, or the day), venue or 1001 note on the right. */
 .card-head {
   display: flex; justify-content: space-between; gap: 12px; margin: 0 0 2px; padding: 6px 10px;
-  border-bottom: 1px solid var(--chalk-faint); background: rgb(236 232 220 / 0.04); font-size: 0.78rem; color: var(--chalk-2);
+  border-bottom: 1px solid var(--chalk-faint); background: rgb(var(--ink-rgb) / 0.04); font-size: 0.78rem; color: var(--chalk-2);
 }
 .card-status { font-weight: 700; color: var(--chalk); white-space: nowrap; }
 .card-aside { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
@@ -398,7 +559,7 @@ html:has(.lander), body:has(.lander) { background: #000; }
 }
 .card.unplayed .card-row { grid-template-columns: 26px 1.1rem minmax(0, 1fr); }
 .card.unplayed .card-score, .card.unplayed .card-mark { display: none; }
-.card-row:hover { background: rgb(236 232 220 / 0.05); }
+.card-row:hover { background: rgb(var(--ink-rgb) / 0.05); }
 .card-row:hover .side-name { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--chalk-line); }
 .card-row .crest { width: 26px; height: 26px; font-family: inherit; font-size: 0.66rem; font-weight: 700; letter-spacing: 0; }
 .card-row .rank-tag { font-family: inherit; font-size: 0.8rem; text-align: right; opacity: 0.65; }
@@ -415,6 +576,14 @@ html:has(.lander), body:has(.lander) { background: #000; }
   .card.unplayed .card-row { grid-template-columns: 1.1rem minmax(0, 1fr); }
   .card-row .crest { display: none; }
 }
+/* The newsletter editor's pick, along the bottom of a card; a featured write-up opens in place. */
+.card-pick { margin: 2px 0 0; padding: 6px 10px 4px; border-top: 1px dashed var(--chalk-faint); font-size: 0.85rem; line-height: 1.35; color: var(--chalk-2); }
+.card-pick-label { font-weight: 700; color: var(--yellow); margin-right: 4px; }
+details.card-pick summary { cursor: pointer; list-style: none; }
+details.card-pick summary::-webkit-details-marker { display: none; }
+details.card-pick summary::after { content: " Read more"; color: var(--chalk); text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 3px; }
+details.card-pick[open] summary::after { content: " Less"; }
+details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
 .card-foot { margin: 0; padding: 2px 10px 4px 44px; font-size: 0.8rem; color: var(--chalk-2); }
 /* A team's crest: its two-letter monogram ringed in its own chalk colour, where a sports site puts the logo. */
 .crest {
@@ -427,7 +596,7 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .seg { display: inline-flex; border: 1.5px solid var(--chalk-line); border-radius: 8px; overflow: hidden; }
 .seg button { font: inherit; font-size: 1.1rem; padding: 10px 18px; border: 0; background: transparent; color: var(--chalk); cursor: pointer; }
-.seg button[aria-pressed="true"] { background: rgb(243 211 107 / 0.15); color: var(--yellow); }
+.seg button[aria-pressed="true"] { background: rgb(var(--hi-rgb) / 0.15); color: var(--yellow); }
 .legend { display: flex; gap: 14px; font-size: 1rem; color: var(--chalk-2); margin-bottom: 8px; }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; }
 .sw.won { background: var(--won-bar); }
@@ -470,9 +639,58 @@ html:has(.lander), body:has(.lander) { background: #000; }
 .plegend button:focus-visible { outline: 2px dashed var(--yellow); outline-offset: 2px; }
 .tip {
   position: absolute; top: 4px; transform: translateX(-50%); pointer-events: none; max-width: 70vw;
-  background: #26322c; border: 1.5px solid var(--chalk-line); border-radius: 8px; padding: 6px 9px;
+  background: var(--menu-bg); border: 1.5px solid var(--chalk-line); border-radius: 8px; padding: 6px 9px;
   font-size: 1rem; white-space: nowrap;
 }
+
+/* ---- Form tab: a player, a game, one season line, and lines to compare with ---- */
+.form-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 4px 0 12px; }
+.form-pick button { min-height: 40px; padding: 4px 6px; font-size: 1.02rem; }
+.form-pick button, .form-games button, .form-refs button {
+  min-height: 44px; padding: 6px 10px; cursor: pointer; font: 400 1.1rem var(--hand); color: var(--chalk-2);
+  background: none; border: 1.5px dashed var(--chalk-line); border-radius: 10px;
+}
+.form-pick button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.form-pick button[aria-pressed="true"], .form-games button[aria-pressed="true"] {
+  color: var(--yellow); border-style: solid; border-color: var(--yellow); background: rgb(var(--hi-rgb) / 0.1);
+}
+.form-games { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.5fr) minmax(0, 1.5fr); gap: 8px; align-items: end; margin-bottom: 12px; }
+.g-group { display: grid; gap: 2px; min-width: 0; }
+.g-head { text-align: center; font-size: 0.95rem; color: var(--chalk-2); }
+.g-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.form-games button { padding: 6px 4px; font-size: 1.05rem; white-space: nowrap; }
+@media (min-width: 640px) { .form-pick { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.form-verdict { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; font-size: 1.15rem; line-height: 1.35; background: rgb(var(--ink-rgb) / 0.05); }
+.form-word { font: 700 1.3rem var(--sketch); margin-right: 4px; }
+.form-verdict.hot { background: rgb(var(--green-rgb) / 0.14); }
+.form-verdict.hot .form-word { color: rgb(var(--green-rgb)); }
+.form-verdict.cold { background: rgb(var(--loss-rgb) / 0.12); }
+.form-verdict.cold .form-word { color: var(--pink); }
+.form-verdict.few { color: var(--chalk-2); font-size: 1.05rem; }
+.form-chart { margin: 4px 0 8px; }
+.fline path { fill: none; stroke: var(--lc); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.fline circle { fill: var(--lc); stroke: var(--slate); stroke-width: 1.5; }
+.ref-main { --lc: var(--yellow); }
+.ref-main path { stroke-width: 3; }
+.ref-team { --lc: var(--chalk-2); }
+.ref-team path { stroke-dasharray: 6 4; }
+.ref-best { --lc: var(--p1); }
+.ref-best path { stroke-dasharray: 2 4; stroke-width: 2.5; }
+.ref-compare { --lc: var(--p2); }
+.ref-half { --lc: var(--chalk-2); }
+.ref-half-line { stroke: var(--chalk-2); stroke-width: 1.2; stroke-dasharray: 1 3; }
+.form-refs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 6px 0; }
+.form-refs button { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; text-align: left; }
+.form-refs button .sw { flex: none; width: 18px; height: 0; border-radius: 0; border-top: 3px solid var(--lc); opacity: 0.4; }
+.ref-team .sw { border-top-style: dashed !important; }
+.ref-best .sw { border-top-style: dotted !important; }
+.ref-half .sw { border-top-style: dotted !important; }
+.form-refs button[aria-pressed="true"] { color: var(--chalk); border-style: solid; border-color: var(--lc); }
+.form-refs button[aria-pressed="true"] .sw { opacity: 1; }
+.form-note { margin: 2px 0 6px; color: var(--chalk-2); font-size: 1rem; }
+.form-compare { display: grid; gap: 4px; margin: 4px 0 8px; color: var(--chalk-2); }
+.form-compare select { width: 100%; }
+.tip .sw { width: 14px; height: 0; border-radius: 0; border-top: 3px solid var(--lc); vertical-align: 3px; background: none; }
 
 .loading { min-height: 60vh; }
 
@@ -492,7 +710,7 @@ h1, .hero .big {
   background: var(--grain), var(--ink);
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 0.8px rgb(236 232 220 / 0.5));
+  filter: var(--glow);
 }
 h1 { --grain: var(--streaks); }
 .team-head h1 { --ink: var(--team); }
@@ -530,7 +748,7 @@ h1 { --grain: var(--streaks); }
  * glance. The pinned name column takes the same wash over its solid slate. Highlights (our row,
  * this week's fixture) sit on top.
  */
-:root { --stripe: rgb(236 232 220 / 0.055); }
+:root { --stripe: rgb(var(--ink-rgb) / 0.055); }
 section tbody tr:nth-child(even) td,
 section tbody tr:nth-child(even) th,
 .matches li:nth-child(even),
@@ -538,7 +756,7 @@ section tbody tr:nth-child(even) th,
 .team-list li:nth-child(even) a,
 .key-dates li:nth-child(even) { background-color: var(--stripe); }
 table.wide tbody tr:nth-child(even) .sticky { background: linear-gradient(var(--stripe), var(--stripe)), var(--slate); }
-.fixtures li.current { background: rgb(243 211 107 / 0.1); }
+.fixtures li.current { background: rgb(var(--hi-rgb) / 0.1); }
 .matches li, .key-dates li { padding-left: 8px; padding-right: 8px; }
 section tbody td:first-child { padding-left: 8px; }
 .team-list a { padding-left: 8px; padding-right: 8px; }
@@ -560,21 +778,113 @@ section tbody td:first-child { padding-left: 8px; }
   border-bottom: 1.5px solid var(--chalk-line);
 }
 .tab-row::-webkit-scrollbar { display: none; }
+/*
+ * Every tab shows without scrolling: the tabs share the row's width, and on a narrow phone their
+ * lettering shrinks with the screen (down to about 15px) rather than pushing the last one off the
+ * edge. The row can still scroll sideways as a last resort.
+ */
 .tab-row button {
-  all: unset; box-sizing: border-box; flex: none; min-height: 50px; padding: 10px 12px 8px; cursor: pointer;
-  font: 700 1.25rem/1.2 var(--sketch); color: var(--chalk-2);
+  all: unset; box-sizing: border-box; flex: 1 1 auto; min-height: 50px; padding: 10px clamp(4px, 1.6vw, 12px) 8px; cursor: pointer;
+  text-align: center; white-space: nowrap;
+  font: 700 clamp(0.95rem, 4.5vw, 1.25rem)/1.2 var(--sketch); color: var(--chalk-2);
 }
+/* Five tabs (team pages): tighter spacing and slightly smaller lettering, still all on screen. */
+.tab-row[data-count="5"] button { padding-inline: 2px; font-size: clamp(0.9rem, 4.2vw, 1.2rem); }
 .tab-row button[aria-selected="true"] {
   color: var(--yellow);
   background: linear-gradient(var(--yellow), var(--yellow)) left 10px bottom 6px / calc(100% - 20px) 2px no-repeat,
-              linear-gradient(rgb(243 211 107 / .5), rgb(243 211 107 / .5)) left 14px bottom 2px / calc(100% - 30px) 1.5px no-repeat;
+              linear-gradient(rgb(var(--hi-rgb) / .5), rgb(var(--hi-rgb) / .5)) left 14px bottom 2px / calc(100% - 30px) 1.5px no-repeat;
 }
 .tab-row button:hover { color: var(--chalk); }
 .tab-row button:focus-visible { outline: 2px dashed var(--yellow); outline-offset: -4px; }
 /* The tab already names the section, so the panel's own rule-off line goes. */
 .tab-panel > section:first-child { background: none; padding-top: 14px; }
 
-.hero { padding: 14px 16px 10px; }
-.hero h2 { margin-bottom: 4px; }
-.hero p { margin-bottom: 4px; }
+.hero { padding: 10px 14px 8px; }
+.hero h2 { margin-bottom: 0; font-size: 1.25rem; }
+.hero p { margin-bottom: 2px; }
+.hero .big { font-size: 1.6rem; line-height: 1.1; margin: 2px 0; }
+.hero-opp { font-size: 1rem; }
+.hero-where { font-size: 1.1rem; }
+.hero .venue-addr { margin: 0 0 4px; font-size: 0.9rem; line-height: 1.25; }
+.hero .maps { margin: 6px 0 2px; gap: 8px; }
+.hero .map-btn { min-height: 42px; font-size: 0.95rem; }
+/* Phones: the two map buttons side by side, the address on one line without its landmark, long player names wrapping. */
+@media (max-width: 480px) {
+  .hero .maps { flex-wrap: nowrap; }
+  .hero .map-btn { flex: 1 1 0; min-width: 0; padding: 0 8px; }
+  .hero .venue-landmark { display: none; }
+  .team-page .scout .sticky { white-space: normal; min-width: 7.5rem; max-width: 9rem; }
+}
 .tab-note { margin: 0 0 8px; color: var(--chalk-2); font-size: 1.05rem; }
+
+/*
+ * Light mode, "dartboard colours" (picked 2026-11-05 from four options): a crisp white board in
+ * black marker, and only a dartboard's two colours: green where the chalkboard uses yellow (you
+ * are here, the leader, selected tabs), red for losses. Team names are written in black like
+ * everything else (no rainbow of team colours on white). A real black-and-cream dartboard and a
+ * black site bar. No chalk grain: marker goes on solid.
+ */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink-rgb: 17 17 17;
+  --hi-rgb: 27 127 75;
+  --loss-rgb: 215 38 61;
+  --red-rgb: 215 38 61;
+  --green-rgb: 27 127 75;
+  --blue-rgb: 27 127 75;
+  --smudge-rgb: 120 128 136;
+  --slate: #ffffff;
+  --slate-hi: #f2f3f4;
+  --chalk: #151515;
+  --chalk-2: #62656a;
+  --yellow: #1b7f4b;
+  --pink: #d7263d;
+  --chalk-bright: #000000;
+  --hi-bright: #0f5c35;
+  --board-black: #ffffff;
+  --board-black-hi: #f2f3f4;
+  --chalk-2-black: #62656a;
+  --bar-bg: #151515;
+  --menu-bg: #ffffff;
+  --panel: #ffffff;
+  --on-hi: #ffffff;
+  --dart-1: #9aa0a6; --dart-2: #3a3f44; --dart-3: #6b7075; --dart-edge: #ffffff;
+  --won-bar: #3b4148;
+  --logo-filter: invert(1);
+  --glow: none;
+  /* Team names in black; their round badges too. */
+  --c0: #151515; --c1: #151515; --c2: #151515; --c3: #151515; --c4: #151515; --c5: #151515; --c6: #151515; --c7: #151515;
+  /* Chart lines still need telling apart. */
+  --p0: #1b7f4b; --p1: #d7263d; --p2: #1d5bbf; --p3: #6a1b9a; --p4: #ef6c00; --p5: #00838f; --p6: #37474f; --p7: #ad1457; --p8: #558b2f; --p9: #795548;
+  --stick-1: #2b2f33; --stick-2: #15181b; --stick-3: #3a3f44; --stick-shadow: #1f2328;
+  --streaks: linear-gradient(transparent, transparent);
+  --dust: linear-gradient(transparent, transparent);
+  --rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='6' viewBox='0 0 240 6'%3E%3Cpath d='M0 3.2 C 30 1.6 60 4.4 92 2.9 S 160 1.8 190 3.6 S 228 2.6 240 3' fill='none' stroke='%23151515' stroke-opacity='.3' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+/* The black site bar keeps light writing and the logo's own white. */
+:root[data-theme="light"] .site-bar { color: #c9cbce; }
+:root[data-theme="light"] .site-bar a, :root[data-theme="light"] .site-home, :root[data-theme="light"] .crumbs a[aria-current] { color: #f2f2f2; }
+/* A real dartboard: black and cream segments, solid red and green rings, grey wires. */
+:root[data-theme="light"] .seg-fill { fill: #f3ead6; }
+:root[data-theme="light"] .seg-light .seg-fill { fill: #1c1c1c; }
+:root[data-theme="light"] .seg-light .seg-letter { fill: #f3ead6; }
+:root[data-theme="light"] .seg-red { fill: rgb(var(--red-rgb)); }
+:root[data-theme="light"] .seg-green { fill: rgb(var(--green-rgb)); }
+:root[data-theme="light"] .bull { fill: rgb(var(--red-rgb)); }
+:root[data-theme="light"] .wires { stroke: #8a8a8a; opacity: 1; }
+@media (hover: hover) { :root[data-theme="light"] .seg:hover .seg-fill { fill: rgb(var(--hi-rgb) / 0.55); } }
+:root[data-theme="light"] .seg-hit .seg-treble { fill: #f5c400; }
+/* Cards lift a little off the white. */
+:root[data-theme="light"] .card, :root[data-theme="light"] .hero { box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); }
+/* Marker ink on a whiteboard is solid: no chalk-dust specks over the board. */
+:root[data-theme="light"] body { background-image: none; background-color: var(--slate); }
+:root[data-theme="light"] .board-logo { filter: var(--logo-filter); }
+
+/* The title is written with chalk on the chalkboard and a marker on the whiteboard. */
+.stick-marker { display: none; }
+:root[data-theme="light"] .stick-chalk { display: none; }
+:root[data-theme="light"] .stick-marker { display: inline; }
+/* The dartboard is drawn in marker on the whiteboard: clean lines, no chalk grain. */
+:root[data-theme="light"] .dartboard g, :root[data-theme="light"] .more-below g { filter: none; }
+

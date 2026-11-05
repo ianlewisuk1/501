@@ -20,10 +20,13 @@ function dataUpdated(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Served from the root of https://area501.lol (Vercel).
+// Served from the root of https://raleighdarts.com (Vercel).
 export default defineConfig({
   plugins: [react()],
   define: { __DATA_UPDATED__: JSON.stringify(dataUpdated()) },
+  // Let an ngrok tunnel reach the dev and preview servers, for trying the site on a real phone.
+  server: { allowedHosts: [".ngrok-free.app", ".ngrok.app"] },
+  preview: { allowedHosts: [".ngrok-free.app", ".ngrok.app"] },
   test: {
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
   },

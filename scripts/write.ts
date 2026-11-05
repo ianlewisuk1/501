@@ -2,13 +2,15 @@
  * Writes data/{season}/week-NN.json, data/{season}/division-week-NN.json (every team's players, for scouting),
  * data/{season}/teams-week-NN.json (every division team's week, for the team picker),
  * data/{season}/league-week-NN.json (every division, see src/parser/league.ts), data/{season}/index.json, data/latest.json (a copy of the newest week)
- * and records the file in data/manifest.json. data/updated.json gets today's date (Raleigh time),
+ * and records the file in data/manifest.json. A season's first issue also gives data/{season}/venues.json
+ * (the league's directory of host bars, for map links). data/updated.json gets today's date (Raleigh time),
  * which the lander shows as "Last updated".
  */
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { basename, join } from "node:path";
 import { parseDivisionTeams, parseDivisionWorkbook, parseLeague, parseWorkbook } from "../src/parser/index";
 import { loadWorkbook } from "../src/parser/workbook";
+import { parseVenueDirectory } from "../src/parser/venues";
 import { TEAM } from "../src/parser/team";
 
 const DATA = "data";
@@ -35,6 +37,9 @@ export function parseFiles(files: string[]): string[] {
     write(join(dir, `teams-week-${nn}.json`), parseDivisionTeams(wb, TEAM));
     // Compact: the league file is the big one and the site will fetch it on demand.
     writeFileSync(join(dir, `league-week-${nn}.json`), JSON.stringify(parseLeague(wb)) + "\n");
+    // The first issue of a season lists every host bar's address: the map links come from it.
+    const venues = parseVenueDirectory(wb);
+    if (venues) write(join(dir, "venues.json"), venues);
     manifest[basename(file)] = out;
     written.push(out);
     console.log(`${file} -> ${out}`);

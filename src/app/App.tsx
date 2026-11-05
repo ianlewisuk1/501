@@ -8,6 +8,7 @@ import { useSeason, type SeasonData } from "./store";
 import { sawTeam, useMyTeams, type TeamRef } from "./myTeam";
 
 import { chalkFor } from "./ui";
+import { syncStatusBar } from "./theme";
 
 export { ClinchBadge, PLAYER_COLUMNS } from "./ui";
 
@@ -36,6 +37,7 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
   const week = history.at(-1);
 
   useTheme(team);
+  useEffect(() => { syncStatusBar(); }, [route]);
   useEffect(() => {
     document.title = team ? `${team}, ${division!.division} Division | RDL` : division ? `${division.division} Division | RDL` : "Raleigh Dart League";
     if (team && division) sawTeam({ division: division.division, team });

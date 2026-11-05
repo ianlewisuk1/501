@@ -5,6 +5,8 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
+import venuesJson from "../../data/Fa26/venues.json";
+import type { Venue } from "../parser/venueMatch";
 import { breakingNews, buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
@@ -50,6 +52,8 @@ describe("fixtures", () => {
   });
 });
 
+const venues = venuesJson as Venue[];
+
 describe("helpers", () => {
   it("formats dates without timezone drift", () => expect(shortDate("2026-09-23")).toBe("Wed, Sep 23"));
 
@@ -58,9 +62,10 @@ describe("helpers", () => {
   });
 
   it("builds maps links per platform", () => {
-    expect(mapsUrl("The Flying Saucer", sched, true)).toBe("https://maps.apple.com/?q=Flying%20Saucer%20Draught%20Emporium%2C%20328%20W%20Morgan%20St%2C%20Raleigh%2C%20NC%2027601");
-    expect(mapsUrl("Nowhere", sched, false)).toBe("https://www.google.com/maps/search/?api=1&query=Nowhere%2C%20Raleigh%2C%20NC");
-    expect(mapsUrls("Snooker's 1&2", sched).google).toContain("query=Snooker's%20Bar%20%26%20Billiards%2C%203520%20Wade%20Ave");
+    // Street address from the league's directory, no business name.
+    expect(mapsUrl("The Flying Saucer", venues, true)).toBe("https://maps.apple.com/?q=328%20West%20Morgan%20Street%2C%20Raleigh%2C%20NC");
+    expect(mapsUrls("Brass Tap 5&6", venues).google).toBe("https://www.google.com/maps/search/?api=1&query=3316%20Capital%20Boulevard%2C%20Raleigh%2C%20NC");
+    expect(mapsUrl("Nowhere 1&2", venues, false)).toBe("https://www.google.com/maps/search/?api=1&query=Nowhere%2C%20Raleigh%2C%20NC");
     expect(isIOS({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)" })).toBe(true);
     expect(isIOS({ userAgent: "Mozilla/5.0 (Linux; Android 15)" })).toBe(false);
   });

@@ -1,12 +1,14 @@
 import { fullTeamName, norm } from "../parser/names";
 import type { DivisionWeek, MatchResult, Player, Standing, TeamWeek, WL } from "../parser/types";
+import { resolveVenue, venueBar, type Venue } from "../parser/venueMatch";
 
 export interface SeasonSchedule {
   season: string;
   division: string;
   weeks: ({ week: number; date: string; bye: true }
     | { week: number; date: string; home: boolean; opponent: string; venue: string; score?: Score })[];
-  venues: Record<string, { maps: string }>;
+  /** No longer used: map links come from the league's own venue directory (data/{season}/venues.json). */
+  venues?: Record<string, { maps: string }>;
   keyDates: { date: string; label: string }[];
 }
 
@@ -133,14 +135,20 @@ export function isIOS(nav?: { userAgent: string; platform?: string; maxTouchPoin
   return /iPad|iPhone|iPod/.test(nav.userAgent) || (nav.platform === "MacIntel" && (nav.maxTouchPoints ?? 0) > 1);
 }
 
-export function mapsUrls(venue: string, schedule: SeasonSchedule | undefined): { apple: string; google: string } {
-  const q = encodeURIComponent(schedule?.venues[venue]?.maps ?? `${venue}, Raleigh, NC`);
+/**
+ * Map links for a venue as page 5 prints it ("Brass Tap 1&2"). They search for the street address
+ * from the league's directory, never the bar's name, so a business with a similar name elsewhere
+ * can't catch the search. A venue missing from the directory falls back to its name (the
+ * validator reports any such venue).
+ */
+export function mapsUrls(venue: string, directory: Venue[] | undefined): { apple: string; google: string } {
+  const q = encodeURIComponent(resolveVenue(venue, directory ?? [])?.maps ?? `${venueBar(venue)}, Raleigh, NC`);
   return { apple: `https://maps.apple.com/?q=${q}`, google: `https://www.google.com/maps/search/?api=1&query=${q}` };
 }
 
 /** One link per platform, for compact places like the fixtures list. */
-export function mapsUrl(venue: string, schedule: SeasonSchedule | undefined, ios: boolean): string {
-  const urls = mapsUrls(venue, schedule);
+export function mapsUrl(venue: string, directory: Venue[] | undefined, ios: boolean): string {
+  const urls = mapsUrls(venue, directory);
   return ios ? urls.apple : urls.google;
 }
 

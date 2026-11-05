@@ -176,6 +176,20 @@ export interface PerfectThrow {
   dates: string[];
 }
 
+/** The newsletter editor's pick for one of this week's matches (page 5, "Predictions for the week"). */
+export interface Pick {
+  away: string;
+  home: string;
+  /** A featured match, written up in prose; otherwise a line in the "remaining matches" list. */
+  featured: boolean;
+  /** The whole write-up, or the score line ("Mulligans Mafia 15, Still Hump'N 9"). */
+  text: string;
+  /** The sentence that makes the call ("Have to go Element, 13-11."), or the score line; null when one write-up covers several matches. */
+  call: string | null;
+  /** How many matches the write-up covers (1 unless the editor took a few together). */
+  together: number;
+}
+
 export interface LeagueDivision {
   division: string;
   headline: string | null;
@@ -187,6 +201,8 @@ export interface LeagueDivision {
   teams: DivisionTeam[];
   records: TrophyRecord[];
   hotDarts: DivisionHotDart[];
+  /** The editor's picks for this issue's matches (thisWeek). Missing in data parsed before 2026-11-05. */
+  picks?: Pick[];
 }
 
 export interface LeagueWeek {

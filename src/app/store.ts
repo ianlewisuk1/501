@@ -5,10 +5,12 @@
 import { useEffect, useState } from "react";
 import type { LeagueWeek } from "../parser/types";
 import type { NewsItem, SeasonSchedule } from "./model";
+import type { Venue } from "../parser/venueMatch";
 
 const leagueFiles = import.meta.glob<LeagueWeek>("../../data/*/league-week-*.json", { import: "default" });
 const scheduleFiles = import.meta.glob<SeasonSchedule>("../../data/*/schedule.json", { eager: true, import: "default" });
 const newsFiles = import.meta.glob<NewsItem[]>("../../data/news.json", { eager: true, import: "default" });
+const venueFiles = import.meta.glob<Venue[]>("../../data/*/venues.json", { eager: true, import: "default" });
 
 export interface SeasonData {
   season: string;
@@ -17,6 +19,8 @@ export interface SeasonData {
   /** Hand-entered season schedule (dates, venues' map queries, key dates), if there is one. */
   schedule: SeasonSchedule | undefined;
   news: NewsItem[];
+  /** The league's directory of host bars, read from the season's first issue (for map links). */
+  venues: Venue[] | undefined;
 }
 
 const TERMS = ["Wi", "Sp", "Su", "Fa"];
@@ -37,6 +41,7 @@ const assemble = (season: string, issues: LeagueWeek[]): SeasonData => ({
   issues: issues.sort((a, b) => a.issueDate.localeCompare(b.issueDate)),
   schedule: Object.values(scheduleFiles).find((s) => s.season === season),
   news: Object.values(newsFiles).flat(),
+  venues: Object.entries(venueFiles).find(([path]) => path.includes(`/data/${season}/`))?.[1],
 });
 
 const files = (season: string) => refs.filter((r) => r.season === season).sort((a, b) => a.week - b.week);

@@ -5,7 +5,7 @@
 import type * as XLSX from "xlsx";
 import { headline, issueInfo } from "./page1";
 import { page2Division } from "./page2";
-import { leagueRounds } from "./page5";
+import { leaguePicks, leagueRounds } from "./page5";
 import { divisionTeams } from "./page10";
 import { divisionLetters, issueOf } from "./issue";
 import { norm } from "./names";
@@ -53,6 +53,7 @@ export function parseLeague(wb: XLSX.WorkBook): LeagueWeek {
   }));
   const rounds = leagueRounds(pg5, names.map((n) => ({ division: n.division, names: n.teams })), year);
   const records = divisionRecords(pg3, names, year);
+  const picks = leaguePicks(pg5, names.map((n) => ({ division: n.division, names: n.teams, matches: rounds.get(n.division)?.thisWeek?.matches ?? [] })));
   const hot = leagueHotDarts(pg3, names);
 
   const divisions: LeagueDivision[] = base.map((d) => ({
@@ -65,6 +66,7 @@ export function parseLeague(wb: XLSX.WorkBook): LeagueWeek {
     teams: d.teams,
     records: records.get(d.division) ?? [],
     hotDarts: hot.get(d.division) ?? [],
+    picks: picks.get(d.division) ?? [],
   }));
   return { season, week, ...info, divisions, perfectThrows: perfectThrows(pg3, names, year) };
 }

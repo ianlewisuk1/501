@@ -32,7 +32,7 @@ export function Tabs({ tabs, label }: { tabs: Tab[]; label: string }) {
   if (!shown.length) return null;
   return (
     <div className="tabs">
-      <div className="tab-row" role="tablist" aria-label={label} onKeyDown={onKey}>
+      <div className="tab-row" role="tablist" aria-label={label} onKeyDown={onKey} data-count={shown.length}>
         {shown.map((t) => (
           <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={t.id === active} aria-controls={`panel-${t.id}`}
             tabIndex={t.id === active ? 0 : -1} onClick={() => pick(t.id)}>
