@@ -39,6 +39,10 @@ describe("routes", () => {
     expect(html).toContain("Know your team&#x27;s name?");
     // When the data last changed, under the season line.
     expect(html).toMatch(/Last updated \w{3}, \w{3} \d+/);
+    // How to add RDL to a phone, for everyone, after the key dates: iPhone and Android side by side.
+    expect(html).toContain("Add RDL to your phone");
+    expect(html.indexOf("Add RDL to your phone")).toBeGreaterThan(html.indexOf("Coming up"));
+    expect(html).toMatch(/<th scope="col">iPhone<\/th><th scope="col">Android<\/th>/);
     // The lander is its own banner: no site bar.
     expect(html).not.toContain('class="site-bar"');
     // Nothing typed yet, so no team list; no returning visitor, so no shortcut.

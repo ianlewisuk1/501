@@ -59,9 +59,10 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
 
       <FindTeam issue={issue} />
 
-      <AddToHome />
 
       <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
+
+      <AddToHome />
     </main>
   );
 }
@@ -313,46 +314,59 @@ function FindTeam({ issue }: { issue: LeagueWeek }) {
 }
 
 /**
- * "Add RDL to your home screen", on phones only (not computers), and not once it's already there. On Android it
- * opens Chrome's own install prompt when Chrome offers one; otherwise (and always on an iPhone,
- * where a website can't open it) it shows the few taps it takes, with the icon to look for.
+ * How to put RDL on your phone's home screen, for everyone (it can't be done for them on an
+ * iPhone): a plain two-column table, iPhone and Android, three taps each with the button to look
+ * for drawn in. The visitor's own phone's column is marked. Hidden once RDL is opened from the
+ * home screen. On Android, when Chrome offers it, a button does it in one tap.
  */
 function AddToHome() {
   const env = usePlatform();
   const prompt = useInstallPrompt();
   const installed = useInstalled();
-  const [steps, setSteps] = useState(false);
-  if (!env || env.standalone || installed) return null;
-  const { platform } = env;
-  // Phones only: a computer's browser has its own install button if it offers one.
-  if (platform === "other") return null;
-  // Only Android's Chrome has a prompt a page can open; everywhere else, the steps.
-  const native = platform === "android" ? prompt : null;
-  const go = async () => {
-    if (native) { if (!(await promptInstall())) setSteps(true); return; }
-    setSteps((s) => !s);
-  };
+  if (env?.standalone || installed) return null;
+  const mine = env?.platform;
+  const native = mine === "android" ? prompt : null;
   return (
     <section className="add-home" aria-labelledby="add-home-h">
-      <h2 id="add-home-h">Keep RDL on your phone</h2>
-      <p className="add-home-why">Add it to your home screen and it opens like an app, straight to the league.</p>
-      <button type="button" className="add-home-btn" onClick={go} aria-expanded={native ? undefined : steps}>
-        <PhoneIcon />Add to your home screen
-      </button>
-      {steps && (platform === "ios" ? (
-        <ol className="add-home-steps">
-          <li>Tap the Share button <ShareIcon /> in Safari's toolbar, at the bottom of the screen (top right in Chrome).</li>
-          <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
-          <li>Tap <b>Add</b>. RDL appears with the other apps.</li>
-        </ol>
-      ) : (
-        <ol className="add-home-steps">
-          <li>Tap the menu button <DotsIcon /> at the top right of Chrome.</li>
-          <li>Tap <b>Add to Home screen</b> (on some phones it says <b>Install app</b>).</li>
-          <li>Tap <b>Add</b> or <b>Install</b>. RDL appears with the other apps.</li>
-        </ol>
-      ))}
+      <h2 id="add-home-h">Add RDL to your phone</h2>
+      <p className="add-home-why">It goes on your home screen like an app and opens straight to the league.</p>
+      <table className="add-home-table">
+        <thead>
+          <tr>
+            <th scope="col" className={mine === "ios" ? "mine" : undefined}>iPhone{mine === "ios" && <span className="your-phone">your phone</span>}</th>
+            <th scope="col" className={mine === "android" ? "mine" : undefined}>Android{mine === "android" && <span className="your-phone">your phone</span>}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span className="step-n">1</span>In Safari, tap <b>Share</b> <ShareIcon /> at the bottom</td>
+            <td><span className="step-n">1</span>In Chrome, tap the <b>menu</b> <DotsIcon /> at the top right</td>
+          </tr>
+          <tr>
+            <td><span className="step-n">2</span>Scroll down, tap <b>Add to Home Screen</b> <PlusBoxIcon /></td>
+            <td><span className="step-n">2</span>Tap <b>Add to Home screen</b> or <b>Install app</b> <PlusBoxIcon /></td>
+          </tr>
+          <tr>
+            <td><span className="step-n">3</span>Tap <b>Add</b> at the top right</td>
+            <td><span className="step-n">3</span>Tap <b>Add</b> or <b>Install</b></td>
+          </tr>
+        </tbody>
+      </table>
+      {native && (
+        <button type="button" className="add-home-btn" onClick={() => promptInstall()}>
+          <PhoneIcon />Add it now
+        </button>
+      )}
     </section>
+  );
+}
+
+/** The "Add to Home Screen" icon both phones use: a square with a plus. */
+function PlusBoxIcon() {
+  return (
+    <svg className="inline-icon" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Add" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="3.5" /><path d="M12 8.5v7M8.5 12h7" />
+    </svg>
   );
 }
 

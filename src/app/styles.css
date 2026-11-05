@@ -395,17 +395,25 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .find .team-list { margin-top: 6px; }
 .find-none { margin: 10px 0 0; }
 
-/* "Add to your home screen", between the search and the key dates (phones only). */
-.add-home { margin-top: 28px; padding: 16px; border: 2px dashed rgb(var(--hi-rgb) / 0.6); border-radius: 14px; text-align: center; }
-.add-home h2 { margin: 0 0 4px; font-size: 1.5rem; color: var(--chalk-bright); }
-.add-home-why { margin: 0 0 12px; color: var(--chalk-2); font-size: 1.05rem; }
+/* "Add RDL to your phone": below Coming up, on every device. Two columns, iPhone and Android, three steps each. */
+.add-home { margin-top: 28px; padding: 16px 0 0; background: var(--rule) center top / 100% 6px no-repeat; }
+.add-home h2 { margin: 0 0 4px; text-align: center; font-size: 1.5rem; color: var(--chalk-bright); }
+.add-home-why { margin: 0 0 10px; text-align: center; color: var(--chalk-2); font-size: 1.05rem; }
+.add-home-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 1.05rem; line-height: 1.35; }
+.add-home-table th { padding: 8px 6px; text-align: left; font: 700 1.3rem var(--sketch); color: var(--chalk-bright); border-bottom: 1.5px solid var(--chalk-line); }
+.add-home-table th.mine { color: var(--yellow); }
+.your-phone { display: block; font: 400 0.9rem var(--hand); color: var(--yellow); }
+.add-home-table td { padding: 10px 6px; vertical-align: top; border-bottom: 1px dashed var(--chalk-faint); }
+.add-home-table td + td, .add-home-table th + th { border-left: 1px dashed var(--chalk-line); padding-left: 10px; }
+.add-home-table b { color: var(--chalk-bright); }
+.step-n {
+  display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; margin-right: 6px; vertical-align: 1px;
+  border: 1.5px solid var(--yellow); border-radius: 50%; color: var(--yellow); font: 700 0.95rem var(--sketch);
+}
 .add-home-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 22rem; min-height: 52px; padding: 8px 18px;
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 22rem; margin: 14px auto 0; min-height: 52px; padding: 8px 18px;
   border: 0; border-radius: 26px; cursor: pointer; background: var(--yellow); color: var(--on-hi); font: 700 1.2rem var(--hand);
 }
-.add-home-btn:hover { filter: brightness(1.06); }
-.add-home-steps { margin: 14px 0 0; padding-left: 1.4em; text-align: left; display: grid; gap: 8px; font-size: 1.1rem; }
-.add-home-steps b { color: var(--yellow); font-weight: 400; }
 .inline-icon { display: inline-block; vertical-align: -4px; margin: 0 2px; color: var(--yellow); }
 
 .key-dates { margin-top: 28px; padding-top: 18px; background: var(--rule) center top / 100% 6px no-repeat; }
