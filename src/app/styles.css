@@ -474,6 +474,13 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
   display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto 3rem; align-items: center; gap: 10px;
   min-height: var(--row); padding: 2px 12px; text-decoration: none; border-bottom: 1px dashed var(--chalk-line);
 }
+/* A clinch key under the ladder takes about 30px more. */
+.ladder[data-key] {
+  --row: clamp(42px, calc((100vh - 305px) / (var(--n, 8) + 0.6)), 62px);
+  --row: clamp(42px, calc((100svh - 305px) / (var(--n, 8) + 0.6)), 62px);
+}
+.ladder-key { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 6px 12px 0; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.25; }
+.ladder-key b { color: var(--yellow); font: 700 0.9rem/1 var(--sketch); }
 .ladder li:last-child a { border-bottom: 0; }
 .ladder li:nth-child(odd):not(.ladder-top) a { background: rgb(var(--ink-rgb) / 0.035); }
 .ladder a:hover { background: rgb(var(--ink-rgb) / 0.07); }

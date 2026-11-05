@@ -65,9 +65,11 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
   const mine = useMine(division);
   const [top, second] = standings;
   const clear = top && second ? top.points - second.points : 0;
+  const marks = new Set(standings.map((s) => s.clinched));
   return (
-    // --n lets the rows share out the screen's height (styles.css), so the table fits without scrolling.
-    <ol className="ladder" style={{ "--n": standings.length } as CSSProperties}>
+    <>
+    {/* --n lets the rows share out the screen's height (styles.css), so the table fits without scrolling. */}
+    <ol className="ladder" data-key={marks.has("G") || marks.has("C") ? "" : undefined} style={{ "--n": standings.length } as CSSProperties}>
       {standings.map((s, i) => (
         <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine"].filter(Boolean).join(" ") || undefined}>
           <Link to={teamPath(division, s.team)}>
@@ -83,6 +85,14 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
         </li>
       ))}
     </ol>
+    {/* What the clinch marks mean, only when one shows: a tooltip never appears on a phone. */}
+    {(marks.has("G") || marks.has("C")) && (
+      <p className="ladder-key">
+        {marks.has("C") && <span><b>✓ Clinched</b> can't finish lower than 2nd.</span>}
+        {marks.has("G") && <span><b>★ Champion</b> has won the division.</span>}
+      </p>
+    )}
+    </>
   );
 }
 
