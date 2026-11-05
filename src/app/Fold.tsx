@@ -18,3 +18,19 @@ export function Fold({ show, hide, summary, children }: { show: string; hide: st
 
 /** Inside a tab the reader has already asked for the section, so folds there open flat. */
 export const Unfolded = createContext(false);
+
+/**
+ * A section's heading. Inside a tab the tab already names the section, so the title is kept for
+ * screen readers only and any detail ("17 pts clear of 2nd") shows as a short line instead.
+ */
+export function SectionHead({ id, title, detail }: { id: string; title: ReactNode; detail?: ReactNode }) {
+  if (useContext(Unfolded)) {
+    return (
+      <>
+        <h2 id={id} className="sr-only">{title}</h2>
+        {detail && <p className="tab-note">{detail}</p>}
+      </>
+    );
+  }
+  return <h2 id={id}>{title} {detail && <span className="muted">{detail}</span>}</h2>;
+}

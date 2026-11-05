@@ -3,7 +3,7 @@ import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
-import { Fold, Unfolded } from "./Fold";
+import { Fold, SectionHead, Unfolded } from "./Fold";
 import { divisionWeeks, scheduleFor } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
@@ -139,7 +139,7 @@ function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: Fixtu
   if (!report?.rows.length) return null;
   return (
     <section aria-labelledby="scouting">
-      <h2 id="scouting">This Week's Opponent (Week {fixture!.week}) <span className="muted">{report.team}</span></h2>
+      <SectionHead id="scouting" title={`This Week's Opponent (Week ${fixture!.week})`} detail={<>Week {fixture!.week}: {report.team}</>} />
       <div className="scroll-x" tabIndex={0} role="region" aria-label="Opponent player stats, scrolls sideways">
         <table className="players wide scout">
           <thead>
@@ -186,7 +186,7 @@ function Standings({ week }: { week: TeamWeek }) {
     : `${leader.points - us.points} pts behind 1st`;
   return (
     <section aria-labelledby="standings">
-      <h2 id="standings">Standings {gap && <span className="muted">{gap}</span>}</h2>
+      <SectionHead id="standings" title="Standings" detail={gap} />
       <StandingsTable standings={week.standings} division={week.team.division} highlight={week.team.name} />
       <p className="more-link"><Link to={divisionPath(week.team.division)}>All of {week.team.division} Division: results, matches and the player leaderboard</Link></p>
     </section>
@@ -204,7 +204,7 @@ function Fixtures({ rows, maps, names, division, expanded = false }: { rows: Fix
   const shown = all ? rows : rows.slice(start, start + 3);
   return (
     <section aria-labelledby="fixtures">
-      <h2 id="fixtures">Fixtures</h2>
+      <SectionHead id="fixtures" title="Fixtures" />
       <ol className="fixtures">
         {shown.map((f) => (
           <li key={f.week} className={f.status}>
@@ -245,7 +245,7 @@ function Players({ week }: { week: TeamWeek }) {
 
   return (
     <section aria-labelledby="players">
-      <h2 id="players">Players <span className="muted">through week {week.week - 1}</span></h2>
+      <SectionHead id="players" title="Players" detail={`Through week ${week.week - 1}`} />
       <Fold show="Show player stats" hide="Hide player stats"
         summary={<>{week.players.length} players. The team is {fmtWL(team.total)} in games, {fmtPct(pct(team.total))} won.</>}>
         <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">

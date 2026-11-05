@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Fold } from "./Fold";
+import { Fold, SectionHead } from "./Fold";
 import type { Player, TeamWeek } from "../parser/types";
 import { fmtPct, fmtWL, form, pct, playerIn, weeklyGames, WHOLE_TEAM, type FixtureRow, type FormPoint } from "./model";
 
@@ -19,7 +19,7 @@ export function PerformanceChart({ current, history, fixtures }: { current: Team
 
   return (
     <section aria-labelledby="perf">
-      <h2 id="perf">Performance</h2>
+      <SectionHead id="perf" title="Performance" />
       <Fold show="Show charts" hide="Hide charts" summary="Win % week by week, and each player's games by type.">
         <div className="controls">
           {hasWeekly && (

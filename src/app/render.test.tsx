@@ -73,6 +73,7 @@ describe("team page", () => {
   it("renders the whole page from data/", () => {
     const html = at("/c/area-501");
     for (const text of ["Area 501", "Menace 2 Sobriety", "Standings", "This Week&#x27;s Opponent (Week ", "Fixtures", "Players", "Performance"]) {
+      // Titles live on in the tabs and, for screen readers, in hidden headings.
       expect(html).toContain(text);
     }
     expect(html).not.toContain("Editor&#x27;s pick"); // no predictions anywhere
@@ -140,6 +141,9 @@ describe("team page", () => {
     expect(html).not.toContain("Show player stats");
     expect(html).not.toContain("Show charts");
     expect(html).toContain("Team total"); // the players table is there, unfolded
+    // No title repeated inside a tab; details like the gap to 2nd stay as a line.
+    expect(html).toContain('<h2 id="fixtures" class="sr-only">Fixtures</h2>');
+    expect(html).toMatch(/<p class="tab-note">\d+ pts clear of 2nd<\/p>/);
     expect(html).toContain('href="/c">All of C Division: results, matches and the player leaderboard</a>');
   });
 
