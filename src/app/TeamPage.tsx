@@ -1,10 +1,10 @@
 /** One team's page: tonight's match, the opponent, standings, fixtures, players and charts. */
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
-import { Fold } from "./Fold";
-import { divisionWeeks, scheduleFor, seasonLabel } from "./league";
+import { Fold, Unfolded } from "./Fold";
+import { divisionWeeks, scheduleFor } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow, type SeasonSchedule,
@@ -23,22 +23,27 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const today = todayIso();
   const current = fixtures.find((f) => f.status === "current");
   const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, data.news);
+  const scout = current && !current.bye ? scoutReport(current.opponent, week, divisions) : null;
 
   return (
     <>
       {news && <ClinchBanner news={news} />}
       <main className={news ? "under-banner" : undefined}>
         <header className="brand">
-          <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
-          <p className="meta">{division} Division, week {week.week} of the {seasonLabel(week.season).toLowerCase().replace(/ \d+$/, "")} season</p>
+          <div>
+            <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
+            <p className="meta">{division} Division, week {week.week}{teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}</p>
+          </div>
           <TeamPicker team={week.team.name} division={division} names={week.standings.map((s) => s.team)} />
         </header>
         <Tonight week={week} fixture={current} today={today} schedule={data.schedule} />
-        <Scouting week={week} fixture={current} divisions={divisions} />
-        <Standings week={week} />
-        <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} />
-        <Players week={week} />
-        <PerformanceChart current={week} history={history} fixtures={fixtures} />
+        <Tabs tabs={[
+          { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
+          { id: "standings", label: "Standings", show: true, body: <Standings week={week} /> },
+          { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
+          { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
+          { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} history={history} fixtures={fixtures} /> },
+        ]} />
         <footer className="muted small">
           Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
         </footer>
@@ -52,7 +57,7 @@ function TeamPicker({ team, division, names }: { team: string; division: string;
   if (names.length < 2) return null;
   return (
     <label className="team-pick">
-      <span>Show team</span>
+      <span className="sr-only">Show another team in the division</span>
       <select value={team} onChange={(e) => navigate(teamPath(division, e.target.value))}>
         {[...names].sort((a, b) => a.localeCompare(b)).map((t) => <option key={t} value={t}>{t}</option>)}
       </select>
@@ -188,8 +193,9 @@ function Standings({ week }: { week: TeamWeek }) {
   );
 }
 
-function Fixtures({ rows, maps, names, division }: { rows: FixtureRow[]; maps: (v: string) => string; names: string[]; division: string }) {
-  const [all, setAll] = useState(false);
+function Fixtures({ rows, maps, names, division, expanded = false }: { rows: FixtureRow[]; maps: (v: string) => string; names: string[]; division: string; expanded?: boolean }) {
+  const [more, setAll] = useState(false);
+  const all = expanded || more;
   if (!rows.length) return null;
   // Collapsed: last week, this week and next week. Before or after the season, the nearest three.
   const now = rows.findIndex((f) => f.status !== "past");
@@ -223,7 +229,7 @@ function Fixtures({ rows, maps, names, division }: { rows: FixtureRow[]; maps: (
           </li>
         ))}
       </ol>
-      {rows.length > 3 && (
+      {!expanded && rows.length > 3 && (
         <button className="showall" aria-expanded={all} onClick={() => setAll(!all)}>
           {all ? "Show fewer weeks" : `Show all ${rows.length} weeks`}
         </button>
@@ -292,4 +298,54 @@ function Outcome({ f }: { f: FixtureRow }) {
   const tb = f.result?.tiebreaker1001;
   const r = us > them || (us === them && tb === "W") ? "W" : us < them || (us === them && tb === "L") ? "L" : "T";
   return <span className={`badge ${r === "W" ? "win" : r === "L" ? "loss" : "tie"}`} title={us === them && r !== "T" ? "Decided by the 1001 tiebreaker" : undefined}>{r}</span>;
+}
+
+interface Tab { id: string; label: string; show: boolean; body: ReactNode }
+
+/** The tab in the link (?tab=fixtures), so a shared link opens on the same one. */
+const tabFromUrl = (): string | null => (typeof location === "undefined" ? null : new URLSearchParams(location.search).get("tab"));
+
+/**
+ * Big chalk tabs under tonight's match: one section at a time, so the page stays about a screen
+ * tall. Every panel is in the page (hidden ones too), so find-in-page and screen readers still work.
+ */
+function Tabs({ tabs }: { tabs: Tab[] }) {
+  const shown = tabs.filter((t) => t.show);
+  const [picked, setPicked] = useState(() => tabFromUrl());
+  const active = shown.find((t) => t.id === picked)?.id ?? shown[0]?.id;
+  const pick = (id: string) => {
+    setPicked(id);
+    const url = new URL(location.href);
+    if (id === shown[0]?.id) url.searchParams.delete("tab");
+    else url.searchParams.set("tab", id);
+    history.replaceState(null, "", url);
+  };
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const i = shown.findIndex((t) => t.id === active);
+    const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+    if (next === null) return;
+    const t = shown[(next + shown.length) % shown.length];
+    pick(t.id);
+    document.getElementById(`tab-${t.id}`)?.focus();
+  };
+  if (!shown.length) return null;
+  return (
+    <div className="tabs">
+      <div className="tab-row" role="tablist" aria-label="Team sections" onKeyDown={onKey}>
+        {shown.map((t) => (
+          <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={t.id === active} aria-controls={`panel-${t.id}`}
+            tabIndex={t.id === active ? 0 : -1} onClick={() => pick(t.id)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <Unfolded.Provider value={true}>
+        {shown.map((t) => (
+          <div key={t.id} id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`} hidden={t.id !== active} className="tab-panel">
+            {t.body}
+          </div>
+        ))}
+      </Unfolded.Provider>
+    </div>
+  );
 }

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 /**
  * Keeps a long section folded behind one big button so the page stays short. Folded content
@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
  */
 export function Fold({ show, hide, summary, children }: { show: string; hide: string; summary?: ReactNode; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  if (useContext(Unfolded)) return <>{children}</>;
   return (
     <>
       {!open && summary && <p className="muted">{summary}</p>}
@@ -14,3 +15,6 @@ export function Fold({ show, hide, summary, children }: { show: string; hide: st
     </>
   );
 }
+
+/** Inside a tab the reader has already asked for the section, so folds there open flat. */
+export const Unfolded = createContext(false);

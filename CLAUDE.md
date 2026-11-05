@@ -337,6 +337,9 @@ The site is opening up to the whole league: every division, every team, from its
 - The RDL logo (from the newsletter workbook, made chalk-white as `public/rdl-logo.png`) sits on the lander. It carries a ™: get the league's OK before publishing.
 - The editor's prediction is removed everywhere, Area 501 included. The site should read as official and neutral.
 - Personal records: each division's trophy darts (Page 3), Perfect Throws and Hot Darts, shown on division, team and player pages.
+- Lander (2026-11-04): drawn as a bar cricket scoreboard. RDL logo and the chalk-written title (written a letter at a time, then the chalk is laid down), "Fall 2026, week 13 of 14", your team vs this week's opponent, then "1st | Division | 2nd" with A to H down the middle; tap a letter for its teams. ✓ clinched top two, ★ champion, with a legend under H. Key dates ("Coming up") at the bottom, moved off team pages.
+- Team page (2026-11-04): short header (name, division, week N of 14, team switcher), tonight's match, then tabs: Opponent | Standings | Fixtures | Players | Form. One tab at a time, folds open flat inside tabs, Fixtures lists all 14 weeks. `?tab=` keeps the tab in the link. The division leaderboard lives on the division page, filtered by games played (all, more than 5, more than 20).
+- Alternate rows carry a faint chalk stripe everywhere.
 - Player pages are in scope: season line, rank in division, week-by-week form, honors (records, perfect throws, hot darts), game breakdown.
 
 Phases: 1. league data model, records parser, validator (done). 2. routing and nav (lander, division, team pages). 3. records page and badges. 4. redesign pass. 5. player pages. 6. remove the old per-team files and parsers once nothing reads them.

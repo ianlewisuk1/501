@@ -99,12 +99,12 @@ describe("team page", () => {
     expect(html).toContain('aria-pressed="true" aria-label="Russell Riley"');
   });
 
-  it("shows last, this and next week's fixtures until expanded", () => {
+  it("lists every week of the season in the Fixtures tab, this week highlighted", () => {
     const html = at("/c/area-501");
     const list = html.slice(html.indexOf('<ol class="fixtures">'), html.indexOf("</ol>", html.indexOf('<ol class="fixtures">')));
-    expect(list.match(/<li /g)).toHaveLength(3);
+    expect(list.match(/<li /g)).toHaveLength(14);
     expect(list).toContain('class="current"');
-    expect(html).toMatch(/Show all \d+ weeks/);
+    expect(html).not.toMatch(/Show all \d+ weeks/);
   });
 
   it("shows every category in the players table", () => {
@@ -130,13 +130,19 @@ describe("team page", () => {
     expect(scout).toContain('aria-sort="descending"');
   });
 
-  it("starts Players and Performance folded behind big buttons, with a one-line summary", () => {
+  it("puts the sections in tabs under tonight's match, the opponent open first", () => {
     const html = at("/c/area-501");
-    expect(html).toContain('aria-expanded="false">Show player stats</button>');
-    expect(html).toContain('aria-expanded="false">Show charts</button>');
-    expect(html).toMatch(/\d+ players. The team is \d+–\d+ in games/);
+    const tabs = [...html.matchAll(/role="tab" aria-selected="(true|false)"[^>]*>([^<]+)</g)].map((m) => [m[2], m[1]]);
+    expect(tabs).toEqual([["Opponent", "true"], ["Standings", "false"], ["Fixtures", "false"], ["Players", "false"], ["Form", "false"]]);
+    expect(html).toMatch(/id="panel-opponent" role="tabpanel"[^>]*class="tab-panel"/);
+    expect(html).toMatch(/id="panel-players" role="tabpanel"[^>]*hidden=""/);
+    // Inside a tab, sections open flat: no fold buttons.
+    expect(html).not.toContain("Show player stats");
+    expect(html).not.toContain("Show charts");
+    expect(html).toContain("Team total"); // the players table is there, unfolded
     expect(html).toContain('href="/c">All of C Division: results, matches and the player leaderboard</a>');
   });
+
 });
 
 it("ranks the division's top 25 in a chosen category, with a button for everyone", () => {

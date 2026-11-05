@@ -423,3 +423,37 @@ section tbody td:first-child { padding-left: 8px; }
 .games-filter .seg { display: flex; flex-wrap: wrap; }
 .games-filter .seg button { flex: 1 1 auto; min-height: 48px; }
 .games-filter .seg button + button { border-left: 1.5px solid var(--chalk-line); }
+
+/*
+ * Team page tabs: section names chalked in a row under tonight's match; the open one is underlined
+ * twice in yellow chalk. On a narrow phone the row scrolls sideways rather than wrapping.
+ */
+.tabs { margin-top: 14px; }
+.tab-row {
+  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin: 0 -18px; padding: 0 12px;
+  border-bottom: 1.5px solid var(--chalk-line);
+}
+.tab-row::-webkit-scrollbar { display: none; }
+.tab-row button {
+  all: unset; box-sizing: border-box; flex: none; min-height: 50px; padding: 10px 12px 8px; cursor: pointer;
+  font: 700 1.25rem/1.2 var(--sketch); color: var(--chalk-2);
+}
+.tab-row button[aria-selected="true"] {
+  color: var(--yellow);
+  background: linear-gradient(var(--yellow), var(--yellow)) left 10px bottom 6px / calc(100% - 20px) 2px no-repeat,
+              linear-gradient(rgb(243 211 107 / .5), rgb(243 211 107 / .5)) left 14px bottom 2px / calc(100% - 30px) 1.5px no-repeat;
+}
+.tab-row button:hover { color: var(--chalk); }
+.tab-row button:focus-visible { outline: 2px dashed var(--yellow); outline-offset: -4px; }
+/* The tab already names the section, so the panel's own rule-off line goes. */
+.tab-panel > section:first-child { background: none; padding-top: 14px; }
+
+/* Team page header kept short so the tabs come up on the first screen: name and division on the
+   left, the team switcher beside them. */
+header.brand { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 6px 16px; padding-bottom: 14px; }
+header.brand > div { min-width: 0; }
+header.brand .team-pick { margin-top: 0; max-width: 14rem; flex: 0 1 14rem; }
+header.brand .team-pick select { min-height: 44px; font-size: 1rem; }
+.hero { padding: 14px 16px 10px; }
+.hero h2 { margin-bottom: 4px; }
+.hero p { margin-bottom: 4px; }
