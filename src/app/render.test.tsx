@@ -272,10 +272,10 @@ it("filters the leaderboard by games played: all, more than 5, more than 20", ()
   expect(board).not.toContain("6+ matches");
 });
 
-it("writes each team's place in the standings small in front of its name, with a chalk crest", () => {
+it("writes each team's place in the standings small in front of its name, with no monogram crest", () => {
   const matches = section(at("/c"), "matches");
   expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="card-line"><span class="side-name">Area 501</span></span><span class="card-rec">12–0</span>');
-  expect(matches).toContain('aria-hidden="true">PP</span>'); // Pints and Points' chalk crest
+  expect(matches).not.toContain('class="crest"');
 });
 
 describe("matches, every week", () => {

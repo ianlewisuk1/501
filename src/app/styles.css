@@ -189,17 +189,13 @@ select option { background: var(--menu-bg); color: var(--chalk); }
 .hero .big { font-size: 2rem; }
 .hero + section { background: none; }
 
-.maps { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-.map-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
-  flex: 1 1 8rem; min-height: 48px; padding: 0 12px; text-decoration: none; font-size: 1rem;
+.maps { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 4px 0 2px; }
+/* Directions, written on the board: underlined in chalk, with a tap area bigger than the words. */
+.map-link {
+  display: inline-flex; align-items: center; min-height: 44px; font-size: 1.15rem; color: var(--yellow);
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: rgb(var(--hi-rgb) / 0.55);
 }
-/* Apple: solid, rounded rectangle, SF. Google: pill, hairline border, red pin. Like their own dark-mode buttons. */
-.map-btn.apple { background: #fff; color: #000; border-radius: 10px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
-.map-btn.google { background: #131314; color: #e3e3e3; border: 1px solid #8e918f; border-radius: 999px; font-weight: 500; font-family: "Google Sans", Roboto, Arial, sans-serif; }
-.map-btn.google .gpin { display: inline-flex; color: #ea4335; }
-/* On a white card the white Apple button needs an edge. */
-:root[data-theme="light"] .map-btn.apple { border: 1px solid #c7c9cc; }
+.map-link:hover { text-decoration-color: var(--yellow); }
 
 /* The venue's street address and the league's how-to-find-it note, under "Home, at …". */
 .venue-addr { margin: -2px 0 8px; font-size: 1rem; }
@@ -563,45 +559,35 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .week-step button:hover:not(:disabled) { background: rgb(var(--ink-rgb) / 0.1); }
 .week-step button:disabled { color: var(--chalk-faint); cursor: default; }
 .week-step select { width: 100%; }
-/*
- * Scoreboard cards: the one place the board drops the handwriting. A dark panel hung on the
- * slate, set in the system's clean sans with even-width numbers, like a scores page.
- */
+/* Scoreboard cards: a dark panel hung on the slate, written in the same hand as the rest of the board. */
 .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .card {
   background: var(--panel); border: 1px solid var(--chalk-faint); border-radius: 6px; overflow: hidden; padding-bottom: 4px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 /* The strip along the top: status on the left (Final, or the day), venue or 1001 note on the right. */
 .card-head {
   display: flex; justify-content: space-between; gap: 12px; margin: 0 0 2px; padding: 6px 10px;
-  border-bottom: 1px solid var(--chalk-faint); background: rgb(var(--ink-rgb) / 0.04); font-size: 0.78rem; color: var(--chalk-2);
+  border-bottom: 1px solid var(--chalk-faint); background: rgb(var(--ink-rgb) / 0.04); font-size: 0.95rem; color: var(--chalk-2);
 }
 .card-status { font-weight: 700; color: var(--chalk); white-space: nowrap; }
 .card-aside { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
 .card-row {
-  display: grid; grid-template-columns: 26px 1.1rem minmax(0, 1fr) 2rem 0.9rem; align-items: center; column-gap: 8px;
+  display: grid; grid-template-columns: 1.1rem minmax(0, 1fr) 2rem 0.9rem; align-items: center; column-gap: 8px;
   min-height: 48px; padding: 0 6px 0 10px; text-decoration: none; color: var(--chalk);
 }
-.card.unplayed .card-row { grid-template-columns: 26px 1.1rem minmax(0, 1fr); }
+.card.unplayed .card-row { grid-template-columns: 1.1rem minmax(0, 1fr); }
 .card.unplayed .card-score, .card.unplayed .card-mark { display: none; }
 .card-row:hover { background: rgb(var(--ink-rgb) / 0.05); }
 .card-row:hover .side-name { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--chalk-line); }
-.card-row .crest { width: 26px; height: 26px; font-family: inherit; font-size: 0.66rem; font-weight: 700; letter-spacing: 0; }
-.card-row .rank-tag { font-family: inherit; font-size: 0.8rem; text-align: right; opacity: 0.65; }
+.card-row .rank-tag { font-family: inherit; font-size: 1.05rem; text-align: right; opacity: 0.65; }
 .card-name { display: grid; padding: 5px 0; min-width: 0; }
 /* One line always: FitName scales a long name down to fit; the ellipsis is only a last resort. */
-.card-row .side-name { font-size: 1rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-rec { font-size: 0.75rem; color: var(--chalk-2); line-height: 1.3; }
-.card-score { font-size: 1.25rem; font-weight: 700; text-align: right; }
-.card-mark { font-size: 0.8rem; color: var(--yellow); }
-.card-row.lost .side-name, .card-row.lost .card-score { color: var(--chalk-2); font-weight: 500; }
-/* The smallest phones: the crest makes way so names stay readable. */
-@media (max-width: 359px) {
-  .card-row { grid-template-columns: 1.1rem minmax(0, 1fr) 2rem 0.9rem; column-gap: 6px; }
-  .card.unplayed .card-row { grid-template-columns: 1.1rem minmax(0, 1fr); }
-  .card-row .crest { display: none; }
-}
+.card-row .side-name { font-size: 1.2rem; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-rec { font-size: 0.9rem; color: var(--chalk-2); line-height: 1.3; }
+.card-score { font-size: 1.5rem; font-weight: 400; text-align: right; }
+.card-mark { font-size: 1.1rem; color: var(--yellow); }
+.card-row.lost .side-name, .card-row.lost .card-score { color: var(--chalk-2); }
 /* The newsletter editor's pick, along the bottom of a card; a featured write-up opens in place. */
 .card-pick { margin: 2px 0 0; padding: 6px 10px 4px; border-top: 1px dashed var(--chalk-faint); font-size: 0.85rem; line-height: 1.35; color: var(--chalk-2); }
 .card-pick-label { font-weight: 700; color: var(--yellow); margin-right: 4px; }
@@ -610,12 +596,7 @@ details.card-pick summary::-webkit-details-marker { display: none; }
 details.card-pick summary::after { content: " Read more"; color: var(--chalk); text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 3px; }
 details.card-pick[open] summary::after { content: " Less"; }
 details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
-.card-foot { margin: 0; padding: 2px 10px 4px 44px; font-size: 0.8rem; color: var(--chalk-2); }
-/* A team's crest: its two-letter monogram ringed in its own chalk colour, where a sports site puts the logo. */
-.crest {
-  flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
-  border: 1.5px solid currentColor; font: 700 0.8rem/1 var(--sketch); letter-spacing: -0.02em;
-}
+.card-foot { margin: 0; padding: 2px 10px 4px 36px; font-size: 0.8rem; color: var(--chalk-2); }
 .rank-tag { flex: none; color: var(--chalk-2); opacity: 0.7; font: 400 1.05rem/1 var(--hand); }
 
 /* ---- Charts and breakdown (Chart.tsx) ---- */
@@ -833,12 +814,8 @@ section tbody td:first-child { padding-left: 8px; }
 .hero-opp { font-size: 1rem; }
 .hero-where { font-size: 1.1rem; }
 .hero .venue-addr { margin: 0 0 4px; font-size: 0.9rem; line-height: 1.25; }
-.hero .maps { margin: 6px 0 2px; gap: 8px; }
-.hero .map-btn { min-height: 42px; font-size: 0.95rem; }
-/* Phones: the two map buttons side by side, the address on one line without its landmark, long player names wrapping. */
+/* Phones: the address on one line without its landmark, long player names wrapping. */
 @media (max-width: 480px) {
-  .hero .maps { flex-wrap: nowrap; }
-  .hero .map-btn { flex: 1 1 0; min-width: 0; padding: 0 8px; }
   .hero .venue-landmark { display: none; }
   .team-page .scout .sticky { white-space: normal; min-width: 7.5rem; max-width: 9rem; }
 }

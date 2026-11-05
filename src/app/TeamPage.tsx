@@ -131,17 +131,13 @@ function VenueAddress({ venue, venues }: { venue: string; venues: Venue[] | unde
   return <p className="venue-addr muted">{v.street}, {v.area}{v.landmark && <span className="venue-landmark">, {v.landmark}</span>}</p>;
 }
 
-/** Directions buttons styled after each maps app's own buttons (no logos: they're trademarks). */
+/** Directions: two chalk links, one per maps app. */
 function Directions({ venue, venues }: { venue: string; venues: Venue[] | undefined }) {
   const urls = mapsUrls(venue, venues);
   return (
     <div className="maps">
-      <a className="map-btn apple" href={urls.apple} target="_blank" rel="noopener">
-        <Pin /> Apple Maps
-      </a>
-      <a className="map-btn google" href={urls.google} target="_blank" rel="noopener">
-        <span className="gpin"><Pin /></span> Google Maps
-      </a>
+      <a className="map-link" href={urls.apple} target="_blank" rel="noopener">Map (Apple)</a>
+      <a className="map-link" href={urls.google} target="_blank" rel="noopener">Map (Google)</a>
     </div>
   );
 }

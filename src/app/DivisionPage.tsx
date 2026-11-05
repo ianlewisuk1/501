@@ -232,16 +232,6 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
   );
 }
 
-/** Short words left out of a team's monogram. */
-const SMALL = new Set(["and", "the", "a", "of", "&", "n", "'n"]);
-/** Two letters for a team's chalk crest, where a sports site puts the logo: "Pints and Points" is PP. */
-export const monogram = (team: string) => {
-  const words = team.replace(/[^\p{L}\p{N}&'\- ]/gu, " ").split(/\s+/).filter(Boolean);
-  const big = words.filter((w) => !SMALL.has(w.toLowerCase()));
-  const use = big.length ? big : words;
-  return (use.length > 1 ? use[0][0] + use[1][0] : use[0]?.slice(0, 2) ?? "").toUpperCase();
-};
-
 interface CardRow { team: string; score?: number | null; won?: boolean; lost?: boolean }
 
 /**
@@ -274,8 +264,8 @@ function FitName({ name, className = "side-name" }: { name: string; className?: 
 }
 
 /**
- * One match as a sports scoreboard card: a strip along the top with the status (Final, or the
- * day) and the venue, then a row per team: crest, place, name and record, score, a mark by the winner.
+ * One match as a scoreboard card: a strip along the top with the status (Final, or the
+ * day) and the venue, then a row per team: place, name and record, score, a mark by the winner.
  */
 const pickFor = (round: DivisionRound, away: string, home: string) => round.picks.find((p) => p.away === away && p.home === home);
 
@@ -290,7 +280,6 @@ function MatchCard({ rows, status, aside, note, division, pick }: {
         const s = division.standings.find((x) => x.team === r.team);
         return (
           <Link key={r.team} className={`card-row${r.won ? " won" : ""}${r.lost ? " lost" : ""}${r.team === mine ? " mine" : ""}`} to={teamPath(division.division, r.team)}>
-            <span className="crest" style={{ color: chalkFor(r.team) }} aria-hidden="true">{monogram(r.team)}</span>
             <span className="rank-tag" title={s ? `${ordinal(s.rank)} in the standings` : undefined}>{s?.rank}</span>
             <span className="card-name">
               <span className="card-line"><FitName name={r.team} />{r.team === mine && <MyStar />}</span>
