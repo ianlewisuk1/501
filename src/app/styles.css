@@ -298,15 +298,15 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
   padding: max(10px, env(safe-area-inset-top)) 0 10px;
 }
 /*
- * iPhone Safari's toolbars shrink and hide, so the screen can be taller than the "small" viewport
- * the board is sized to, and the search below would peek in. The block fills the largest the screen
- * can be; the gap between the two sits empty at the bottom, so the board and the arrow still fit
- * the screen with the toolbars showing.
+ * iPhone Safari's toolbars shrink and hide, so the screen can be taller than the "small" viewport,
+ * and the search below would peek in. The block fills the largest the screen can be, and the
+ * dartboard grows into the extra height (no empty band, so no big gap above the search once
+ * scrolled). The bottom padding keeps the arrow clear of the home bar.
  */
 @supports (height: 100lvh) {
   .lander-fold {
     min-height: max(520px, 100lvh);
-    padding-bottom: calc(10px + 100lvh - 100svh);
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 }
 .lander-fold > * { flex: none; }
@@ -392,7 +392,7 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .wires { fill: none; stroke: var(--chalk); stroke-width: 2; stroke-linecap: round; opacity: 0.85; pointer-events: none; }
 
 /* Find a team by name. */
-.find { margin-top: 26px; scroll-margin-top: 16px; }
+.find { margin-top: 14px; scroll-margin-top: 16px; }
 .find label { display: block; margin-bottom: 8px; color: var(--chalk-2); font-size: 1.15rem; }
 .find-box {
   display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px;
