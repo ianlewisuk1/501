@@ -416,3 +416,10 @@ table.wide tbody tr:nth-child(even) .sticky { background: linear-gradient(var(--
 .matches li, .key-dates li { padding-left: 8px; padding-right: 8px; }
 section tbody td:first-child { padding-left: 8px; }
 .team-list a { padding-left: 8px; padding-right: 8px; }
+
+/* The leaderboard's games-played filter: three big chalk buttons in a row. */
+.games-filter { border: 0; margin: 4px 0 10px; padding: 0; }
+.games-filter legend { padding: 0; margin-bottom: 4px; color: var(--chalk-2); }
+.games-filter .seg { display: flex; flex-wrap: wrap; }
+.games-filter .seg button { flex: 1 1 auto; min-height: 48px; }
+.games-filter .seg button + button { border-left: 1.5px solid var(--chalk-line); }

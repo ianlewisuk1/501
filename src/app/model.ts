@@ -377,5 +377,3 @@ export function divisionPlayers(current: TeamWeek, divisions: DivisionWeek[]): D
   return (div?.teams ?? []).flatMap((t) => t.players.map((p) => ({ ...p, team: t.name, code: t.code })));
 }
 
-/** "Regulars": played at least half the weeks so far, so a 2–0 sub doesn't top the win % table. */
-export const regularMatches = (issueWeek: number): number => Math.max(1, Math.ceil((issueWeek - 1) / 2));

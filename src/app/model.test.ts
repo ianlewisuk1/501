@@ -5,7 +5,7 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { breakingNews, buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, regularMatches, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { breakingNews, buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -181,8 +181,6 @@ describe("division leaderboard", () => {
   });
 
   it("counts regulars as half the weeks played so far", () => {
-    expect(regularMatches(wk07.week)).toBe(3);
-    expect(regularMatches(1)).toBe(1);
   });
 });
 

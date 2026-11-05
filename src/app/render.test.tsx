@@ -146,3 +146,11 @@ it("ranks the division's top 25 in a chosen category, with a button for everyone
   expect(body.match(/<tr[ >]/g)).toHaveLength(25);
   expect(board).toMatch(/Show all \d+ players/);
 });
+
+it("filters the leaderboard by games played: all, more than 5, more than 20", () => {
+  const board = section(at("/c"), "division");
+  expect(board).toContain('aria-pressed="false">All players</button>');
+  expect(board).toContain('aria-pressed="false">More than 5 games</button>');
+  expect(board).toContain('aria-pressed="true">More than 20 games</button>'); // late season: enough regulars
+  expect(board).not.toContain("6+ matches");
+});

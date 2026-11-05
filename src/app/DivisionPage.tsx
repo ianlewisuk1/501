@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import type { LeagueDivision, LeagueWeek, Match } from "../parser/types";
 import { Fold } from "./Fold";
 import { seasonLabel } from "./league";
-import { regularMatches, shortDate, type DivisionPlayer } from "./model";
+import { shortDate, type DivisionPlayer } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import { GROUPS, PLAYER_COLUMNS, StandingsTable, useSort } from "./ui";
 
@@ -99,12 +99,15 @@ const RANK_BY: [string, string][] = [
 ];
 const TOP = 25;
 
+/** Who to list, by games played: everyone who's played, or regulars only, so a 2–0 sub can't top a win % table. */
+const GAME_FILTERS: [number, string][] = [[0, "All players"], [5, "More than 5 games"], [20, "More than 20 games"]];
+
 /** Every player in the division: a top 25 for any category, like the newsletter's leaderboards. */
 export function Leaderboard({ week, division, players }: { week: number; division: string; players: DivisionPlayer[] }) {
   const all = players;
-  const min = regularMatches(week);
-  const [regulars, setRegulars] = useState(true);
-  const shown = regulars ? all.filter((p) => p.matchesPlayed >= min) : all.filter((p) => p.matchesPlayed > 0);
+  // Starts at "more than 20 games" once enough players have that many; early in the season, more than 5.
+  const [minGames, setMinGames] = useState<number>(() => (all.filter((p) => p.gamesPlayed > 20).length >= 10 ? 20 : 5));
+  const shown = all.filter((p) => p.gamesPlayed > minGames);
   const { rows, sortKey, toggle, sortBy, arrow, ariaSort } = useSort<DivisionPlayer>(shown, PLAYER_COLUMNS, "totalPct");
   const [everyone, setEveryone] = useState(false);
   const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
@@ -124,10 +127,14 @@ export function Leaderboard({ week, division, players }: { week: number; divisio
             {RANK_BY.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
           </select>
         </label>
-        <label className="check">
-          <input type="checkbox" checked={regulars} onChange={(e) => setRegulars(e.target.checked)} />
-          Only players with {min}+ matches
-        </label>
+        <fieldset className="games-filter">
+          <legend>Show</legend>
+          <div className="seg">
+            {GAME_FILTERS.map(([n, label]) => (
+              <button key={n} type="button" aria-pressed={minGames === n} onClick={() => setMinGames(n)}>{label}</button>
+            ))}
+          </div>
+        </fieldset>
         <div className="scroll-x" tabIndex={0} role="region" aria-label="Division player stats, scrolls sideways">
           <table className="players wide">
             <thead>
