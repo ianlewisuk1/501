@@ -2,8 +2,8 @@
 import { teamWeekOf } from "../parser/league";
 import { norm } from "../parser/names";
 import { TEAM } from "../parser/team";
-import type { DivisionWeek, LeagueDivision, LeagueWeek, TeamWeek } from "../parser/types";
-import { teamSchedule, teamSlug, type SeasonSchedule } from "./model";
+import type { DivisionWeek, LeagueDivision, LeagueWeek, Match, Round, TeamWeek } from "../parser/types";
+import { addDays, teamSchedule, teamSlug, type SeasonSchedule } from "./model";
 import type { SeasonData } from "./store";
 
 const TERM_NAMES: Record<string, string> = { Wi: "Winter", Sp: "Spring", Su: "Summer", Fa: "Fall" };
@@ -43,4 +43,31 @@ export function scheduleFor(data: SeasonData, team: string, division: string): S
   if (!data.schedule) return undefined;
   if (norm(team) === norm(TEAM.name)) return data.schedule;
   return teamSchedule(team, divisionHistory(data, division), data.schedule);
+}
+
+/** One week of a division's season: final scores once played, otherwise the matchups. */
+export type DivisionRound =
+  | { week: number; date: string; played: true; matches: Match[]; byes: string[] }
+  | { week: number; date: string; played: false; matches: Round["matches"]; byes: string[] };
+
+/**
+ * Every week of a division's season that any issue covers, in order. A played week comes from
+ * page 2 of the issue after it; a week still to come from page 5 of the newest issue that lists
+ * it (so a reschedule wins). Dates come from the hand-entered schedule when it has the week.
+ */
+export function divisionRounds(data: SeasonData, division: string): DivisionRound[] {
+  const rounds = new Map<number, DivisionRound>();
+  const scheduled = (week: number) =>
+    data.schedule?.season === data.season ? data.schedule.weeks.find((w) => w.week === week)?.date : undefined;
+  for (const issue of data.issues) {
+    const d = divisionIn(issue, division);
+    if (!d) continue;
+    for (const [round, date] of [[d.thisWeek, issue.issueDate], [d.nextWeek, addDays(issue.issueDate, 7)]] as const) {
+      if (round && !rounds.get(round.week)?.played)
+        rounds.set(round.week, { week: round.week, date: scheduled(round.week) ?? date, played: false, matches: round.matches, byes: round.byes });
+    }
+    if (d.results)
+      rounds.set(d.results.week, { week: d.results.week, date: d.results.date, played: true, matches: d.results.matches, byes: d.results.byes });
+  }
+  return [...rounds.values()].sort((a, b) => a.week - b.week);
 }

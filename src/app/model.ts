@@ -122,7 +122,7 @@ export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: 
   return [...rows.values()].sort((a, b) => a.week - b.week);
 }
 
-function addDays(iso: string, days: number): string {
+export function addDays(iso: string, days: number): string {
   const d = new Date(`${iso}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);

@@ -1,5 +1,5 @@
 /** Pieces shared by the league, division and team pages. */
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Player, Standing, WL } from "../parser/types";
 import { fmtPct, fmtWL, pct } from "./model";
 import { Link, teamPath } from "./route";
@@ -117,3 +117,20 @@ export const groupSpans = <T,>(columns: Column<T>[]) => columns.reduce<{ group: 
   return acc;
 }, []);
 export const GROUPS = groupSpans(PLAYER_COLUMNS);
+
+/**
+ * The heading every division and team page opens with: the name in chalk, one plain line under it
+ * (division or season, and the week), and a switcher to another division or team beside them.
+ * A team's name is written in that team's own chalk.
+ */
+export function PageHead({ title, meta, team = false, children }: { title: string; meta: string; team?: boolean; children?: ReactNode }) {
+  return (
+    <header className={team ? "page-head team-head" : "page-head"}>
+      <div>
+        <h1 className={title.length > 10 ? "long" : undefined}>{title}</h1>
+        <p className="meta">{meta}</p>
+      </div>
+      {children}
+    </header>
+  );
+}

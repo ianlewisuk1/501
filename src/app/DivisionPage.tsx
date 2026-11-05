@@ -1,57 +1,43 @@
-/** One division: standings, this week's matches, last week's results and the player leaderboard. */
-import { useMemo, useState } from "react";
+/** One division, in tabs: standings, matches (this week's and last week's results) and the player leaderboard. */
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { LeagueDivision, LeagueWeek, Match } from "../parser/types";
-import { Fold } from "./Fold";
-import { seasonLabel } from "./league";
+import { Fold, SectionHead } from "./Fold";
+import { divisionRounds, seasonLabel, type DivisionRound } from "./league";
 import { shortDate, type DivisionPlayer } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
-import { GROUPS, PLAYER_COLUMNS, StandingsTable, useSort } from "./ui";
+import type { SeasonData } from "./store";
+import { Tabs } from "./Tabs";
+import { chalkFor, GROUPS, ordinal, PageHead, PLAYER_COLUMNS, StandingsTable, useSort } from "./ui";
 
-export function DivisionPage({ issue, division }: { issue: LeagueWeek; division: LeagueDivision }) {
+export function DivisionPage({ data, issue, division }: { data: SeasonData; issue: LeagueWeek; division: LeagueDivision }) {
   const d = division.division;
   const players = useMemo<DivisionPlayer[]>(
     () => division.teams.flatMap((t) => t.players.map((p) => ({ ...p, team: t.name, code: t.code }))), [division]);
+  const rounds = useMemo(() => divisionRounds(data, d), [data, d]);
+  const seasonWeeks = data.schedule?.season === issue.season ? data.schedule.weeks.length : null;
   return (
     <main className="division-page">
-      <header className="page-head">
-        <h1>{d} Division</h1>
-        <p className="meta">{seasonLabel(issue.season)}, week {issue.week}</p>
-        <label className="pick-inline">
-          <span className="sr-only">Division</span>
+      <PageHead title={`${d} Division`} meta={`${seasonLabel(issue.season)}, week ${issue.week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`}>
+        <label className="page-pick">
+          <span className="sr-only">Show another division</span>
           <select value={d} onChange={(e) => navigate(divisionPath(e.target.value))}>
             {issue.divisions.map((x) => <option key={x.division} value={x.division}>{x.division} Division</option>)}
           </select>
         </label>
-      </header>
-      <section aria-labelledby="standings">
-        <h2 id="standings">Standings</h2>
-        <StandingsTable standings={division.standings} division={d} />
-      </section>
-      {division.thisWeek && (
-        <section aria-labelledby="matches">
-          <h2 id="matches">Week {division.thisWeek.week} matches <span className="muted">{shortDate(issue.issueDate)}</span></h2>
-          <ul className="matches">
-            {division.thisWeek.matches.map((m) => (
-              <li key={m.home}>
-                <span className="teams"><Link to={teamPath(d, m.away)}>{m.away}</Link> <span className="muted">at</span> <Link to={teamPath(d, m.home)}>{m.home}</Link></span>
-                <span className="muted small">{m.venue}{m.date ? `, played ${shortDate(m.date)}` : ""}</span>
-              </li>
-            ))}
-            {division.thisWeek.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">has a bye</span></span></li>)}
-          </ul>
-        </section>
-      )}
-      {division.results && (
-        <section aria-labelledby="results">
-          <h2 id="results">Week {division.results.week} results <span className="muted">{shortDate(division.results.date)}</span></h2>
-          <ul className="matches">
-            {division.results.matches.map((m) => <Result key={m.home.team} match={m} division={d} />)}
-            {division.results.byes.map((b) => <li key={b}><span className="teams"><Link to={teamPath(d, b)}>{b}</Link> <span className="muted">has a bye</span></span></li>)}
-          </ul>
-          <p className="muted small">Home team second. Out of 24 games.</p>
-        </section>
-      )}
-      <Leaderboard week={issue.week} division={d} players={players} />
+      </PageHead>
+      <Tabs label="Division sections" tabs={[
+        {
+          id: "standings", label: "Standings", show: true,
+          body: (
+            <section aria-labelledby="standings">
+              <SectionHead id="standings" title="Standings" />
+              <StandingsTable standings={division.standings} division={d} />
+            </section>
+          ),
+        },
+        { id: "matches", label: "Matches", show: rounds.length > 0, body: <Matches rounds={rounds} now={issue.week} division={division} /> },
+        { id: "leaderboard", label: "Leaderboard", show: players.length > 0, body: <Leaderboard week={issue.week} division={d} players={players} /> },
+      ]} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", issue #{issue.issue}. Stats through week {issue.week - 1}.
       </footer>
@@ -59,29 +45,137 @@ export function DivisionPage({ issue, division }: { issue: LeagueWeek; division:
   );
 }
 
-/** "Pints and Points 5 – 19 Area 501", the winner in bold; a forfeit or missing sheet says so. */
-function Result({ match, division }: { match: Match; division: string }) {
-  const { away, home } = match;
-  const winner = away.score === null || home.score === null ? null
-    : away.score > home.score || (away.score === home.score && away.tiebreaker1001 === "W") ? away.team
-    : home.score > away.score || (away.score === home.score && home.tiebreaker1001 === "W") ? home.team : null;
-  const side = (t: typeof away) => (
-    <span className={t.team === winner ? "won" : undefined}><Link to={teamPath(division, t.team)}>{t.team}</Link></span>
-  );
+/** The week in the link (?week=12), so a shared link opens on the same week. */
+const weekFromUrl = (): number | null => {
+  const w = typeof location === "undefined" ? null : Number(new URLSearchParams(location.search).get("week"));
+  return w || null;
+};
+
+/**
+ * Every week's matches, one week at a time: big back and forward buttons either side of a plain
+ * dropdown of the weeks. Opens on this week. Played weeks show scores, the rest show venues.
+ */
+function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: number; division: LeagueDivision }) {
+  const [picked, setPicked] = useState(() => weekFromUrl() ?? now);
+  // The picked week, else this week, else the latest one there is.
+  const find = (w: number) => rounds.findIndex((r) => r.week === w);
+  const at = [find(picked), find(now), rounds.length - 1].find((k) => k >= 0)!;
+  const round = rounds[at];
+  const go = (week: number) => {
+    setPicked(week);
+    const url = new URL(location.href);
+    if (week === now) url.searchParams.delete("week");
+    else url.searchParams.set("week", String(week));
+    history.replaceState(null, "", url);
+  };
+  const label = (r: DivisionRound) => `Week ${r.week}${r.week === now ? " (this week)" : ""}`;
   return (
-    <li>
-      <span className="teams">{side(away)} <span className="muted">at</span> {side(home)}</span>
-      <span className="score">
-        {away.score === null || home.score === null
-          ? <span className="muted small">{match.note ?? "no score yet"}</span>
-          : <>
-              {away.score}–{home.score}
-              {away.score === home.score && <span className="muted small">, won on the 1001</span>}
-              {match.note && <span className="muted small">, {match.note}</span>}
-            </>}
-      </span>
+    <section aria-labelledby="matches">
+      <h2 id="matches" className="sr-only">Matches</h2>
+      <div className="week-step">
+        <button type="button" aria-label="Previous week" disabled={at === 0} onClick={() => go(rounds[at - 1].week)}>‹</button>
+        <label>
+          <span className="sr-only">Week</span>
+          <select value={round.week} onChange={(e) => go(Number(e.target.value))}>
+            {rounds.map((r) => <option key={r.week} value={r.week}>{label(r)}</option>)}
+          </select>
+        </label>
+        <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}>›</button>
+      </div>
+      <p className="tab-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === now ? "this week's matches" : "still to play"}</p>
+      <ul className="cards">
+        {round.played
+          ? round.matches.map((m) => <ResultCard key={m.home.team} match={m} division={division} />)
+          : round.matches.map((m) => (
+              <MatchCard key={m.home} division={division}
+                rows={[{ team: m.away }, { team: m.home }]}
+                status={shortDate(m.date ?? round.date)}
+                aside={m.venue} />
+            ))}
+        {round.byes.map((b) => <MatchCard key={b} division={division} rows={[{ team: b }]} status="Bye" />)}
+      </ul>
+      <p className="muted small">Home team second.{round.played ? " Out of 24 games." : ""} Places and records are from the current standings.</p>
+    </section>
+  );
+}
+
+/** Short words left out of a team's monogram. */
+const SMALL = new Set(["and", "the", "a", "of", "&", "n", "'n"]);
+/** Two letters for a team's chalk crest, where a sports site puts the logo: "Pints and Points" is PP. */
+export const monogram = (team: string) => {
+  const words = team.replace(/[^\p{L}\p{N}&'\- ]/gu, " ").split(/\s+/).filter(Boolean);
+  const big = words.filter((w) => !SMALL.has(w.toLowerCase()));
+  const use = big.length ? big : words;
+  return (use.length > 1 ? use[0][0] + use[1][0] : use[0]?.slice(0, 2) ?? "").toUpperCase();
+};
+
+interface CardRow { team: string; score?: number | null; won?: boolean; lost?: boolean }
+
+/**
+ * A team name that always fits on one line: when it is too wide for its space, its text is
+ * scaled down just enough (re-measured whenever the space changes size).
+ */
+function FitName({ name }: { name: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.fontSize = "";
+      // Text doesn't shrink exactly in proportion, so step down until it fits (or hits the floor).
+      for (let i = 0; i < 6 && el.scrollWidth > el.clientWidth; i++) {
+        const size = parseFloat(getComputedStyle(el).fontSize);
+        if (size <= 11) break;
+        el.style.fontSize = `${Math.max(11, Math.floor((size * el.clientWidth) / el.scrollWidth * 10) / 10 - 0.2)}px`;
+      }
+    };
+    fit();
+    const watch = new ResizeObserver(fit);
+    watch.observe(el.parentElement ?? el);
+    return () => watch.disconnect();
+  }, [name]);
+  return <span ref={ref} className="side-name">{name}</span>;
+}
+
+/**
+ * One match as a sports scoreboard card: a strip along the top with the status (Final, or the
+ * day) and the venue, then a row per team: crest, place, name and record, score, a mark by the winner.
+ */
+function MatchCard({ rows, status, aside, note, division }: { rows: CardRow[]; status: string; aside?: string; note?: string; division: LeagueDivision }) {
+  return (
+    <li className={`card${rows.some((r) => r.score != null) ? "" : " unplayed"}`}>
+      <p className="card-head"><span className="card-status">{status}</span>{aside && <span className="card-aside">{aside}</span>}</p>
+      {rows.map((r) => {
+        const s = division.standings.find((x) => x.team === r.team);
+        return (
+          <Link key={r.team} className={`card-row${r.won ? " won" : ""}${r.lost ? " lost" : ""}`} to={teamPath(division.division, r.team)}>
+            <span className="crest" style={{ color: chalkFor(r.team) }} aria-hidden="true">{monogram(r.team)}</span>
+            <span className="rank-tag" title={s ? `${ordinal(s.rank)} in the standings` : undefined}>{s?.rank}</span>
+            <span className="card-name">
+              <FitName name={r.team} />
+              {s && <span className="card-rec">{s.wins}–{s.losses}</span>}
+            </span>
+            <span className="card-score">{r.score ?? ""}</span>
+            <span className="card-mark" aria-label={r.won ? "won" : undefined}>{r.won ? "◂" : ""}</span>
+          </Link>
+        );
+      })}
+      {note && <p className="card-foot">{note}</p>}
     </li>
   );
+}
+
+/** A played match: scores, the winner marked (a 12–12 goes to whoever won the 1001), any forfeit or missing-sheet note. */
+function ResultCard({ match, division }: { match: Match; division: LeagueDivision }) {
+  const { away, home } = match;
+  const scored = away.score !== null && home.score !== null;
+  const winner = !scored ? null
+    : away.score! > home.score! || (away.score === home.score && away.tiebreaker1001 === "W") ? away.team
+    : home.score! > away.score! || (away.score === home.score && home.tiebreaker1001 === "W") ? home.team : null;
+  const row = (t: typeof away): CardRow => ({ team: t.team, score: t.score, won: t.team === winner, lost: !!winner && t.team !== winner });
+  const status = !scored ? "No score yet" : "Final";
+  const aside = scored && away.score === home.score ? "Won on the 1001" : undefined;
+  return <MatchCard rows={[row(away), row(home)]} status={status} aside={aside} note={match.note} division={division} />;
 }
 
 /** Leaderboard categories for the "Rank by" dropdown: plain words for the table's sort keys. */
@@ -117,7 +211,7 @@ export function Leaderboard({ week, division, players }: { week: number; divisio
 
   return (
     <section aria-labelledby="division">
-      <h2 id="division">Leaderboard <span className="muted">through week {week - 1}</span></h2>
+      <SectionHead id="division" title="Leaderboard" detail={`Through week ${week - 1}`} />
       <Fold show="Show leaderboard" hide="Hide leaderboard"
         summary={<>Top {TOP} of {all.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
         <label className="rank-by">

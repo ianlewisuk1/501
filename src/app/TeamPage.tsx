@@ -1,9 +1,9 @@
 /** One team's page: tonight's match, the opponent, standings, fixtures, players and charts. */
-import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
-import { Fold, SectionHead, Unfolded } from "./Fold";
+import { Fold, SectionHead } from "./Fold";
 import { divisionWeeks, scheduleFor } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
@@ -11,7 +11,9 @@ import {
 } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
-import { groupSpans, GROUPS, ordinal, Pin, PLAYER_COLUMNS, pctCol, StandingsTable, useSort, wlCol, type Column } from "./ui";
+import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
+import { Tabs } from "./Tabs";
+import { groupSpans, GROUPS, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, StandingsTable, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
   const division = week.team.division;
@@ -29,15 +31,14 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
     <>
       {news && <ClinchBanner news={news} />}
       <main className={news ? "under-banner" : undefined}>
-        <header className="brand">
-          <div>
-            <h1 className={week.team.name.length > 10 ? "long" : undefined}>{week.team.name}</h1>
-            <p className="meta">{division} Division, week {week.week}{teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}</p>
+        <PageHead team title={week.team.name} meta={`${division} Division, week ${week.week}${teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}`}>
+          <div className="page-tools">
+            <MyTeamButton team={week.team.name} division={division} />
+            <TeamPicker team={week.team.name} division={division} names={week.standings.map((s) => s.team)} />
           </div>
-          <TeamPicker team={week.team.name} division={division} names={week.standings.map((s) => s.team)} />
-        </header>
+        </PageHead>
         <Tonight week={week} fixture={current} today={today} schedule={data.schedule} />
-        <Tabs tabs={[
+        <Tabs label="Team sections" tabs={[
           { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
           { id: "standings", label: "Standings", show: true, body: <Standings week={week} /> },
           { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
@@ -52,11 +53,42 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   );
 }
 
+/**
+ * "This is my team": remembers this team on this device so the front page leads with it.
+ * Once picked it says so, with a plain way to undo it. Picking another team replaces it.
+ */
+function MyTeamButton({ team, division }: { team: string; division: string }) {
+  const { picked } = useMyTeams();
+  const me = { division, team };
+  if (sameTeam(picked, me)) {
+    return (
+      <div className="my-team is-mine">
+        <span className="my-team-on"><Star filled />My team</span>
+        <button type="button" className="my-team-undo" onClick={() => pickTeam(null)}>Not my team</button>
+      </div>
+    );
+  }
+  return (
+    <div className="my-team">
+      <button type="button" className="my-team-pick" onClick={() => pickTeam(me)}><Star />This is my team</button>
+    </div>
+  );
+}
+
+function Star({ filled = false }: { filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"
+        fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** A big plain dropdown of every team in the division, A to Z. */
 function TeamPicker({ team, division, names }: { team: string; division: string; names: string[] }) {
   if (names.length < 2) return null;
   return (
-    <label className="team-pick">
+    <label className="page-pick">
       <span className="sr-only">Show another team in the division</span>
       <select value={team} onChange={(e) => navigate(teamPath(division, e.target.value))}>
         {[...names].sort((a, b) => a.localeCompare(b)).map((t) => <option key={t} value={t}>{t}</option>)}
@@ -300,52 +332,3 @@ function Outcome({ f }: { f: FixtureRow }) {
   return <span className={`badge ${r === "W" ? "win" : r === "L" ? "loss" : "tie"}`} title={us === them && r !== "T" ? "Decided by the 1001 tiebreaker" : undefined}>{r}</span>;
 }
 
-interface Tab { id: string; label: string; show: boolean; body: ReactNode }
-
-/** The tab in the link (?tab=fixtures), so a shared link opens on the same one. */
-const tabFromUrl = (): string | null => (typeof location === "undefined" ? null : new URLSearchParams(location.search).get("tab"));
-
-/**
- * Big chalk tabs under tonight's match: one section at a time, so the page stays about a screen
- * tall. Every panel is in the page (hidden ones too), so find-in-page and screen readers still work.
- */
-function Tabs({ tabs }: { tabs: Tab[] }) {
-  const shown = tabs.filter((t) => t.show);
-  const [picked, setPicked] = useState(() => tabFromUrl());
-  const active = shown.find((t) => t.id === picked)?.id ?? shown[0]?.id;
-  const pick = (id: string) => {
-    setPicked(id);
-    const url = new URL(location.href);
-    if (id === shown[0]?.id) url.searchParams.delete("tab");
-    else url.searchParams.set("tab", id);
-    history.replaceState(null, "", url);
-  };
-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const i = shown.findIndex((t) => t.id === active);
-    const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
-    if (next === null) return;
-    const t = shown[(next + shown.length) % shown.length];
-    pick(t.id);
-    document.getElementById(`tab-${t.id}`)?.focus();
-  };
-  if (!shown.length) return null;
-  return (
-    <div className="tabs">
-      <div className="tab-row" role="tablist" aria-label="Team sections" onKeyDown={onKey}>
-        {shown.map((t) => (
-          <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={t.id === active} aria-controls={`panel-${t.id}`}
-            tabIndex={t.id === active ? 0 : -1} onClick={() => pick(t.id)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <Unfolded.Provider value={true}>
-        {shown.map((t) => (
-          <div key={t.id} id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`} hidden={t.id !== active} className="tab-panel">
-            {t.body}
-          </div>
-        ))}
-      </Unfolded.Provider>
-    </div>
-  );
-}

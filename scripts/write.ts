@@ -2,7 +2,8 @@
  * Writes data/{season}/week-NN.json, data/{season}/division-week-NN.json (every team's players, for scouting),
  * data/{season}/teams-week-NN.json (every division team's week, for the team picker),
  * data/{season}/league-week-NN.json (every division, see src/parser/league.ts), data/{season}/index.json, data/latest.json (a copy of the newest week)
- * and records the file in data/manifest.json.
+ * and records the file in data/manifest.json. data/updated.json gets today's date (Raleigh time),
+ * which the lander shows as "Last updated".
  */
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -61,5 +62,6 @@ export function parseFiles(files: string[]): string[] {
     console.log(`latest -> ${latest.season} week ${latest.week}`);
   }
   write(manifestPath, Object.fromEntries(Object.entries(manifest).sort()));
+  write(join(DATA, "updated.json"), { date: new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" }) });
   return written;
 }

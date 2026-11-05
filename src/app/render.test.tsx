@@ -6,6 +6,7 @@ import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
 import { CompareChart } from "./Chart";
 import { buildFixtures, form, todayIso, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { divisionRounds } from "./league";
 import { parseRoute } from "./route";
 import { loadSeason, type SeasonData } from "./store";
 
@@ -25,35 +26,81 @@ describe("routes", () => {
     expect(parseRoute("/", "?team=menace-2-sobriety")).toEqual({ page: "team", division: "C", team: "menace-2-sobriety" });
   });
 
-  it("lands on a cricket board: 1st | division | 2nd, A to H down the middle", () => {
+  it("lands on a chalk dartboard: one segment per division, each a link to it", () => {
     const html = at("/");
     expect(html).toContain('aria-label="Raleigh Dart League"');
     expect(html).toContain('class="board-logo"');
     expect(html).toMatch(/Fall 2026, week \d+ of 14/);
-    // Key dates sit at the bottom of the lander now, while any are still ahead.
+    // Key dates sit at the bottom of the lander, while any are still ahead.
     const ahead = (schedule as SeasonSchedule).keyDates.some((d) => d.date >= todayIso());
     expect(html.includes("Coming up")).toBe(ahead);
-    expect(html.match(/class="cricket-row"/g)).toHaveLength(8);
-    expect(html).toContain(">Division</span>");
-    expect(html).toMatch(/Area 501<span class="mark" title="clinched a top-two finish"> ✓<\/span>/);
-    expect(html).not.toContain("⊗");
-    expect(html).toContain('class="cricket-legend"');
+    expect(html).toContain("Throw for your division");
+    expect(html.match(/class="seg[ "]/g)).toHaveLength(8);
+    expect(html).toContain('class="seg" aria-label="C Division, 8 teams" href="/c"');
+    expect(html).toContain("Know your team&#x27;s name?");
+    // When the data last changed, under the season line.
+    expect(html).toMatch(/Last updated \w{3}, \w{3} \d+/);
+    // The lander is its own banner: no site bar.
+    expect(html).not.toContain('class="site-bar"');
+    // Nothing typed yet, so no team list; no returning visitor, so no shortcut.
+    expect(html).not.toContain('class="team-list"');
+    expect(html).not.toContain("Your team");
   });
 
-  it("puts your team against this week's opponent on the vs line", () => {
+  it("gives a returning visitor their team, with this week's match, on a clean board", () => {
     const html = renderToStaticMarkup(<Screen data={data} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    const vs = html.slice(html.indexOf('class="vs-line"'), html.indexOf("</p>", html.indexOf('class="vs-line"')));
-    expect(vs).toContain(">Area 501</a>");
-    expect(vs).toContain(">vs</span>");
-    expect(vs).toContain(">Pints and Points</a>");
+    const mine = html.slice(html.indexOf('class="your-team"'), html.indexOf('class="aim"'));
+    expect(mine).toContain('href="/c/area-501"');
+    expect(mine).toMatch(/This week: (home to|away at) Pints and Points/);
+    expect(html).toContain('class="seg" aria-label="C Division, 8 teams"'); // nothing chalked in from last time
   });
 
-  it("shows a division's standings, matches, results and leaderboard", () => {
+  it("adds a quieter link to the team looked at last, unless it is the picked team", () => {
+    const home = (myTeam: { division: string; team: string } | null, lastTeam: { division: string; team: string } | null) =>
+      renderToStaticMarkup(<Screen data={data} route={{ page: "home" }} myTeam={myTeam} lastTeam={lastTeam} />);
+    const area = { division: "C", team: "Area 501" };
+    const menace = { division: "C", team: "Menace 2 Sobriety" };
+    // Only looked around, never picked: no "Your team", just the link.
+    let html = home(null, menace);
+    expect(html).not.toContain("Your team");
+    expect(html).toContain('Last looked at <a href="/c/menace-2-sobriety">Menace 2 Sobriety</a>');
+    // Picked Area 501, then looked at Menace: both.
+    html = home(area, menace);
+    expect(html).toContain("Your team");
+    expect(html).toContain("Last looked at");
+    // Last looked at their own team: no second link to the same place.
+    expect(home(area, area)).not.toContain("Last looked at");
+    // A team no longer in the standings is dropped.
+    expect(home(null, { division: "C", team: "Gone Team" })).not.toContain("Last looked at");
+  });
+
+  it("lets a team page be picked as my team", () => {
+    expect(at("/c/menace-2-sobriety")).toContain('<button type="button" class="my-team-pick">');
+    expect(at("/c/menace-2-sobriety")).toContain("This is my team");
+  });
+
+  it("puts the same black site bar and page heading on division and team pages", () => {
+    const div = at("/c");
+    const team = at("/c/area-501");
+    for (const html of [div, team]) {
+      expect(html).toContain('class="site-bar"');
+      expect(html).toContain('<a class="site-home" href="/">');
+      expect(html).toContain('<header class="page-head');
+    }
+    expect(div).toContain('aria-current="page" href="/c">C Division</a>');
+    expect(team).toContain('aria-current="page" href="/c/area-501">Area 501</a>');
+    expect(team).toContain('<header class="page-head team-head">');
+  });
+
+  it("puts a division in tabs: standings, matches and leaderboard", () => {
     const html = at("/g");
     expect(html).toContain("G Division");
-    for (const id of ["standings", "matches", "results", "division"]) expect(html).toContain(`id="${id}"`);
-    expect(section(html, "matches")).toContain("bye");
-    expect(html).toContain('aria-expanded="false">Show leaderboard</button>');
+    for (const id of ["standings", "matches", "division"]) expect(html).toContain(`id="${id}"`);
+    expect(section(html, "matches")).toContain('<span class="card-status">Bye</span>');
+    const tabs = html.slice(html.indexOf('role="tablist"'), html.indexOf("</div>", html.indexOf('role="tablist"')));
+    expect([...tabs.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(["Standings", "Matches", "Leaderboard"]);
+    expect(html).toContain('id="tab-standings" role="tab" aria-selected="true"'); // opens on the standings
+    expect(html).not.toContain("Show leaderboard"); // the tab is the fold
   });
 
   it("renders any team in the league", () => {
@@ -163,4 +210,34 @@ it("filters the leaderboard by games played: all, more than 5, more than 20", ()
   expect(board).toContain('aria-pressed="false">More than 5 games</button>');
   expect(board).toContain('aria-pressed="true">More than 20 games</button>'); // late season: enough regulars
   expect(board).not.toContain("6+ matches");
+});
+
+it("writes each team's place in the standings small in front of its name, with a chalk crest", () => {
+  const matches = section(at("/c"), "matches");
+  expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="side-name">Area 501</span><span class="card-rec">12–0</span>');
+  expect(matches).toContain('aria-hidden="true">PP</span>'); // Pints and Points' chalk crest
+});
+
+describe("matches, every week", () => {
+  it("covers the whole season: played weeks with scores, the rest as fixtures", () => {
+    const rounds = divisionRounds(data, "C");
+    const last = data.issues.at(-1)!.week;
+    expect(rounds.map((r) => r.week)).toEqual(Array.from({ length: last + 1 }, (_, i) => i + 1));
+    expect(rounds.filter((r) => r.played).map((r) => r.week)).toEqual(Array.from({ length: last - 1 }, (_, i) => i + 1));
+    // C has 8 teams: four matches a week, no byes.
+    for (const r of rounds) expect(r.matches).toHaveLength(4);
+    // Dates come from the season schedule: Wednesdays, a week apart.
+    expect(rounds[0].date).toBe("2026-08-12");
+    expect(rounds.at(-1)!.date).toBe("2026-11-11");
+  });
+
+  it("opens on this week, with a week picker either side", () => {
+    const html = section(at("/c"), "matches");
+    const week = data.issues.at(-1)!.week;
+    expect(html).toContain('aria-label="Previous week"');
+    expect(html).toContain('aria-label="Next week"');
+    expect(html).toMatch(new RegExp(`<option value="${week}" selected="">Week ${week} \\(this week\\)</option>`));
+    expect(html.match(/<option /g)).toHaveLength(week + 1);
+    expect(html).toContain(": this week&#x27;s matches");
+  });
 });
