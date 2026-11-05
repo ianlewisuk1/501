@@ -51,10 +51,9 @@ export const Pin = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
-/** Page 2's clinch marker as a small pill; bottom-two clinches get none. */
+/** Page 2's clinch marker as a small pill, only for a team sure to finish first; top-two and bottom-two clinches get none. */
 export function ClinchBadge({ mark }: { mark: Standing["clinched"] }) {
-  if (mark === "G") return <span className="clinch champ" title="Regular-season division champion">Champion</span>;
-  if (mark === "C") return <span className="clinch" title="Clinched a top-two finish">Clinched</span>;
+  if (mark === "G") return <span className="clinch" title="Sure to finish 1st">Clinched</span>;
   return null;
 }
 

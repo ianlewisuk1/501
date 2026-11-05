@@ -87,7 +87,7 @@ function Star({ filled = false }: { filled?: boolean }) {
 }
 
 
-/** A slim news ticker strip announcing a clinched title or top-two finish. */
+/** A slim news ticker strip announcing a clinched title. */
 function ClinchBanner({ news }: { news: { headline: string; detail: string } }) {
   return (
     <aside className="breaking" role="status">

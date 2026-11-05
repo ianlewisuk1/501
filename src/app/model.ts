@@ -65,15 +65,28 @@ export function breakingNews(current: TeamWeek, seasonWeeks: number, items: News
   return clinchNews(current, seasonWeeks);
 }
 
-/** Breaking news for a team that has clinched a title or a top-two finish; null otherwise. */
+/**
+ * Marks the leader `G` (sure to finish first) once no one can catch it on wins: every other team's
+ * wins plus every match it could still play (season length less its games so far, so byes and
+ * unreported matches only make this cautious) stays below the leader's. A tie isn't enough, since
+ * points would then decide. The newsletter's own `G` is kept; without a season length nothing changes.
+ */
+export function withClinchedFirst(standings: Standing[], seasonWeeks: number | null | undefined): Standing[] {
+  if (!seasonWeeks || standings.length < 2 || standings.some((s) => s.clinched === "G")) return standings;
+  const leader = standings.reduce((a, b) => (b.wins > a.wins ? b : a));
+  const best = Math.max(...standings.filter((s) => s !== leader).map((s) => s.wins + Math.max(0, seasonWeeks - s.wins - s.losses)));
+  if (leader.wins <= best) return standings;
+  return standings.map((s) => (s === leader ? { ...s, clinched: "G" as const } : s));
+}
+
+/** Breaking news for a team that is sure to finish first; null otherwise. */
 export function clinchNews(current: TeamWeek, seasonWeeks: number): { headline: string; detail: string } | null {
-  const me = findStanding(current.team.name, current.standings);
-  if (me?.clinched !== "G" && me?.clinched !== "C") return null;
-  const headline = me.clinched === "G"
-    ? `${me.team} clinches the ${current.team.division} Division title`
-    : `${me.team} clinches a top-two finish in ${current.team.division} Division`;
+  const standings = withClinchedFirst(current.standings, seasonWeeks);
+  const me = findStanding(current.team.name, standings);
+  if (me?.clinched !== "G") return null;
+  const headline = `${me.team} clinches the ${current.team.division} Division title`;
   const left = seasonWeeks - (current.week - 1);
-  const next = current.standings.find((s) => s !== me && s.rank > me.rank) ?? current.standings.find((s) => s !== me);
+  const next = standings.find((s) => s !== me && s.rank > me.rank) ?? standings.find((s) => s !== me);
   const parts = [`${me.wins}–${me.losses} record`];
   if (next && me.rank === 1) parts.push(`${me.points - next.points} pts clear`);
   if (left > 0) parts.push(`${left} ${left === 1 ? "week" : "weeks"} still to play`);

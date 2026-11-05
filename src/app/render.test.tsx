@@ -159,9 +159,9 @@ describe("team page", () => {
     expect(html).not.toContain("Key dates");
   });
 
-  it("badges clinched teams in the standings, but not bottom-two clinches", () => {
-    expect(renderToStaticMarkup(<ClinchBadge mark="C" />)).toContain(">Clinched<");
-    expect(renderToStaticMarkup(<ClinchBadge mark="G" />)).toContain(">Champion<");
+  it("badges only a team sure to finish first, not top-two or bottom-two clinches", () => {
+    expect(renderToStaticMarkup(<ClinchBadge mark="G" />)).toContain(">Clinched<");
+    expect(renderToStaticMarkup(<ClinchBadge mark="C" />)).toBe("");
     expect(renderToStaticMarkup(<ClinchBadge mark="D" />)).toBe("");
     expect(renderToStaticMarkup(<ClinchBadge mark={undefined} />)).toBe("");
   });

@@ -7,7 +7,7 @@ import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
 import { divisionRounds, seasonLabel, type DivisionRound } from "./league";
-import { shortDate, todayIso, type DivisionPlayer } from "./model";
+import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { Tabs } from "./Tabs";
@@ -41,7 +41,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           body: (
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail="Tap a team to see its page: fixtures, players and form" />
-              <Ladder standings={division.standings} division={d} />
+              <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
             </section>
           ),
         },
@@ -65,11 +65,11 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
   const mine = useMine(division);
   const [top, second] = standings;
   const clear = top && second ? top.points - second.points : 0;
-  const marks = new Set(standings.map((s) => s.clinched));
+  const clinched = standings.some((s) => s.clinched === "G");
   return (
     <>
     {/* --n lets the rows share out the screen's height (styles.css), so the table fits without scrolling. */}
-    <ol className="ladder" data-key={marks.has("G") || marks.has("C") ? "" : undefined} style={{ "--n": standings.length } as CSSProperties}>
+    <ol className="ladder" data-key={clinched ? "" : undefined} style={{ "--n": standings.length } as CSSProperties}>
       {standings.map((s, i) => (
         <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine"].filter(Boolean).join(" ") || undefined}>
           <Link to={teamPath(division, s.team)}>
@@ -85,13 +85,8 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
         </li>
       ))}
     </ol>
-    {/* What the clinch marks mean, only when one shows: a tooltip never appears on a phone. */}
-    {(marks.has("G") || marks.has("C")) && (
-      <p className="ladder-key">
-        {marks.has("C") && <span><b>✓ Clinched</b> can't finish lower than 2nd.</span>}
-        {marks.has("G") && <span><b>★ Champion</b> has won the division.</span>}
-      </p>
-    )}
+    {/* What the clinch mark means, only when one shows: a tooltip never appears on a phone. */}
+    {clinched && <p className="ladder-key"><b>✓ Clinched</b> means sure to finish 1st.</p>}
     </>
   );
 }

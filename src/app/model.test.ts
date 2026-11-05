@@ -7,7 +7,7 @@ import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
 import venuesJson from "../../data/Fa26/venues.json";
 import type { Venue } from "../parser/venueMatch";
-import { breakingNews, buildFixtures, clinchNews, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { breakingNews, buildFixtures, clinchNews, withClinchedFirst, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -194,13 +194,33 @@ describe("clinch news", () => {
     expect(clinchNews(wk07, 14)).toBeNull();
   });
 
-  it("announces a clinched top-two finish (wk12)", () => {
+  it("says nothing about a top-two clinch while first can still be caught (wk12)", () => {
     const wk12 = parse("fixtures/Fa26wk12.xlsx", TEAM);
     expect(wk12.standings[0].clinched).toBe("C");
-    expect(clinchNews(wk12, 14)).toEqual({
-      headline: "Area 501 clinches a top-two finish in C Division",
+    // 11-0 with 3 to play; 2nd could still reach 11 wins, so nothing yet.
+    expect(withClinchedFirst(wk12.standings, 14)).toBe(wk12.standings);
+    expect(clinchNews(wk12, 14)).toBeNull();
+    const won = { ...wk12, standings: wk12.standings.map((s, i) => (i === 0 ? { ...s, clinched: "G" as const } : s)) };
+    expect(clinchNews(won, 14)).toEqual({
+      headline: "Area 501 clinches the C Division title",
       detail: "11–0 record · 14 pts clear · 3 weeks still to play",
     });
+  });
+});
+
+describe("withClinchedFirst", () => {
+  const row = (team: string, wins: number, losses: number) => ({ rank: 0, team, wins, losses, points: 0 });
+  it("marks the leader once no one can reach its wins", () => {
+    const out = withClinchedFirst([row("A", 12, 0), row("B", 8, 4), row("C", 7, 5)], 14);
+    expect(out.map((s) => s.clinched)).toEqual(["G", undefined, undefined]);
+  });
+  it("waits while a chaser could tie, and counts unplayed matches as possible wins", () => {
+    expect(withClinchedFirst([row("A", 12, 0), row("B", 10, 2)], 14)[0].clinched).toBeUndefined();
+    expect(withClinchedFirst([row("A", 12, 0), row("B", 8, 2)], 14)[0].clinched).toBeUndefined();
+  });
+  it("changes nothing without a season length", () => {
+    const s = [row("A", 12, 0), row("B", 1, 11)];
+    expect(withClinchedFirst(s, null)).toBe(s);
   });
 });
 
