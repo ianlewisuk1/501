@@ -129,9 +129,15 @@ describe("routes", () => {
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
     const rec = html.slice(html.indexOf('id="panel-records"'));
     expect(rec).toContain("Fast singles 301");
-    expect(rec).toContain("Ian Lewis, Area 501, Aug 12");
+    expect(rec).toMatch(/<span class="rec-val">9 darts<\/span>.*?Ian Lewis<\/span> <span class="rec-team-date"><span class="rec-team"[^>]*>Area 501<\/span><span class="rec-date">, Aug 12/);
     expect(rec).toContain("Perfect throws");
-    expect(rec).toContain("Hot darts last week");
+    // Hot darts lead, ringed, with last week's number; one line per feat with everyone who threw it.
+    expect(rec.indexOf("rec-hot-board")).toBeLessThan(rec.indexOf("Trophy darts"));
+    expect(rec).toMatch(/Hot darts<span class="rec-hot-week">week \d+<\/span>/);
+    const feats = [...rec.matchAll(/class="rec-feat">([^<]+)</g)].map((m) => m[1]);
+    expect(new Set(feats).size).toBe(feats.length);
+    // Each kind of perfect throw is counted in tally marks.
+    expect(rec).toMatch(/class="rec-kind"><span>9-Marks<\/span><span class="tally" role="img" aria-label="\d+ this season">/);
   });
 
   it("renders any team in the league", () => {

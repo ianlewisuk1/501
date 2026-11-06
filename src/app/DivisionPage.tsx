@@ -47,7 +47,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         },
         { id: "matches", label: "Matches", show: rounds.length > 0, body: <Matches rounds={rounds} now={issue.week} division={division} /> },
         { id: "leaderboard", label: "Players", show: players.length > 0, body: <Leaderboard week={issue.week} division={d} players={players} /> },
-        { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} /> },
+        { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} week={issue.week - 1} /> },
       ]} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", issue #{issue.issue}. Stats through week {issue.week - 1}.
@@ -96,63 +96,108 @@ const sentence = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
 const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
 
 /**
- * The division's best throws: trophy darts with who holds them and when, the perfect throws of the
- * season (9-marks, ton-80s, 6-bulls), and last week's hot darts.
+ * The division's best throws, as three boards: last week's hot darts first and chalked round like
+ * news, then the season's trophy darts (the standing records), then the perfect throws as tallies.
  */
-function Records({ division, throws }: { division: LeagueDivision; throws: PerfectThrow[] }) {
+function Records({ division, throws, week }: { division: LeagueDivision; throws: PerfectThrow[]; week: number }) {
   const kinds = [...new Set(throws.map((t) => t.kind))];
+  // The same feat by several players reads as one line: "4 ASPs" and everyone who threw it.
+  const feats = [...new Set(division.hotDarts.map((h) => h.feat))].map((feat) => ({ feat, who: division.hotDarts.filter((h) => h.feat === feat) }));
   return (
-    <section aria-labelledby="records">
-      <h2 id="records" className="sr-only">Records</h2>
+    <>
+      {feats.length > 0 && (
+        <section className="rec-section" aria-labelledby="rec-hot-h">
+          <div className="rec-hot-board">
+            <h2 id="rec-hot-h" className="rec-hot-title"><ChalkStar />Hot darts<span className="rec-hot-week">week {week}</span></h2>
+            <ul className="rec-hot">
+              {feats.map(({ feat, who }) => (
+                <li key={feat}>
+                  <span className="rec-feat">{feat}</span>
+                  <span className="rec-names">
+                    {who.map((h, j) => (
+                      <span key={j} className="rec-person">
+                        <span className="rec-name">{joinNames(h.players)}</span>{" "}
+                        <span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
+                      </span>
+                    ))}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
       {division.records.length > 0 && (
-        <>
-          <h3 className="rec-head">Trophy darts</h3>
-          <ul className="rec-list">
+        <section className="rec-section" aria-labelledby="rec-trophy-h">
+          <h2 id="rec-trophy-h" className="rec-head">Trophy darts<span className="rec-head-note">best this season</span></h2>
+          <ul className="rec-board">
             {division.records.map((r) => (
               <li key={r.category}>
-                <span className="rec-cat">{sentence(r.category)}</span>
-                <span className="rec-val">{r.value}</span>
-                <span className="rec-who">
-                  {r.holders.length
-                    ? r.holders.map((h) => [joinNames(h.players), h.team, h.date && shortDate(h.date, false)].filter(Boolean).join(", ")).join("; ")
-                    : "None reported yet"}
+                <span className="rec-val">{r.holders.length ? r.value : "–"}</span>
+                <span className="rec-body">
+                  <span className="rec-cat">{sentence(r.category)}</span>
+                  {r.holders.length ? r.holders.map((h, j) => (
+                    <span key={j} className="rec-holder">
+                      <span className="rec-name">{joinNames(h.players)}</span>{" "}
+                      <span className="rec-team-date"><span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
+                      {h.date && <span className="rec-date">, {shortDate(h.date, false)}</span>}</span>
+                    </span>
+                  )) : <span className="rec-holder muted">None reported yet</span>}
                 </span>
               </li>
             ))}
           </ul>
-        </>
+        </section>
       )}
       {kinds.length > 0 && (
-        <>
-          <h3 className="rec-head">Perfect throws</h3>
+        <section className="rec-section" aria-labelledby="rec-perfect-h">
+          <h2 id="rec-perfect-h" className="rec-head">Perfect throws<span className="rec-head-note">this season</span></h2>
           {kinds.map((k) => {
             const who = throws.filter((t) => t.kind === k);
+            const count = who.reduce((n, t) => n + Math.max(1, t.dates.length), 0);
             return (
-              <p key={k} className="rec-throws">
-                <span className="rec-kind">{k}:</span>{" "}
-                {who.map((t, j) => (
-                  <span key={t.player + t.team}>
-                    {j > 0 && ", "}{t.player}{t.dates.length > 1 && ` (${t.dates.length})`}
-                  </span>
-                ))}
-              </p>
+              <div key={k} className="rec-kind-block">
+                <h3 className="rec-kind"><span>{k}</span><Tally n={count} /></h3>
+                <ul className="rec-throwers">
+                  {who.map((t) => (
+                    <li key={t.player + t.team}>
+                      <span><span className="rec-name">{t.player}</span>{t.dates.length > 1 && <span className="rec-times"> ×{t.dates.length}</span>}</span>{" "}
+                      <span className="rec-team" style={{ color: chalkFor(t.team) }}>{t.team}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             );
           })}
-        </>
+        </section>
       )}
-      {division.hotDarts.length > 0 && (
-        <>
-          <h3 className="rec-head">Hot darts last week</h3>
-          <ul className="rec-hot">
-            {division.hotDarts.map((h, j) => (
-              <li key={j}><span>{joinNames(h.players)}</span><span className="rec-who">{h.team}</span><span className="rec-val">{h.feat}</span></li>
-            ))}
-          </ul>
-        </>
-      )}
-    </section>
+    </>
   );
 }
+
+/** A count chalked up the way a scorer does it: four strokes and a fifth across. */
+function Tally({ n }: { n: number }) {
+  const groups = Array.from({ length: Math.ceil(n / 5) }, (_, g) => Math.min(5, n - g * 5));
+  return (
+    <span className="tally" role="img" aria-label={`${n} this season`}>
+      {groups.map((k, g) => (
+        <svg key={g} viewBox="0 0 30 22" width="30" height="22" aria-hidden="true">
+          {Array.from({ length: Math.min(4, k) }, (_, i) => (
+            <path key={i} d={`M${5 + i * 6} ${3 + (i % 2)} L${4.5 + i * 6 + (i % 2)} 19`} />
+          ))}
+          {k === 5 && <path d="M1 16 L28 5" />}
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+/** A star scribbled in chalk, the kind a teacher puts by good work. */
+const ChalkStar = () => (
+  <svg className="chalk-star" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+    <path d="M20 3 L24.5 15.5 L37.5 15.8 L27 23.6 L31 36.5 L20 28.6 L9.2 36.2 L13.2 23.5 L2.6 15.6 L15.6 15.2 Z" />
+  </svg>
+);
 
 /** The team picked with "This is my team", if it's in this division. */
 const useMine = (division: string) => {
