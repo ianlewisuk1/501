@@ -14,7 +14,7 @@ import type { SeasonData } from "./store";
 import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
-import { Arrow, groupSpans, GROUPS, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
+import { Arrow, groupSpans, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
   const division = week.team.division;
@@ -55,6 +55,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
         ]} />
         <footer className="muted small">
           Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
+          <NewsletterLink />
         </footer>
       </main>
     </>

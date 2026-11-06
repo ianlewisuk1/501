@@ -12,7 +12,7 @@ import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { Tabs } from "./Tabs";
 import { useMyTeams } from "./myTeam";
-import { Arrow, ClinchBadge, chalkFor, GROUPS, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
+import { Arrow, ClinchBadge, chalkFor, GROUPS, NewsletterLink, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
 
 export function DivisionPage({ data, issue, division }: { data: SeasonData; issue: LeagueWeek; division: LeagueDivision }) {
   const d = division.division;
@@ -42,6 +42,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail="Tap a team to see its page: fixtures, players and form" />
               <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
+              {division.headline && <Headlines text={division.headline} week={issue.week - 1} />}
             </section>
           ),
         },
@@ -51,6 +52,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
       ]} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", issue #{issue.issue}. Stats through week {issue.week - 1}.
+        <NewsletterLink />
       </footer>
     </main>
   );
@@ -199,6 +201,20 @@ const ChalkStar = () => (
   </svg>
 );
 
+/**
+ * The editor's write-up of a week in this division, from page 1's RDL Headlines: one story a line
+ * (the newsletter runs them together with semicolons), in his words.
+ */
+function Headlines({ text, week }: { text: string; week: number }) {
+  const stories = text.split(/;\s+/).map((t) => t.trim()).filter(Boolean).map((t) => t[0].toUpperCase() + t.slice(1));
+  return (
+    <aside className="headlines" aria-label={`Kilt's headlines, week ${week}`}>
+      <p className="headlines-label">Kilt's headlines <span>week {week}</span></p>
+      <ul>{stories.map((t, i) => <li key={i}>{t}</li>)}</ul>
+    </aside>
+  );
+}
+
 /** The team picked with "This is my team", if it's in this division. */
 const useMine = (division: string) => {
   const { picked } = useMyTeams();
@@ -259,6 +275,7 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
         <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}>›</button>
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
+      {round.played && round.headline && <Headlines text={round.headline} week={round.week} />}
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
       <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
         {round.played

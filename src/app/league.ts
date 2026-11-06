@@ -52,6 +52,8 @@ export type DivisionRound = (
 ) & {
   /** The newsletter editor's picks for the week, from the issue dated that night. */
   picks: Pick[];
+  /** A played week's write-up from page 1's RDL Headlines, in the issue that brought its results. */
+  headline?: string | null;
 };
 
 /**
@@ -77,7 +79,7 @@ export function divisionRounds(data: SeasonData, division: string): DivisionRoun
         rounds.set(round.week, { week: round.week, date: scheduled(round.week) ?? date, played: false, matches: round.matches, byes: round.byes, picks: picksFor.get(round.week) ?? [] });
     }
     if (d.results)
-      rounds.set(d.results.week, { week: d.results.week, date: d.results.date, played: true, matches: d.results.matches, byes: d.results.byes, picks: picksFor.get(d.results.week) ?? [] });
+      rounds.set(d.results.week, { week: d.results.week, date: d.results.date, played: true, matches: d.results.matches, byes: d.results.byes, picks: picksFor.get(d.results.week) ?? [], headline: d.headline });
   }
   return [...rounds.values()].sort((a, b) => a.week - b.week);
 }

@@ -336,3 +336,27 @@ describe("the team page's match card follows the calendar, not the newsletter", 
     expect(html).toContain("Wed, Nov 18");
   });
 });
+
+describe("from the newsletter itself", () => {
+  it("puts the editor's headlines for the week just played under the standings, one story a line", () => {
+    const html = at("/c");
+    const standings = html.slice(html.indexOf('id="panel-standings"'), html.indexOf('id="panel-matches"'));
+    const latest = data.issues.at(-1)!;
+    const text = divisionIn(latest, "C")!.headline!;
+    expect(standings).toContain(`Kilt&#x27;s headlines <span>week ${latest.week - 1}</span>`);
+    const first = text.split(/;\s+/)[0];
+    expect(standings).toContain(`<li>${first[0].toUpperCase() + first.slice(1)}</li>`.replace(/'/g, "&#x27;"));
+  });
+
+  it("gives every played week on Matches its own headlines", () => {
+    const rounds = divisionRounds(data, "C").filter((r) => r.played);
+    expect(rounds.length).toBeGreaterThan(0);
+    for (const r of rounds) expect(r.headline, `week ${r.week}`).toBeTruthy();
+  });
+
+  it("links to the full newsletter from division and team pages", () => {
+    for (const path of ["/c", "/c/area-501"]) {
+      expect(at(path)).toContain('<a href="https://raleighdartleague.org/newsletter/" target="_blank" rel="noopener">Read the full newsletter</a>');
+    }
+  });
+});

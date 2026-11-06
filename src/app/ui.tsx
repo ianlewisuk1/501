@@ -158,3 +158,9 @@ export function Arrow({ dir }: { dir: "left" | "right" }) {
   );
 }
 
+
+/** Where the newsletter itself lives: the league's archive of every issue, for everything this site leaves out. */
+export const NEWSLETTER_URL = "https://raleighdartleague.org/newsletter/";
+export function NewsletterLink() {
+  return <> <a href={NEWSLETTER_URL} target="_blank" rel="noopener">Read the full newsletter</a></>;
+}
