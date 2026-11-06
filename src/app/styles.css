@@ -484,6 +484,9 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .ladder-line { display: flex; align-items: baseline; min-width: 0; }
 .ladder-name { flex: 0 1 auto; min-width: 0; font-size: 1.3rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ladder-line .clinch { flex: none; font-size: 0.85rem; }
+/* overflow: hidden (for the ellipsis) cuts off descenders (g, y, p) at tight line heights: give the
+   box room above and below, and take it back with a matching negative margin so rows don't grow. */
+.ladder-name, .card-row .side-name { padding-block: 0.15em; margin-block: -0.15em; }
 .ladder-rec { font-size: 1.05rem; color: var(--chalk-2); white-space: nowrap; }
 .ladder-pts { font: 700 1.5rem/1 var(--sketch); text-align: right; }
 /* The leader, ringed in yellow chalk like it would be on the board. */
@@ -498,7 +501,9 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .card-line { display: flex; align-items: center; min-width: 0; }
 .card-line .side-name { min-width: 0; }
 .card-row.mine { background: rgb(var(--hi-rgb) / 0.08); }
-.ladder-clear { font-size: 1rem; line-height: 1.2; color: var(--chalk-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Record and lead, then the clinch mark: on a narrow phone the mark drops to its own line rather than being cut off. */
+.ladder-clear { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; font-size: 1rem; line-height: 1.2; color: var(--chalk-2); }
+.ladder-clear .clinch { margin-left: 0; }
 
 /*
  * Fitting the first screen: the header and tabs tighten up so the ladder (and a week of match

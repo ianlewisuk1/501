@@ -77,7 +77,7 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
             <span className="ladder-team">
               <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} />}</span>
               {/* The leader's second line carries its clinch mark, leaving the name the whole width. */}
-              {i === 0 && <span className="ladder-clear">{s.wins}–{s.losses}{clear > 0 && `, ${clear} points clear`}<ClinchBadge mark={s.clinched} /></span>}
+              {i === 0 && <span className="ladder-clear"><span>{s.wins}–{s.losses}{clear > 0 && `, ${clear} points clear`}</span><ClinchBadge mark={s.clinched} /></span>}
             </span>
             {i > 0 && <span className="ladder-rec">{s.wins}–{s.losses}</span>}
             <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>
