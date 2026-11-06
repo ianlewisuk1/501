@@ -124,7 +124,7 @@ describe("routes", () => {
     expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
     expect(ladder).toContain("12–0, 17 points clear");
     // Says the rows can be tapped.
-    expect(html).toContain('<p class="tab-note">Tap a team to see its page: fixtures, players and form</p>');
+    expect(html).toMatch(/<p class="tab-note">After week 12, Oct 28\. Tap a team to see its page\.<\/p>/);
     // The arrows wrap round: before A comes H.
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
     const rec = html.slice(html.indexOf('id="panel-records"'));

@@ -40,7 +40,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           id: "standings", label: "Standings", show: true,
           body: (
             <section aria-labelledby="standings">
-              <SectionHead id="standings" title="Standings" detail="Tap a team to see its page: fixtures, players and form" />
+              <SectionHead id="standings" title="Standings" detail={`${division.results ? `After week ${division.results.week}, ${shortDate(division.results.date, false)}. ` : ""}Tap a team to see its page.`} />
               <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} />}
             </section>
