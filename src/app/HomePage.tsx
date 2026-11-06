@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
 import { divisionIn, seasonLabel, teamHistory } from "./league";
-import { addDays, shortDate, todayIso } from "./model";
+import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { sameTeam, type TeamRef } from "./myTeam";
@@ -125,14 +125,19 @@ function MoreBelow() {
 /**
  * The team picked with "This is my team", as one big link back to it, saying plainly that it's
  * the visitor's pick and what its next match is. Once this issue's match night has passed (its
- * result waits for the next newsletter), the next match is the following week's.
+ * result waits for the next newsletter), the next match is the following week's; once that has
+ * passed too and the season is over, it's the next division tournament night.
  */
 function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   const latest = teamHistory(data, mine.team).at(-1);
-  const played = !!latest && latest.issueDate < todayIso();
-  const fixture = latest ? (played ? latest.nextWeek : latest.thisWeek) : null;
-  const date = latest && (played ? addDays(latest.issueDate, 7) : latest.issueDate);
-  const next = !fixture || !date ? null
+  const today = todayIso();
+  // This issue's match night, else next week's once it has passed; after the season, the tournament.
+  const ahead = latest ? ([[latest.thisWeek, latest.issueDate], [latest.nextWeek, addDays(latest.issueDate, 7)]] as const)
+    .find(([f, d]) => f && d >= today) : undefined;
+  const tournament = !ahead ? nextTournament(data.schedule?.season === latest?.season ? data.schedule : undefined, today) : null;
+  const [fixture, date] = ahead ?? [null, null];
+  const next = tournament ? `Next: ${tournament.label.replace(/^RDL /, "")}, ${shortDate(tournament.date, false)}`
+    : !fixture || !date ? null
     : "bye" in fixture ? `Next: a bye week, ${shortDate(date, false)}`
     : `Next: ${shortDate(date, false)}, ${fixture.home ? "home to" : "away at"} ${fixture.opponent}`;
   return (

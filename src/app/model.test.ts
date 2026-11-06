@@ -7,7 +7,7 @@ import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
 import venuesJson from "../../data/Fa26/venues.json";
 import type { Venue } from "../parser/venueMatch";
-import { breakingNews, buildFixtures, clinchNews, withClinchedFirst, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
+import { breakingNews, buildFixtures, nextTournament, clinchNews, withClinchedFirst, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
 
 const wk06 = parse("fixtures/Fa26wk06.xlsx", TEAM);
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -45,6 +45,24 @@ describe("fixtures", () => {
   it("lets the newsletter override the schedule", () => {
     const moved = { ...wk07, nextWeek: { week: 8, home: true, opponent: "Ducks", venue: "Somewhere Else" } };
     expect(buildFixtures(moved, [moved], sched)[7]).toMatchObject({ home: true, opponent: "Brutha Ducks", venue: "Somewhere Else" });
+  });
+
+  it("moves on to next week's match the morning after match night, without a new newsletter", () => {
+    const current = (today: string) => buildFixtures(wk07, [wk06, wk07], sched, today).find((r) => r.status === "current");
+    // Week 7 issue: match night Wed Sep 23.
+    expect(current("2026-09-19")?.week).toBe(7); // issue posted early: still this week's match
+    expect(current("2026-09-23")?.week).toBe(7); // match night
+    expect(current("2026-09-24")).toMatchObject({ week: 8, home: false, opponent: "Brutha Ducks", venue: "Snooker's 1&2" });
+    const rows = buildFixtures(wk07, [wk06, wk07], sched, "2026-09-24");
+    expect(rows[6]).toMatchObject({ week: 7, status: "past", score: null });
+    // After the last night of the season nothing is current.
+    expect(buildFixtures(wk07, [wk06, wk07], sched, "2026-11-12").some((r) => r.status === "current")).toBe(false);
+  });
+
+  it("points at the next tournament night once the season is over", () => {
+    expect(nextTournament(sched, "2026-11-12")).toEqual({ date: "2026-11-18", label: "RDL division tournaments (night 1)" });
+    expect(nextTournament(sched, "2026-11-19")?.date).toBe("2026-12-02");
+    expect(nextTournament(sched, "2026-12-10")).toBeNull(); // the banquet isn't a tournament
   });
 
   it("works without a schedule", () => {

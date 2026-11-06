@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
 import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
@@ -309,4 +309,30 @@ describe("matches, every week", () => {
     expect(html).toContain(": next match night");
   });
 
+});
+
+describe("the team page's match card follows the calendar, not the newsletter", () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const card = (iso: string) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(`${iso}T09:00:00`));
+    const html = at("/c/area-501");
+    return html.slice(html.indexOf('aria-labelledby="tonight"'), html.indexOf("</section>", html.indexOf('aria-labelledby="tonight"')));
+  };
+
+  it("shows next week's match the morning after match night", () => {
+    const latest = data.issues.at(-1)!;
+    if (latest.week >= 14) return; // only meaningful while week 14 is still to come
+    const day = new Date(`${latest.issueDate}T12:00:00Z`); day.setUTCDate(day.getUTCDate() + 1);
+    const html = card(day.toISOString().slice(0, 10));
+    expect(html).toContain("Next match");
+    expect(html).not.toContain("This week");
+  });
+
+  it("points at the division tournament after the last night of the season", () => {
+    const html = card("2026-11-12");
+    expect(html).toContain("Next up");
+    expect(html).toContain("Division tournaments (night 1)");
+    expect(html).toContain("Wed, Nov 18");
+  });
 });

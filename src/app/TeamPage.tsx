@@ -6,7 +6,7 @@ import { PerformanceChart } from "./Chart";
 import { Fold, SectionHead } from "./Fold";
 import { divisionWeeks, scheduleFor } from "./league";
 import {
-  breakingNews, buildFixtures, findStanding, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
+  breakingNews, buildFixtures, findStanding, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow,
 } from "./model";
 import { Link, teamPath } from "./route";
@@ -20,10 +20,10 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const division = week.team.division;
   const teamSchedule = useMemo(() => scheduleFor(data, week.team.name, division), [data, week, division]);
   const divisions = useMemo(() => divisionWeeks(data, division), [data, division]);
-  const fixtures = useMemo(() => buildFixtures(week, history, teamSchedule), [week, history, teamSchedule]);
+  const today = todayIso();
+  const fixtures = useMemo(() => buildFixtures(week, history, teamSchedule, today), [week, history, teamSchedule, today]);
   const ios = useMemo(() => isIOS(), []);
   const maps = (venue: string) => mapsUrl(venue, data.venues, ios);
-  const today = todayIso();
   const current = fixtures.find((f) => f.status === "current");
   const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, data.news);
   const scout = current && !current.bye ? scoutReport(current.opponent, week, divisions) : null;
@@ -45,7 +45,8 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
           </PageHead>
           {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
         </div>
-        <Tonight week={week} fixture={current} today={today} venues={data.venues} />
+        {current ? <Tonight week={week} fixture={current} today={today} venues={data.venues} />
+          : <Tournament next={nextTournament(data.schedule?.season === week.season ? data.schedule : undefined, today)} today={today} />}
         <Tabs label="Team sections" tabs={[
           { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
           { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
@@ -120,6 +121,18 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
       <p className="hero-where">{fixture.home ? "Home" : "Away"} at {fixture.venue}</p>
       <VenueAddress venue={fixture.venue} venues={venues} />
       <Directions venue={fixture.venue} venues={venues} />
+    </section>
+  );
+}
+
+/** After the regular season's last night: the next division tournament night, if the schedule has one. */
+function Tournament({ next, today }: { next: { date: string; label: string } | null; today: string }) {
+  if (!next) return null;
+  return (
+    <section className="card hero" aria-labelledby="tonight">
+      <h2 id="tonight">{next.date === today ? "Tonight" : "Next up"} <span className="muted">{shortDate(next.date)}</span></h2>
+      <p className="big">{next.label.replace(/^RDL /, "").replace(/^d/, "D")}</p>
+      <p className="hero-opp muted">The regular season is over. Pairings and venues come from the league.</p>
     </section>
   );
 }
@@ -230,6 +243,8 @@ function Fixtures({ rows, maps, names, division, expanded = false }: { rows: Fix
   const mid = now === -1 ? rows.length - 1 : now;
   const start = Math.max(0, Math.min(mid - 1, rows.length - 3));
   const shown = all ? rows : rows.slice(start, start + 3);
+  // The night just played has no score until the next newsletter says so.
+  const lastPast = rows.filter((r) => r.status === "past").at(-1)?.week;
   return (
     <section aria-labelledby="fixtures">
       <SectionHead id="fixtures" title="Fixtures" />
@@ -252,7 +267,7 @@ function Fixtures({ rows, maps, names, division, expanded = false }: { rows: Fix
             <span className="fres">
               {f.score ? (
                 <><Outcome f={f} /> {f.score.us}–{f.score.them}</>
-              ) : f.status === "current" ? <span className="tag">Next</span> : f.status === "past" ? <span className="muted">–</span> : null}
+              ) : f.status === "current" ? <span className="tag">Next</span> : f.status === "past" ? <span className="muted small">{f.week === lastPast ? "Score next issue" : "–"}</span> : null}
             </span>
           </li>
         ))}

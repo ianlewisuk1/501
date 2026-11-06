@@ -93,8 +93,13 @@ export function clinchNews(current: TeamWeek, seasonWeeks: number): { headline: 
   return { headline, detail: parts.join(" · ") };
 }
 
-/** Every week of the season: schedule, overridden by the newsletter's own fixtures, plus any results we have. */
-export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: SeasonSchedule | undefined): FixtureRow[] {
+/**
+ * Every week of the season: schedule, overridden by the newsletter's own fixtures, plus any results we have.
+ * With `today`, the current week is the first match night still to come (never before the issue's
+ * own week), so the page moves on to next week's match the morning after match night instead of
+ * waiting for the next newsletter; once the season's last night has passed, no week is current.
+ */
+export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: SeasonSchedule | undefined, today?: string): FixtureRow[] {
   const results = new Map<number, MatchResult>();
   for (const w of history) {
     if (w.season === current.season && w.lastResult && !("bye" in w.lastResult)) results.set(w.lastResult.week, w.lastResult);
@@ -134,7 +139,17 @@ export function buildFixtures(current: TeamWeek, history: TeamWeek[], schedule: 
       row.score = r.score;
     }
   }
-  return [...rows.values()].sort((a, b) => a.week - b.week);
+  const sorted = [...rows.values()].sort((a, b) => a.week - b.week);
+  if (today) {
+    const now = sorted.find((r) => r.week >= current.week && r.date >= today)?.week ?? Infinity;
+    for (const r of sorted) r.status = r.week < now ? "past" : r.week === now ? "current" : "future";
+  }
+  return sorted;
+}
+
+/** The next division tournament night from the schedule's key dates, for after the regular season. */
+export function nextTournament(schedule: SeasonSchedule | undefined, today: string): { date: string; label: string } | null {
+  return schedule?.keyDates.find((k) => k.date >= today && /tournament/i.test(k.label)) ?? null;
 }
 
 export function addDays(iso: string, days: number): string {
