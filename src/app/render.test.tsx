@@ -81,12 +81,12 @@ describe("routes", () => {
   });
 
   it("lets a team page be picked as my team, and steps through the division's teams with arrows", () => {
-    const html = at("/c/menace-2-sobriety");
+    const html = at("/c/darty-little-secrets");
     expect(html).toContain('class="my-team-btn" aria-pressed="false"');
     expect(html).toContain("This is my team");
-    // Standings order, wrapping: Menace is 2nd, so Area 501 (1st) before and Darty Little Secrets (3rd) after.
+    // Standings order, wrapping: the Secrets are 2nd, so Area 501 (1st) before and Menace 2 Sobriety (3rd) after.
     expect(html).toContain('aria-label="Previous team: Area 501" href="/c/area-501"');
-    expect(html).toContain('aria-label="Next team: Darty Little Secrets" href="/c/darty-little-secrets"');
+    expect(html).toContain('aria-label="Next team: Menace 2 Sobriety" href="/c/menace-2-sobriety"');
     expect(html).not.toContain("Show another team in the division"); // the team dropdown is gone
   });
 
@@ -122,9 +122,9 @@ describe("routes", () => {
     const ladder = html.slice(html.indexOf('class="ladder"'), html.indexOf("</ol>", html.indexOf('class="ladder"')));
     expect(ladder.match(/<li/g)).toHaveLength(8);
     expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
-    expect(ladder).toContain("12–0, 17 points clear");
+    expect(ladder).toContain("13–0, 27 points clear");
     // Says the rows can be tapped.
-    expect(html).toMatch(/<p class="tab-note">After week 12, Oct 28\. Tap a team to see its page\.<\/p>/);
+    expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
     // The arrows wrap round: before A comes H.
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
     const rec = html.slice(html.indexOf('id="panel-records"'));
@@ -280,7 +280,7 @@ it("filters the leaderboard by games played: all, more than 5, more than 20", ()
 
 it("writes each team's place in the standings small in front of its name, with no monogram crest", () => {
   const matches = section(at("/c"), "matches");
-  expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="card-line"><span class="side-name">Area 501</span></span><span class="card-rec">12–0</span>');
+  expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="card-line"><span class="side-name">Area 501</span></span><span class="card-rec">13–0</span>');
   expect(matches).not.toContain('class="crest"');
 });
 
@@ -288,7 +288,8 @@ describe("matches, every week", () => {
   it("covers the whole season: played weeks with scores, the rest as fixtures", () => {
     const rounds = divisionRounds(data, "C");
     const last = data.issues.at(-1)!.week;
-    expect(rounds.map((r) => r.week)).toEqual(Array.from({ length: last + 1 }, (_, i) => i + 1));
+    // Through next week's fixtures, or to the end of the 14-week season.
+    expect(rounds.map((r) => r.week)).toEqual(Array.from({ length: Math.min(last + 1, 14) }, (_, i) => i + 1));
     expect(rounds.filter((r) => r.played).map((r) => r.week)).toEqual(Array.from({ length: last - 1 }, (_, i) => i + 1));
     // C has 8 teams: four matches a week, no byes.
     for (const r of rounds) expect(r.matches).toHaveLength(4);

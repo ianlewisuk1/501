@@ -13,10 +13,22 @@ describe("the newsletter editor's picks (page 5)", () => {
       const l = parseLeague(loadWorkbook(`inbox/${f}`));
       for (const d of l.divisions) for (const m of d.thisWeek?.matches ?? []) {
         if (l.week === 1) continue; // the first issue picks nothing
+        // The newsletter left this one out of week 14's list (D has four matches, three picks).
+        if (l.week === 14 && m.away === "Nine Lives") continue;
         expect(d.picks!.some((p) => p.away === m.away && p.home === m.home), `${f} ${d.division} ${m.away} @ ${m.home}`).toBe(true);
       }
     }
-   }, 30_000); // reads all 13 workbooks
+   }, 30_000); // reads every workbook
+
+  it("reads the season's last issue, where this week's matches sit on the right and there is no next week", () => {
+    const l = wk("14");
+    const c = l.divisions.find((d) => d.division === "C")!;
+    expect(c.thisWeek?.week).toBe(14);
+    expect(c.thisWeek?.matches).toContainEqual({ away: "Area 501", home: "Menace 2 Sobriety", venue: "High Park 1&2" });
+    expect(c.nextWeek).toBeNull();
+    // Column H's predictions start above the header, under the match list: Match #5 runs on into it.
+    expect(pick(l, "D", "Point & Rally")!.call).toBe("They do, but Sanchez is tough. 14-10.");
+  });
 
   it("keeps a featured match's write-up and its closing call, in the editor's words", () => {
     const p = pick(wk("13"), "A", "The Inflationary Element")!;

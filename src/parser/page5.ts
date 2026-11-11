@@ -10,6 +10,36 @@ function predictionsRow(ws: Sheet): number {
   return ws.findRow("A", (v) => norm(v) === PREDICTIONS) ?? ws.maxRow + 1;
 }
 
+type Cols = [away: string, at: string, home: string, venue: string];
+const LEFT: Cols = ["A", "B", "C", "E"];
+const RIGHT: Cols = ["H", "I", "J", "L"];
+
+/**
+ * Which side holds this week's and next week's matches, by their headers. Usually this week is on
+ * the left and next week on the right; the season's last issue has no next week, puts this week on
+ * the right and fills the left with title scenarios.
+ */
+function matchSides(ws: Sheet): { thisWeek: Cols | null; nextWeek: Cols | null } {
+  const out: { thisWeek: Cols | null; nextWeek: Cols | null } = { thisWeek: null, nextWeek: null };
+  for (const cols of [LEFT, RIGHT]) {
+    const head = str(ws.get(cols[0], 1));
+    if (!/\(Week \d+\)/.test(head)) continue;
+    const which = /next week/i.test(head) ? "nextWeek" : /this week/i.test(head) ? "thisWeek" : cols === LEFT ? "thisWeek" : "nextWeek";
+    out[which] ??= cols;
+  }
+  return out;
+}
+
+/** The last row of the right side's match list (an "@" or a bye in column I), or 0 if it has none. */
+function rightMatchesEnd(ws: Sheet): number {
+  let last = 0;
+  for (let r = 2; r < predictionsRow(ws); r++) {
+    const sep = ws.get("I", r);
+    if (sep === "@" || (typeof sep === "string" && sep.startsWith("BYE - "))) last = r;
+  }
+  return last;
+}
+
 /** This week's (left) and next week's (right) match for our team. */
 export function fixtures(ws: Sheet, team: TeamConfig): { thisWeek: Fixture; nextWeek: Fixture } {
   const end = predictionsRow(ws);
@@ -34,7 +64,11 @@ export function fixtures(ws: Sheet, team: TeamConfig): { thisWeek: Fixture; next
     }
     return out;
   };
-  return { thisWeek: side("A", "B", "C", "E"), nextWeek: side("H", "I", "J", "L") };
+  const sides = matchSides(ws);
+  return {
+    thisWeek: sides.thisWeek ? side(...sides.thisWeek) : null,
+    nextWeek: sides.nextWeek ? side(...sides.nextWeek) : null,
+  };
 }
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -97,15 +131,20 @@ export function leagueRounds(
     }
     return out;
   };
-  const left = side("A", "B", "C", "E");
-  const right = side("H", "I", "J", "L");
+  const sides = matchSides(ws);
+  const thisWeek = sides.thisWeek ? side(...sides.thisWeek) : null;
+  const nextWeek = sides.nextWeek ? side(...sides.nextWeek) : null;
   return new Map(divisions.map((d) => [d.division, {
-    thisWeek: left?.get(d.division) ?? null,
-    nextWeek: right?.get(d.division) ?? null,
+    thisWeek: thisWeek?.get(d.division) ?? null,
+    nextWeek: nextWeek?.get(d.division) ?? null,
   }]));
 }
 
-/** The editor's predictions as one run of text: down column A, then down column H, to the "Page N" footer. */
+/**
+ * The editor's predictions as one run of text: down column A, then down column H, to the "Page N"
+ * footer. Column H's part starts under the right side's match list, which can be above the
+ * "Predictions" header (the last issue's header sits lower, under the title scenarios).
+ */
 function predictionText(ws: Sheet): string | null {
   const start = predictionsRow(ws);
   if (start > ws.maxRow) return null;
@@ -114,7 +153,8 @@ function predictionText(ws: Sheet): string | null {
   while (end <= ws.maxRow && !footer(end)) end++;
   const lines: string[] = [];
   for (let r = start + 1; r < end; r++) lines.push(str(ws.get("A", r)).trim());
-  for (let r = start; r < end; r++) lines.push(str(ws.get("H", r)).trim());
+  const hStart = Math.min(start, rightMatchesEnd(ws) + 1);
+  for (let r = hStart; r < end; r++) lines.push(str(ws.get("H", r)).trim());
   // A "Page 5" footer can land mid-sentence where column A's text runs on into column H's.
   return lines.join(" ").replace(/\bPage \d+\b/g, " ").replace(/\s+/g, " ").trim();
 }
