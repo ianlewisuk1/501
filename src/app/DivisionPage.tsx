@@ -42,6 +42,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail={`${division.results ? `After week ${division.results.week}, ${shortDate(division.results.date, false)}. ` : ""}Tap a team to see its page.`} />
               <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
+              {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} />}
             </section>
           ),
@@ -215,6 +216,19 @@ function Headlines({ text, week }: { text: string; week: number }) {
   );
 }
 
+/**
+ * The last issue's "title possibilities": who can still finish first, or in the top two, on the
+ * season's last night, in the editor's words. Styled like the headlines, under its own label.
+ */
+function TitleRace({ text, week }: { text: string; week: number }) {
+  return (
+    <aside className="headlines title-race" aria-label={`Kilt's title race, week ${week}`}>
+      <p className="headlines-label">Title race <span>going into week {week}</span></p>
+      <p>{text}</p>
+    </aside>
+  );
+}
+
 /** The team picked with "This is my team", if it's in this division. */
 const useMine = (division: string) => {
   const { picked } = useMyTeams();
@@ -276,6 +290,7 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
       {round.played && round.headline && <Headlines text={round.headline} week={round.week} />}
+      {!round.played && round.week === now && division.titleRace && <TitleRace text={division.titleRace} week={round.week} />}
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
       <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
         {round.played

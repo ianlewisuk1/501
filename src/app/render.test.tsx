@@ -125,6 +125,11 @@ describe("routes", () => {
     expect(ladder).toContain("13–0, 27 points clear");
     // Says the rows can be tapped.
     expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
+    // The last issue's title race sits under the ladder, before the headlines.
+    if (data.issues.at(-1)!.divisions.find((x) => x.division === "C")!.titleRace) {
+      expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p>Area 501 is 1st.');
+      expect(html.indexOf("Title race")).toBeLessThan(html.indexOf("Kilt&#x27;s headlines"));
+    }
     // The arrows wrap round: before A comes H.
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
     const rec = html.slice(html.indexOf('id="panel-records"'));

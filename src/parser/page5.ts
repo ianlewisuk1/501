@@ -267,3 +267,26 @@ export function leaguePicks(
   }
   return out;
 }
+
+/**
+ * The season's last issue fills page 5's left side with "title possibilities": who can still finish
+ * first (and in the top two) tonight, one paragraph a division ("C Division:  Area 501 is 1st. …").
+ * Read down column A from the heading to the first blank row after the paragraphs start, so the
+ * notices below it are left out. Other issues have no such heading and give an empty map.
+ */
+export function titleRaces(ws: Sheet): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!/title possibilities/i.test(str(ws.get("A", 1)))) return out;
+  const lines: string[] = [];
+  let started = false;
+  for (let r = 2; r < predictionsRow(ws); r++) {
+    const line = str(ws.get("A", r)).trim();
+    if (!started) started = /^[A-H] Division:/.test(line);
+    if (!started) continue;
+    if (!line) break;
+    lines.push(line);
+  }
+  const text = lines.join(" ").replace(/\s+/g, " ");
+  for (const m of text.matchAll(/([A-H]) Division:\s*(.*?)(?=\s[A-H] Division:|$)/g)) out.set(m[1], m[2].trim());
+  return out;
+}

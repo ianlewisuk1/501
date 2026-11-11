@@ -193,6 +193,8 @@ export interface Pick {
 export interface LeagueDivision {
   division: string;
   headline: string | null;
+  /** The last issue's "title possibilities" for tonight (page 5), in the editor's words; absent in other issues. */
+  titleRace?: string;
   standings: Standing[];
   /** Page 2's results; null in the week 1 issue. */
   results: { week: number; date: string; matches: Match[]; byes: string[] } | null;

@@ -30,6 +30,16 @@ describe("the newsletter editor's picks (page 5)", () => {
     expect(pick(l, "D", "Point & Rally")!.call).toBe("They do, but Sanchez is tough. 14-10.");
   });
 
+  it("reads the last issue's title possibilities, one paragraph a division, and none in other issues", () => {
+    const l = wk("14");
+    const race = (d: string) => l.divisions.find((x) => x.division === d)!.titleRace;
+    expect(race("C")).toMatch(/^Area 501 is 1st\. Darty Little Secrets are 2nd if they win/);
+    expect(race("C")).toMatch(/extra head-to-head match before next week!$/);
+    expect(race("H")).toBe("SofaKings are 1st. Double Vision is 1st if the win, or if Dirty Darts lose. If Vision loses and Dirty wins, Dirty is 2nd if they can gain at least 5 points on Vision tonight.");
+    expect(l.divisions.every((d) => d.titleRace)).toBe(true);
+    expect(wk("13").divisions.some((d) => "titleRace" in d)).toBe(false);
+  });
+
   it("keeps a featured match's write-up and its closing call, in the editor's words", () => {
     const p = pick(wk("13"), "A", "The Inflationary Element")!;
     expect(p.featured).toBe(true);
