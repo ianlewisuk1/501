@@ -5,6 +5,7 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
+import { featLabel, rankHotDarts } from "./league";
 import venuesJson from "../../data/Fa26/venues.json";
 import type { Venue } from "../parser/venueMatch";
 import { breakingNews, buildFixtures, nextTournament, clinchNews, withClinchedFirst, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
@@ -251,5 +252,20 @@ describe("breakingNews", () => {
   it("falls back to clinch news when the item is for another week or team", () => {
     expect(breakingNews(wk12, 14, [{ ...item, week: 99 }])).toEqual(clinchNews(wk12, 14));
     expect(breakingNews(wk12, 14, [{ ...item, team: "Someone Else" }])).toEqual(clinchNews(wk12, 14));
+  });
+});
+
+
+describe("hot darts, rarest first", () => {
+  it("puts 9-marks and Ton-80s ahead of fast games, ins, and all-star points", () => {
+    const feats = ["4 ASPs", "120-In", "11-dart 301", "5-Bulls", "T80", "152-In", "9m", "20-dart 501", "6-Bulls", "7 ASPs", "14-dart SCkt"];
+    expect(rankHotDarts(feats.map((feat) => ({ feat }))).map((h) => h.feat)).toEqual(
+      ["9m", "T80", "6-Bulls", "11-dart 301", "20-dart 501", "14-dart SCkt", "152-In", "120-In", "5-Bulls", "7 ASPs", "4 ASPs"]);
+  });
+  it("writes out the newsletter's shorthand", () => {
+    expect(featLabel("9m")).toBe("9-marks");
+    expect(featLabel("T80")).toBe("Ton-80");
+    expect(featLabel("12-dart SCkt")).toBe("12-dart singles cricket");
+    expect(featLabel("4 ASPs")).toBe("4 ASPs");
   });
 });

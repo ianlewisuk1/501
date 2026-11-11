@@ -304,7 +304,143 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
     padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 }
-.lander-fold > * { flex: none; }
+.lander-fold > *, .lander-head > * { flex: none; }
+/* On phones the head is no box at all: its lines sit straight in the first screen's column. */
+.lander-head { display: contents; }
+
+/* Phones never see the sports-site pieces of the wide lander (menu bar, scores strip, headlines). */
+.desk-only { display: none; }
+
+/*
+ * Wide screens (laptops, desktops, a tablet on its side), laid out like a sports site's front page
+ * (owner, 2026-11-10: "an ESPN like version"): a black menu bar along the top with the logo small
+ * on the left, the divisions across it and the week at its right; last week's scores in a strip
+ * under it; then three columns: your team, the search and coming up on the left, pinned as the
+ * page scrolls; one big lead headline in the middle; every headline down the right. The phone's
+ * title block, dartboard and "Add RDL to your phone" steps are left out (owner, 2026-11-10): the
+ * menu bar does their jobs, and a computer isn't a phone. The left column is its own copy
+ * (`.desk-rail`), so the phone's your team, search and coming up are hidden here.
+ */
+@media (min-width: 960px) {
+  main.lander {
+    max-width: none; display: grid; column-gap: clamp(24px, 2.6vw, 40px); padding: 0 0 48px;
+    grid-template-columns: minmax(0, 1fr) clamp(15rem, 20vw, 20rem) minmax(0, 46rem) clamp(16rem, 22vw, 23rem) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr; align-items: start;
+  }
+  .lander-fold { display: contents; }
+  main.lander .desk-only { display: block; }
+
+  /* The menu bar. */
+  .desk-nav { grid-column: 1 / -1; grid-row: 1; background: var(--bar-bg); border-bottom: 1px solid var(--chalk-faint); }
+  .desk-nav-inner { display: flex; align-items: stretch; gap: 8px; height: 60px; padding: 0 150px 0 24px; }
+  .desk-home { display: flex; align-items: center; gap: 8px; padding-right: 18px; margin-right: 4px; text-decoration: none; color: var(--chalk-bright);
+    border-right: 1px solid var(--chalk-faint); }
+  .desk-home img { display: block; width: 36px; height: 36px; }
+  .desk-home span { font: 700 1.35rem/1 var(--sketch); }
+  .desk-menu { display: flex; align-items: stretch; margin: 0; padding: 0; list-style: none; min-width: 0; }
+  .desk-menu a { display: flex; align-items: center; height: 100%; padding: 0 clamp(8px, 1vw, 16px); text-decoration: none; white-space: nowrap;
+    color: var(--chalk); font-size: 1.25rem; border-bottom: 3px solid transparent; }
+  .desk-menu-word { margin-left: 0.3em; }
+  .desk-menu-label { display: none; }
+  @media (max-width: 1599px) {
+    .desk-menu-word { display: none; }
+    .desk-menu a { padding: 0 clamp(8px, 0.9vw, 14px); font-size: 1.35rem; }
+    .desk-menu-label { display: flex; align-items: center; padding: 0 6px 0 4px; color: var(--chalk-2); font-size: 1.05rem; }
+  }
+  .desk-menu a:hover { color: var(--chalk-bright); border-bottom-color: var(--yellow); background: rgb(var(--ink-rgb) / 0.05); }
+  .desk-when { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; margin: 0; padding-left: 16px;
+    flex: none; line-height: 1.2; font-size: 1.05rem; color: var(--chalk); white-space: nowrap; }
+  .desk-updated { font-size: 0.92rem; color: var(--chalk-2); }
+  main.lander .theme-toggle { position: absolute; top: 8px; right: 20px; }
+
+  /* Last week's scores. */
+  main.lander .scores { grid-column: 1 / -1; grid-row: 2; background: var(--board-black-hi); border-bottom: 1px solid var(--chalk-faint); }
+  .scores-inner { display: flex; align-items: stretch; }
+  .scores-label { flex: none; display: flex; flex-direction: column; justify-content: center; margin: 0; padding: 8px 18px 8px 24px;
+    border-right: 1px solid var(--chalk-faint); line-height: 1.2; }
+  .scores-label b { font: 700 1.15rem var(--sketch); color: var(--chalk-bright); }
+  .scores-label span { font-size: 0.95rem; color: var(--chalk-2); }
+  .scores-row { display: flex; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  .scores-div { display: flex; flex: none; border-right: 1px solid var(--chalk-line); }
+  .scores-div-name { display: grid; place-items: center; width: 34px; text-decoration: none; font: 700 1.3rem var(--sketch); color: var(--yellow);
+    background: rgb(var(--ink-rgb) / 0.04); }
+  .score-card { display: grid; align-content: center; gap: 1px; width: 10.5rem; padding: 7px 12px; text-decoration: none; line-height: 1.2;
+    border-left: 1px solid var(--chalk-faint); }
+  .score-card:hover { background: rgb(var(--ink-rgb) / 0.07); }
+  .score-line { display: flex; justify-content: space-between; gap: 8px; font-size: 1.02rem; color: var(--chalk); }
+  .score-line.lost { color: var(--chalk-2); }
+  .score-line.won { color: var(--chalk-bright); font-weight: 700; }
+  .score-team { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .score-n { flex: none; font-variant-numeric: tabular-nums; }
+
+  /* Left out on wide screens: the title block, the dartboard, the scroll arrow and the phone steps. */
+  main.lander .lander-head, main.lander .aim, main.lander .more-below, main.lander .add-home,
+  .lander-fold > .your-team, .lander-fold > .last-looked, main.lander > .find, main.lander > .key-dates, main.lander > .view-count { display: none; }
+  .desk-rail .view-count { margin-top: 18px; text-align: left; }
+
+  /* Left rail, pinned while the page scrolls (scrolling inside itself if the window is short). */
+  .desk-rail { grid-column: 2; grid-row: 3; position: sticky; top: 0; max-height: 100vh; overflow-y: auto; padding: 22px 2px 24px; scrollbar-width: thin; }
+  .desk-rail .your-team { margin-top: 0; }
+  .desk-rail .last-looked { text-align: left; }
+
+  /* The team search, in the menu bar; matches drop down under it. */
+  .nav-search { position: relative; display: flex; align-items: center; gap: 8px; align-self: center; flex: 0 1 17rem; min-width: 10rem;
+    height: 38px; margin-left: auto; padding: 0 12px; border: 1.5px solid rgb(255 255 255 / 0.3); border-radius: 19px; color: #d8d8d8; }
+  .nav-search:focus-within { border-color: var(--yellow); }
+  .nav-search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; color: #f2f2f2; font: 400 1.1rem var(--hand); }
+  .nav-search input::placeholder { color: rgb(255 255 255 / 0.5); }
+  .nav-search-drop { position: absolute; z-index: 30; top: calc(100% + 8px); left: 0; width: max(100%, 22rem); max-height: 60vh; overflow-y: auto;
+    padding: 4px 14px; color: var(--chalk); border: 1px solid var(--chalk-line); border-radius: 12px; background: var(--board-black); box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); }
+  .nav-search-drop .find-none { margin: 10px 0; }
+  .lander .team-list a { font-size: 1.15rem; min-height: 44px; padding: 8px 2px; }
+
+  .desk-rail .key-dates { margin-top: 22px; }
+  .lander .key-dates h2 { text-align: left; }
+  .lander .key-dates li { grid-template-columns: 1fr; gap: 0; }
+
+  /* The lead story, big in the middle. */
+  .top-story { grid-column: 3; grid-row: 3; padding-top: 22px; }
+  .top-kicker { display: flex; align-items: baseline; gap: 14px; margin: 0 0 6px; font-size: 1.15rem; color: var(--chalk-2); }
+  .top-kicker a { font: 700 1.3rem var(--sketch); color: var(--yellow); text-decoration: none; }
+  .top-kicker a:hover { text-decoration: underline; }
+  .top-image { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; aspect-ratio: 16 / 9; margin: 0 0 16px;
+    border: 2px dashed var(--chalk-line); border-radius: 12px; background: rgb(var(--ink-rgb) / 0.04); color: var(--chalk-2); font-size: 1.1rem; }
+  .top-image svg { opacity: 0.7; }
+  .top-story h1 { margin: 0 0 14px; font-size: clamp(1.7rem, 2.1vw, 2.2rem); line-height: 1.15; color: var(--chalk-bright); text-wrap: balance; }
+  .top-more { margin: 0 0 20px; padding: 0; list-style: none; }
+  .top-more li { position: relative; padding: 7px 0 7px 20px; font-size: 1.2rem; line-height: 1.3; border-top: 1px dashed var(--chalk-faint); }
+  .top-more li::before { content: ""; position: absolute; left: 3px; top: 0.85em; width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); }
+  .top-scores { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 10px; }
+  .top-score { display: grid; gap: 2px; padding: 10px 14px; text-decoration: none; border: 1px solid var(--chalk-faint); border-radius: 10px;
+    background: rgb(var(--ink-rgb) / 0.03); }
+  .top-score:hover { background: rgb(var(--ink-rgb) / 0.07); }
+  .top-score-line { display: flex; justify-content: space-between; gap: 10px; font-size: 1.15rem; color: var(--chalk); }
+  .top-score-line.lost { color: var(--chalk-2); }
+  .top-score-line.won { color: var(--chalk-bright); font-weight: 700; }
+  .top-more-link { margin: 18px 0 0; font-size: 1.15rem; }
+
+  /* Right rail: every headline. */
+  .news { grid-column: 4; grid-row: 3; padding-top: 22px; }
+  .news h2 { margin: 0; font-size: 1.5rem; color: var(--chalk-bright); }
+  .news-sub { margin: 0 0 6px; color: var(--chalk-2); font-size: 1rem; }
+  .news-div { padding: 10px 0 4px; background: var(--rule) top left / 240px 6px repeat-x; }
+  .news-div-name { font: 700 1.15rem var(--sketch); color: var(--yellow); text-decoration: none; }
+  .news-div-name:hover { text-decoration: underline; }
+  .news ul { margin: 2px 0 0; padding: 0; list-style: none; }
+  .news li { padding: 4px 0 6px 14px; position: relative; font-size: 1.05rem; line-height: 1.3; }
+  .news li::before { content: ""; position: absolute; left: 2px; top: 0.65em; width: 5px; height: 5px; border-radius: 50%; background: var(--chalk-2); }
+}
+
+/* The menu bar stays black on the whiteboard too, like the site bar, so its writing stays light. */
+@media (min-width: 960px) {
+  :root[data-theme="light"] .desk-home, :root[data-theme="light"] .desk-menu a, :root[data-theme="light"] .desk-when,
+  :root[data-theme="light"] main.lander .theme-toggle { color: #f2f2f2; }
+  :root[data-theme="light"] .desk-updated, :root[data-theme="light"] .desk-menu-label { color: #b5b8bc; }
+  :root[data-theme="light"] .desk-home { border-right-color: rgb(255 255 255 / 0.15); }
+  :root[data-theme="light"] .desk-home img { filter: none; }
+  :root[data-theme="light"] main.lander .theme-toggle { border-color: rgb(255 255 255 / 0.35); }
+  :root[data-theme="light"] main.lander .theme-toggle:hover, :root[data-theme="light"] .desk-menu a:hover { background: rgb(255 255 255 / 0.08); }
+}
 /* Light or dark, in the top right corner of the lander. */
 .lander { position: relative; }
 .theme-toggle {
@@ -423,6 +559,7 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 }
 .inline-icon { display: inline-block; vertical-align: -4px; margin: 0 2px; color: var(--yellow); }
 
+.view-count { margin: 28px 0 0; text-align: center; font-size: 1rem; color: var(--chalk-2); }
 .key-dates { margin-top: 28px; padding-top: 18px; background: var(--rule) center top / 100% 6px no-repeat; }
 .key-dates h2 { text-align: center; }
 .key-dates ul { list-style: none; margin: 0; padding: 0; }

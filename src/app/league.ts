@@ -12,6 +12,54 @@ const TERM_NAMES: Record<string, string> = { Wi: "Winter", Sp: "Spring", Su: "Su
 export const seasonLabel = (season: string): string =>
   `${TERM_NAMES[season.slice(0, 2)] ?? season.slice(0, 2)} 20${season.slice(2)}`;
 
+/**
+ * Page 1's RDL Headlines for a division, one story each: the newsletter runs them together with
+ * semicolons. Each starts with a capital.
+ */
+export const headlineStories = (text: string): string[] =>
+  text.split(/;\s+/).map((t) => t.trim()).filter(Boolean).map((t) => t[0].toUpperCase() + t.slice(1));
+
+/** A hot dart with its division, for league-wide lists. */
+export type LeagueHotDart = { players: string[]; team: string; feat: string; division: string };
+
+// Fewest darts a fast game could take, so fast games of different kinds compare fairly.
+const GAME_BASE: Record<string, number> = { "301": 9, "501": 15, "1001": 25, SCkt: 8, DCkt: 8 };
+
+/**
+ * How rare a hot dart is, lower first: 9-marks, Ton-80s, 6-bulls, fast games (fewest darts for
+ * the game), big ins and outs, 5-bulls, then all-star points (most first), then anything else.
+ */
+export function hotDartRank(feat: string): [number, number] {
+  let m: RegExpMatchArray | null;
+  if ((m = feat.match(/^(\d+)m$/))) return [0, -Number(m[1])];
+  if ((m = feat.match(/^T(\d+)$/))) return [1, -Number(m[1])];
+  if ((m = feat.match(/^(\d+)-Bulls$/)) && Number(m[1]) >= 6) return [2, -Number(m[1])];
+  if ((m = feat.match(/^(\d+)-dart (\w+)/))) return [3, Number(m[1]) / (GAME_BASE[m[2]] ?? 20)];
+  if ((m = feat.match(/^(\d+)-(In|Out)$/))) return [4, -Number(m[1])];
+  if ((m = feat.match(/^(\d+)-Bulls$/))) return [5, -Number(m[1])];
+  if ((m = feat.match(/^([\d.]+) ASPs$/))) return [6, -Number(m[1])];
+  return [7, 0];
+}
+
+/** Hot darts, rarest first; ties keep the newsletter's order. */
+export const rankHotDarts = <T extends { feat: string }>(list: T[]): T[] =>
+  list.map((h, i) => ({ h, i, r: hotDartRank(h.feat) }))
+    .sort((a, b) => a.r[0] - b.r[0] || a.r[1] - b.r[1] || a.i - b.i)
+    .map((x) => x.h);
+
+/** The newsletter's shorthand for a feat, written out: "9m" is "9-marks", "T80" is "Ton-80". */
+export const featLabel = (feat: string): string =>
+  feat.replace(/^(\d+)m$/, "$1-marks").replace(/^T(\d+)$/, "Ton-$1")
+    .replace(/ SCkt\b/, " singles cricket").replace(/ DCkt\b/, " doubles cricket");
+
+/** Who won a page 2 match: the higher score, or the 1001 at 12-12. Null when it isn't known. */
+export function matchWinner(m: Match): "away" | "home" | null {
+  const a = m.away.score, h = m.home.score;
+  if (a == null || h == null) return null;
+  if (a !== h) return a > h ? "away" : "home";
+  return m.away.tiebreaker1001 === "W" ? "away" : m.home.tiebreaker1001 === "W" ? "home" : null;
+}
+
 export const divisionIn = (issue: LeagueWeek | undefined, division: string): LeagueDivision | undefined =>
   issue?.divisions.find((d) => d.division === division.toUpperCase());
 

@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
-import { divisionIn, seasonLabel, teamHistory } from "./league";
+import { divisionIn, headlineStories, matchWinner, seasonLabel, teamHistory } from "./league";
 import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -16,6 +16,7 @@ import { sameTeam, type TeamRef } from "./myTeam";
 import { useBlackStatusBar } from "./ui";
 import { setTheme, useThemeSetting } from "./theme";
 import { promptInstall, useInstalled, useInstallPrompt, usePlatform } from "./install";
+import { useViewCount } from "./views";
 
 /** A remembered team, if it is still in this season's standings (teams change between seasons). */
 const current = (issue: LeagueWeek, t: TeamRef | null) =>
@@ -31,14 +32,30 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
   return (
     <main className="lander">
       {/* Everything that matters fits on the first screen: the dartboard takes whatever height is left. */}
+      <DeskNav issue={issue} seasonWeeks={seasonWeeks} />
+      <ScoreStrip issue={issue} />
+      <aside className="desk-rail desk-only" aria-label="Find a team, and what's coming up">
+        {known && data && <YourTeam data={data} mine={known} />}
+        {last && !sameTeam(last, known) && (
+          <p className="last-looked">
+            Last looked at <Link to={teamPath(last.division, last.team)}>{last.team}</Link>
+          </p>
+        )}
+        <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
+        <ViewCount />
+      </aside>
+      <TopStory issue={issue} division={(known ?? last)?.division} />
       <div className="lander-fold">
       <ThemeToggle />
+      {/* A box of its own only on wide screens, where it runs across the top above the board and the side column. */}
+      <div className="lander-head">
       <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={104} height={104} />
       <ChalkTitle text="Raleigh Dart League" />
       <p className="board-when">
         {seasonLabel(issue.season)}, week {issue.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}
       </p>
       <p className="board-updated">Last updated {shortDate(__DATA_UPDATED__)}</p>
+      </div>
 
       {known && data && <YourTeam data={data} mine={known} />}
       {last && !sameTeam(last, known) && (
@@ -62,8 +79,191 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
 
       <KeyDates dates={data?.schedule?.season === issue.season ? data.schedule.keyDates : []} />
 
+      <NewsRail issue={issue} />
+
       <AddToHome />
+      <ViewCount />
     </main>
+  );
+}
+
+/**
+ * Wide screens only: a black menu bar across the top, like a sports site's. The small logo goes
+ * home; then one item per division (the dartboard's job on phones); then the week and when the
+ * data was last updated (the phone's title block). The Light/Dark button sits at its right end.
+ */
+function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: number | null }) {
+  return (
+    <nav className="desk-nav desk-only" aria-label="Divisions">
+      <div className="desk-nav-inner">
+        <Link to="/" className="desk-home" aria-label="Raleigh Dart League, home">
+          <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={36} height={36} />
+          <span>RDL</span>
+        </Link>
+        <ul className="desk-menu">
+          <li className="desk-menu-label" aria-hidden="true">Division</li>
+          {issue.divisions.map((d) => (
+            <li key={d.division}>
+              <Link to={divisionPath(d.division)}>{d.division}<span className="desk-menu-word"> Division</span></Link>
+            </li>
+          ))}
+        </ul>
+        <NavSearch issue={issue} />
+        <p className="desk-when">
+          <span>{seasonLabel(issue.season)}, week {issue.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}</span>
+          <span className="desk-updated">Updated {shortDate(__DATA_UPDATED__)}</span>
+        </p>
+      </div>
+    </nav>
+  );
+}
+
+/**
+ * Wide screens only: last week's results from every division in one strip under the menu bar,
+ * the way a sports site runs its scores along the top. Grouped by division; the strip scrolls
+ * sideways inside itself. Each score opens that division's Matches tab at that week.
+ */
+function ScoreStrip({ issue }: { issue: LeagueWeek }) {
+  const played = issue.divisions.filter((d) => d.results?.matches.length);
+  if (!played.length) return null;
+  const { week, date } = played[0].results!;
+  return (
+    <section className="scores desk-only" aria-label={`Week ${week} results`}>
+      <div className="scores-inner">
+        <p className="scores-label"><b>Week {week}</b><span>{shortDate(date, false)}</span></p>
+        <div className="scores-row">
+          {played.map((d) => (
+            <div className="scores-div" key={d.division}>
+              <Link className="scores-div-name" to={divisionPath(d.division)} aria-label={`${d.division} Division`}>{d.division}</Link>
+              {d.results!.matches.map((m, i) => {
+                const won = matchWinner(m);
+                const side = (k: "away" | "home") => (
+                  <span className={`score-line${won === k ? " won" : won ? " lost" : ""}`}>
+                    <span className="score-team">{m[k].short}</span>
+                    <span className="score-n">{m[k].score ?? "–"}</span>
+                  </span>
+                );
+                return (
+                  <Link key={i} className="score-card" to={`${divisionPath(d.division)}?tab=matches&week=${d.results!.week}`}
+                    aria-label={`${m.away.team} ${m.away.score ?? "no score"}, ${m.home.team} ${m.home.score ?? "no score"}`}>
+                    {side("away")}{side("home")}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Wide screens only: the team search in the menu bar, like a sports site's. Matching teams drop
+ * down under the box; Escape clears it.
+ */
+function NavSearch({ issue }: { issue: LeagueWeek }) {
+  const [q, setQ] = useState("");
+  const hits = findTeams(issue, q);
+  return (
+    <div className="nav-search" role="search">
+      <label htmlFor="nav-find" className="sr-only">Find a team</label>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" />
+      </svg>
+      <input id="nav-find" type="search" placeholder="Find a team" autoComplete="off" value={q}
+        onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setQ(""); }} />
+      {norm(q) && (
+        <div className="nav-search-drop">
+          {hits.length ? (
+            <ul className="team-list">
+              {hits.map((t) => (
+                <li key={t.division + t.team}>
+                  <Link to={teamPath(t.division, t.team)}>
+                    <span className="team-name">{t.team}</span>
+                    <span className="team-div">{t.division} Division</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="find-none muted">No team by that name this season.</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Wide screens only: the lead story, big in the middle like a sports site's. The newsletter doesn't
+ * rank its headlines, so it's the first story from the visitor's own division (their picked team's,
+ * else the team they looked at last); for a first-time visitor, the first story about a clinch,
+ * else the first division's. The division's other stories follow, then its scores that week.
+ */
+function TopStory({ issue, division }: { issue: LeagueWeek; division?: string }) {
+  const news = issue.divisions.filter((d) => d.headline);
+  const lead = news.find((d) => d.division === division)
+    ?? news.find((d) => /clinch/i.test(headlineStories(d.headline!)[0]))
+    ?? news[0];
+  if (!lead) return null;
+  const [first, ...rest] = headlineStories(lead.headline!);
+  const results = lead.results;
+  return (
+    <article className="top-story desk-only" aria-labelledby="top-story-h">
+      {/* Placeholder until stories have photos: a 16:9 frame with a dart drawn in. */}
+      <div className="top-image" role="img" aria-label="Photo to come">
+        <svg viewBox="0 0 120 60" width="120" height="60" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="40" cy="30" r="24" /><circle cx="40" cy="30" r="15" /><circle cx="40" cy="30" r="4" />
+          <path d="M44 27 L96 6" /><path d="M86 10 l14 -8 l-2 10 z" />
+        </svg>
+        <span>Photo to come</span>
+      </div>
+      <p className="top-kicker">
+        <Link to={divisionPath(lead.division)}>{lead.division} Division</Link>
+        {results && <span>Week {results.week}, {shortDate(results.date, false)}</span>}
+      </p>
+      <h1 id="top-story-h">{first}</h1>
+      {rest.length > 0 && <ul className="top-more">{rest.map((t, i) => <li key={i}>{t}</li>)}</ul>}
+      {results && results.matches.length > 0 && (
+        <div className="top-scores">
+          {results.matches.map((m, i) => {
+            const won = matchWinner(m);
+            const side = (k: "away" | "home") => (
+              <span className={`top-score-line${won === k ? " won" : won ? " lost" : ""}`}>
+                <span className="score-team">{m[k].team}</span>
+                <span className="score-n">{m[k].score ?? "–"}</span>
+              </span>
+            );
+            return (
+              <Link key={i} className="top-score" to={`${divisionPath(lead.division)}?tab=matches&week=${results.week}`}>
+                {side("away")}{side("home")}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+      <p className="top-more-link"><Link to={divisionPath(lead.division)}>{lead.division} Division standings and matches</Link></p>
+    </article>
+  );
+}
+
+/**
+ * Wide screens only: the editor's RDL Headlines from page 1, every division, down the right side
+ * like a sports site's top headlines. Each division's name opens its page.
+ */
+function NewsRail({ issue }: { issue: LeagueWeek }) {
+  const news = issue.divisions.filter((d) => d.headline);
+  if (!news.length) return null;
+  return (
+    <aside className="news desk-only" aria-labelledby="news-h">
+      <h2 id="news-h">Kilt's headlines</h2>
+      <p className="news-sub">Week {issue.week - 1}, from the newsletter</p>
+      {news.map((d) => (
+        <div className="news-div" key={d.division}>
+          <Link className="news-div-name" to={divisionPath(d.division)}>{d.division} Division</Link>
+          <ul>{headlineStories(d.headline!).map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+      ))}
+    </aside>
   );
 }
 
@@ -285,22 +485,28 @@ function Dart({ ref }: { ref: React.Ref<SVGGElement> }) {
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
-/** Type part of a team's name; matching teams across the league are listed as links. */
-function FindTeam({ issue }: { issue: LeagueWeek }) {
-  const [q, setQ] = useState("");
+/** Every team in the league whose name contains what was typed, A to Z. */
+const findTeams = (issue: LeagueWeek, q: string) => {
   const query = norm(q);
-  const hits = !query ? [] : issue.divisions
+  return !query ? [] : issue.divisions
     .flatMap((d) => d.standings.map((s) => ({ division: d.division, team: s.team })))
     .filter((t) => norm(t.team).includes(query))
     .sort((a, b) => a.team.localeCompare(b.team));
+};
+
+/** Type part of a team's name; matching teams across the league are listed as links. */
+function FindTeam({ issue, id = "find" }: { issue: LeagueWeek; id?: string }) {
+  const [q, setQ] = useState("");
+  const query = norm(q);
+  const hits = findTeams(issue, q);
   return (
-    <section className="find" id="find">
-      <label htmlFor="find-team">Know your team's name? Find it here</label>
+    <section className="find" id={id}>
+      <label htmlFor={`${id}-team`}>Know your team's name? Find it here</label>
       <div className="find-box">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" />
         </svg>
-        <input id="find-team" type="search" placeholder="Type a team name" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input id={`${id}-team`} type="search" placeholder="Type a team name" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
       {query && (hits.length ? (
         <ul className="team-list">
@@ -397,6 +603,13 @@ function DotsIcon() {
       <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
     </svg>
   );
+}
+
+/** The site's running total of page views, small, once the counter has answered. */
+function ViewCount() {
+  const views = useViewCount();
+  if (views == null) return null;
+  return <p className="view-count">{views.toLocaleString("en-US")} page views</p>;
 }
 
 /** Tournaments and the banquet, written along the bottom of the board. Past dates drop off. */

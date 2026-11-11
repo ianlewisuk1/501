@@ -9,6 +9,7 @@ import { sawTeam, useMyTeams, type TeamRef } from "./myTeam";
 
 import { chalkFor } from "./ui";
 import { syncStatusBar } from "./theme";
+import { countView } from "./views";
 
 export { ClinchBadge, PLAYER_COLUMNS } from "./ui";
 
@@ -17,6 +18,8 @@ export function App() {
   // A team page needs the whole season (fixtures, charts, recent form); the others just the newest issue.
   const data = useSeason(route.page === "team");
   const mine = useMyTeams();
+  // Each page opened counts once toward the site's page view total (switching tabs doesn't).
+  useEffect(() => { countView(location.pathname); });
   // Old ?team= links move to the team's own address.
   useEffect(() => {
     if (route.page === "team" && location.search.includes("team=")) navigate(`/c/${route.team}`, true);

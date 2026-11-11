@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { divisionRounds, seasonLabel, type DivisionRound } from "./league";
+import { divisionRounds, headlineStories, seasonLabel, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -206,7 +206,7 @@ const ChalkStar = () => (
  * (the newsletter runs them together with semicolons), in his words.
  */
 function Headlines({ text, week }: { text: string; week: number }) {
-  const stories = text.split(/;\s+/).map((t) => t.trim()).filter(Boolean).map((t) => t[0].toUpperCase() + t.slice(1));
+  const stories = headlineStories(text);
   return (
     <aside className="headlines" aria-label={`Kilt's headlines, week ${week}`}>
       <p className="headlines-label">Kilt's headlines <span>week {week}</span></p>
