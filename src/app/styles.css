@@ -680,6 +680,12 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .headlines ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .headlines li { font-size: 1.1rem; line-height: 1.3; }
 .week-step ~ .headlines { margin: 10px 0 12px; padding-top: 0; }
+/* A team named in the editor's prose: his word, in the team's chalk, underlined to say it can be tapped. */
+.team-mention {
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+}
+.team-mention:hover { text-decoration-color: currentColor; }
 .title-race p:not(.headlines-label) { margin: 0; font-size: 1.1rem; line-height: 1.35; }
 footer a { color: inherit; text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 3px; white-space: nowrap; }
 

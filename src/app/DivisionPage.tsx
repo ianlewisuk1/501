@@ -11,6 +11,7 @@ import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./m
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { Tabs } from "./Tabs";
+import { TeamText } from "./TeamText";
 import { useMyTeams } from "./myTeam";
 import { Arrow, ClinchBadge, chalkFor, GROUPS, NewsletterLink, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
 
@@ -42,8 +43,8 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail={`${division.results ? `After week ${division.results.week}, ${shortDate(division.results.date, false)}. ` : ""}Tap a team to see its page.`} />
               <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
-              {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} />}
-              {division.headline && <Headlines text={division.headline} week={issue.week - 1} />}
+              {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
+              {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
             </section>
           ),
         },
@@ -206,12 +207,13 @@ const ChalkStar = () => (
  * The editor's write-up of a week in this division, from page 1's RDL Headlines: one story a line
  * (the newsletter runs them together with semicolons), in his words.
  */
-function Headlines({ text, week }: { text: string; week: number }) {
+function Headlines({ text, week, division }: { text: string; week: number; division: LeagueDivision }) {
   const stories = headlineStories(text);
+  const teams = division.standings.map((s) => s.team);
   return (
     <aside className="headlines" aria-label={`Kilt's headlines, week ${week}`}>
       <p className="headlines-label">Kilt's headlines <span>week {week}</span></p>
-      <ul>{stories.map((t, i) => <li key={i}>{t}</li>)}</ul>
+      <ul>{stories.map((t, i) => <li key={i}><TeamText text={t} division={division.division} teams={teams} /></li>)}</ul>
     </aside>
   );
 }
@@ -220,11 +222,11 @@ function Headlines({ text, week }: { text: string; week: number }) {
  * The last issue's "title possibilities": who can still finish first, or in the top two, on the
  * season's last night, in the editor's words. Styled like the headlines, under its own label.
  */
-function TitleRace({ text, week }: { text: string; week: number }) {
+function TitleRace({ text, week, division }: { text: string; week: number; division: LeagueDivision }) {
   return (
     <aside className="headlines title-race" aria-label={`Kilt's title race, week ${week}`}>
       <p className="headlines-label">Title race <span>going into week {week}</span></p>
-      <p>{text}</p>
+      <p><TeamText text={text} division={division.division} teams={division.standings.map((s) => s.team)} /></p>
     </aside>
   );
 }
@@ -289,8 +291,8 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
         <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}>›</button>
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
-      {round.played && round.headline && <Headlines text={round.headline} week={round.week} />}
-      {!round.played && round.week === now && division.titleRace && <TitleRace text={division.titleRace} week={round.week} />}
+      {round.played && round.headline && <Headlines text={round.headline} week={round.week} division={division} />}
+      {!round.played && round.week === now && division.titleRace && <TitleRace text={division.titleRace} week={round.week} division={division} />}
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
       <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
         {round.played

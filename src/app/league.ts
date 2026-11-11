@@ -19,6 +19,79 @@ export const seasonLabel = (season: string): string =>
 export const headlineStories = (text: string): string[] =>
   text.split(/;\s+/).map((t) => t.trim()).filter(Boolean).map((t) => t[0].toUpperCase() + t.slice(1));
 
+/**
+ * Nicknames the editor uses that aren't in a team's name, by the standings name. Kept by hand; a
+ * new one shows up as plain text until it's added here.
+ */
+const NICKNAMES: Record<string, string[]> = {
+  "Cheap Shots": ["Cheapies"],
+  "Nine Lives": ["Niners"],
+  "SofaKings": ["Sofa"],
+  "Down to F, Again": ["DTF"],
+  "Shark Shooters": ["Sharks"],
+  "Banging the Wire": ["Bangin"],
+  "Runs with Corks": ["Cork"],
+  "Consistently Inconsistent": ["Inconsist"],
+};
+
+// Words that join a name together ("for", "the") or are too ordinary to mean a team on their own
+// ("Point", "Darts", "Mark", which could be a player's first name). They still count inside a
+// longer run of the name: "Two Time", "What's the Point", "Down to F".
+const JOINING = new Set(["the", "a", "an", "of", "and", "for", "to", "in", "on", "at", "with", "who", "say", "&"]);
+const ORDINARY = new Set([
+  "point", "dart", "darts", "throw", "down", "time", "side", "out", "so", "why", "we", "it", "two", "double", "off",
+  "under", "little", "said", "she", "what's", "mark", "up", "again", "done", "dirt", "cheap", "eye", "red", "ing", "are", "you", "ni",
+]);
+
+export type Mention = string | { text: string; team: string };
+
+/**
+ * The editor's prose split into plain text and the teams he names, for linking. He writes teams
+ * short ("Menace", "the Kids", "Rippin's"), so any run of words from a team's standings name counts,
+ * as long as it starts with a capital, isn't only joining or ordinary words, and fits just one team
+ * in the division. Longest runs win ("Death Throw" over "Death"). The words stay his: only the
+ * link knows the full name. A leading "the" and a trailing "'s" are left outside the link.
+ */
+export function teamMentions(text: string, teams: string[]): Mention[] {
+  const owners = new Map<string, Set<string>>();
+  const add = (phrase: string, team: string) => {
+    if (!owners.has(phrase)) owners.set(phrase, new Set());
+    owners.get(phrase)!.add(team);
+  };
+  for (const team of teams) {
+    const words = team.match(/[A-Za-z0-9][A-Za-z0-9']*|&/g) ?? [];
+    for (let i = 0; i < words.length; i++) {
+      for (let j = i + 1; j <= words.length; j++) {
+        const run = words.slice(i, j);
+        if (!/^[A-Z0-9]/.test(run[0]) || JOINING.has(run[0].toLowerCase()) || JOINING.has(run.at(-1)!.toLowerCase())) continue;
+        const plain = run.every((w) => JOINING.has(w.toLowerCase()) || ORDINARY.has(w.toLowerCase()));
+        // A number alone is a game ("sweeps 501"), never "Area 501".
+        if (run.length === 1 ? plain || run[0].length < 3 || /^\d+$/.test(run[0]) : run.every((w) => JOINING.has(w.toLowerCase()))) continue;
+        add(run.join(" ").toLowerCase(), team);
+      }
+    }
+    for (const nick of NICKNAMES[team] ?? []) add(nick.toLowerCase(), team);
+  }
+  const phrases = [...owners].filter(([, t]) => t.size === 1).map(([p]) => p).sort((a, b) => b.length - a.length);
+  if (!phrases.length) return [text];
+  // Words in the prose may be joined by spaces, hyphens or a comma ("Off Constantly-Reboot", "Down to F, Again").
+  // Case is ignored after the first letter ("Down To F"), but a name has to start with a capital.
+  const pattern = phrases.map((p) => p.split(" ").map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\s,\\-/]+")).join("|");
+  const re = new RegExp(`(?<![A-Za-z0-9'])(?:${pattern})(?![A-Za-z0-9])`, "gi");
+  const out: Mention[] = [];
+  let last = 0;
+  for (const m of text.matchAll(re)) {
+    const key = m[0].split(/[\s,\-/]+/).join(" ").toLowerCase();
+    const team = [...owners.get(key) ?? []][0];
+    if (!team || !/^[A-Z0-9]/.test(m[0])) continue;
+    if (m.index! > last) out.push(text.slice(last, m.index));
+    out.push({ text: m[0], team });
+    last = m.index! + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
 /** A hot dart with its division, for league-wide lists. */
 export type LeagueHotDart = { players: string[]; team: string; feat: string; division: string };
 

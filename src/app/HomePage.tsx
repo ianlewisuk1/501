@@ -17,6 +17,7 @@ import { useBlackStatusBar } from "./ui";
 import { setTheme, useThemeSetting } from "./theme";
 import { promptInstall, useInstalled, useInstallPrompt, usePlatform } from "./install";
 import { useViewCount } from "./views";
+import { TeamText } from "./TeamText";
 
 /** A remembered team, if it is still in this season's standings (teams change between seasons). */
 const current = (issue: LeagueWeek, t: TeamRef | null) =>
@@ -207,6 +208,7 @@ function TopStory({ issue, division }: { issue: LeagueWeek; division?: string })
   if (!lead) return null;
   const [first, ...rest] = headlineStories(lead.headline!);
   const results = lead.results;
+  const story = (t: string) => <TeamText text={t} division={lead.division} teams={lead.standings.map((s) => s.team)} />;
   return (
     <article className="top-story desk-only" aria-labelledby="top-story-h">
       {/* Placeholder until stories have photos: a 16:9 frame with a dart drawn in. */}
@@ -221,8 +223,8 @@ function TopStory({ issue, division }: { issue: LeagueWeek; division?: string })
         <Link to={divisionPath(lead.division)}>{lead.division} Division</Link>
         {results && <span>Week {results.week}, {shortDate(results.date, false)}</span>}
       </p>
-      <h1 id="top-story-h">{first}</h1>
-      {rest.length > 0 && <ul className="top-more">{rest.map((t, i) => <li key={i}>{t}</li>)}</ul>}
+      <h1 id="top-story-h">{story(first)}</h1>
+      {rest.length > 0 && <ul className="top-more">{rest.map((t, i) => <li key={i}>{story(t)}</li>)}</ul>}
       {results && results.matches.length > 0 && (
         <div className="top-scores">
           {results.matches.map((m, i) => {
@@ -260,7 +262,7 @@ function NewsRail({ issue }: { issue: LeagueWeek }) {
       {news.map((d) => (
         <div className="news-div" key={d.division}>
           <Link className="news-div-name" to={divisionPath(d.division)}>{d.division} Division</Link>
-          <ul>{headlineStories(d.headline!).map((t, i) => <li key={i}>{t}</li>)}</ul>
+          <ul>{headlineStories(d.headline!).map((t, i) => <li key={i}><TeamText text={t} division={d.division} teams={d.standings.map((s) => s.team)} /></li>)}</ul>
         </div>
       ))}
     </aside>

@@ -127,7 +127,7 @@ describe("routes", () => {
     expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
     // The last issue's title race sits under the ladder, before the headlines.
     if (data.issues.at(-1)!.divisions.find((x) => x.division === "C")!.titleRace) {
-      expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p>Area 501 is 1st.');
+      expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p><a class="team-mention" title="Area 501"');
       expect(html.indexOf("Title race")).toBeLessThan(html.indexOf("Kilt&#x27;s headlines"));
     }
     // The arrows wrap round: before A comes H.
@@ -351,7 +351,10 @@ describe("from the newsletter itself", () => {
     const text = divisionIn(latest, "C")!.headline!;
     expect(standings).toContain(`Kilt&#x27;s headlines <span>week ${latest.week - 1}</span>`);
     const first = text.split(/;\s+/)[0];
-    expect(standings).toContain(`<li>${first[0].toUpperCase() + first.slice(1)}</li>`.replace(/'/g, "&#x27;"));
+    const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'");
+    expect(plain(standings)).toContain(first[0].toUpperCase() + first.slice(1));
+    // The teams he names link to their pages, in his words, with the full name in the title.
+    expect(standings).toMatch(/<li><a class="team-mention" title="Area 501" style="color:var\(--c\d\)" href="\/c\/area-501">Area<\/a> keeps their streak alive/);
   });
 
   it("gives every played week on Matches its own headlines", () => {
