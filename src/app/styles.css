@@ -200,6 +200,48 @@ select option { background: var(--menu-bg); color: var(--chalk); }
 /* The venue's street address and the league's how-to-find-it note, under "Home, at …". */
 .venue-addr { margin: -2px 0 8px; font-size: 1rem; }
 
+/* ---- A bar's photo on the match card: a square beside the address, opening full width below ---- */
+.hero-venue { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: start; }
+.bar-thumb {
+  width: 76px; height: 76px; margin-top: 4px; padding: 0; overflow: hidden; cursor: pointer;
+  border: 2px solid rgb(var(--ink-rgb) / 0.5); border-radius: 10px 4px 12px 5px / 5px 12px 4px 10px; background: none; color: var(--chalk-2);
+}
+.bar-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bar-thumb.empty { border-style: dashed; display: grid; place-items: center; font: inherit; font-size: 0.95rem; line-height: 1.1; text-align: center; }
+.bar-thumb.empty span { padding: 4px; }
+.bar-thumb:hover, .bar-thumb[aria-expanded="true"] { border-color: var(--yellow); color: var(--yellow); }
+.bar-photo, .bar-send { grid-column: 1 / -1; margin: 10px 0 4px; }
+.bar-photo img { width: 100%; max-height: 70svh; object-fit: contain; border-radius: 6px; display: block; background: rgb(0 0 0 / 0.25); }
+.bar-photo figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; margin-top: 6px; color: var(--chalk-2); }
+.bar-photo-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.text-btn {
+  font: inherit; font-size: 1.05rem; color: var(--yellow); background: none; border: 0; padding: 6px 0; min-height: 40px; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: rgb(var(--hi-rgb) / 0.55);
+}
+.bar-send { display: grid; gap: 4px; padding-top: 10px; border-top: 1px dashed rgb(var(--ink-rgb) / 0.35); }
+.bar-send p { margin: 0 0 4px; }
+.bar-send-title { font: 700 1.25rem/1.2 var(--sketch); color: var(--yellow); }
+.bar-send label { font-size: 1.1rem; margin-top: 6px; }
+.bar-send input[type="text"], .bar-send input[type="file"] {
+  font: inherit; font-size: 1.1rem; min-height: 44px; padding: 6px 10px; color: var(--chalk); max-width: 100%;
+  background: rgb(var(--ink-rgb) / 0.06); border: 1.5px solid rgb(var(--ink-rgb) / 0.4); border-radius: 6px;
+}
+.bar-send input[type="file"] { padding: 8px; }
+.bar-agree { display: flex; gap: 10px; align-items: flex-start; }
+.bar-agree input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--yellow); }
+.bar-error { color: rgb(var(--loss-rgb)); font-size: 1.05rem; }
+.bar-send-actions { display: flex; align-items: center; gap: 18px; margin-top: 8px; }
+.big-btn {
+  font: 700 1.15rem var(--hand); min-height: 48px; padding: 8px 22px; cursor: pointer; color: var(--bg);
+  background: var(--yellow); border: 0; border-radius: 10px 4px 12px 5px / 5px 12px 4px 10px;
+}
+.big-btn:disabled { opacity: 0.6; cursor: wait; }
+
+.admin-photos { max-width: 640px; margin: 0 auto; padding: 16px; }
+.admin-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 28px; }
+.admin-list img { width: 100%; max-height: 60svh; object-fit: contain; border-radius: 6px; background: rgb(0 0 0 / 0.25); }
+.admin-list p { margin: 4px 0; }
+
 /* ---- Results, chalked like a scoreboard ---- */
 .badge { display: inline-grid; place-items: center; min-width: 1.75em; height: 1.75em; font: 700 1.05rem/1 var(--sketch); }
 /* A win gets ringed, the way you'd circle it on the board. */

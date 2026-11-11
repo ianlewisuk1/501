@@ -5,7 +5,8 @@ import { teamSlug } from "./model";
 export type Route =
   | { page: "home" }
   | { page: "division"; division: string }
-  | { page: "team"; division: string; team: string };
+  | { page: "team"; division: string; team: string }
+  | { page: "admin" };
 
 export const divisionPath = (division: string) => `/${division.toLowerCase()}`;
 export const teamPath = (division: string, team: string) => `/${division.toLowerCase()}/${teamSlug(team)}`;
@@ -15,6 +16,7 @@ export function parseRoute(path: string, search = ""): Route {
   const legacy = new URLSearchParams(search).get("team");
   if (legacy) return { page: "team", division: "C", team: legacy };
   const parts = path.split("/").filter(Boolean);
+  if (parts[0] === "admin" && parts[1] === "photos") return { page: "admin" };
   if (parts[0] && /^[a-z]$/i.test(parts[0])) {
     const division = parts[0].toUpperCase();
     return parts[1] ? { page: "team", division, team: parts[1].toLowerCase() } : { page: "division", division };

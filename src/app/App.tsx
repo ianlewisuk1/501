@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { AdminPhotos } from "./AdminPhotos";
 import { DivisionPage } from "./DivisionPage";
 import { HomePage } from "./HomePage";
 import { TeamPage } from "./TeamPage";
@@ -34,7 +35,7 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
   data: SeasonData; route: Route; myTeam?: TeamRef | null; lastTeam?: TeamRef | null;
 }) {
   const issue = data.issues.at(-1)!;
-  const division = route.page === "home" ? undefined : divisionIn(issue, route.division);
+  const division = route.page === "home" || route.page === "admin" ? undefined : divisionIn(issue, route.division);
   const team = route.page === "team" ? teamBySlug(issue, route.division, route.team) : undefined;
   const history = useMemo(() => (team ? teamHistory(data, team) : []), [data, team]);
   const week = history.at(-1);
@@ -42,12 +43,14 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
   useTheme(team);
   useEffect(() => { syncStatusBar(); }, [route]);
   useEffect(() => {
-    document.title = team ? `${team}, ${division!.division} Division | RDL` : division ? `${division.division} Division | RDL` : "Raleigh Dart League";
+    document.title = route.page === "admin" ? "Photos to check | RDL"
+      : team ? `${team}, ${division!.division} Division | RDL` : division ? `${division.division} Division | RDL` : "Raleigh Dart League";
     if (team && division) sawTeam({ division: division.division, team });
   }, [team, division]);
 
   let page;
-  if (route.page === "home") page = <HomePage data={data} issue={issue} myTeam={myTeam} lastTeam={lastTeam} />;
+  if (route.page === "admin") page = <AdminPhotos />;
+  else if (route.page === "home") page = <HomePage data={data} issue={issue} myTeam={myTeam} lastTeam={lastTeam} />;
   else if (!division) page = <NotFound />;
   else if (route.page === "division") page = <DivisionPage data={data} issue={issue} division={division} />;
   else if (!team || !week) page = <NotFound />;

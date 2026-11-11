@@ -14,6 +14,7 @@ import type { SeasonData } from "./store";
 import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
+import { BarPhoto } from "./BarPhoto";
 import { Arrow, groupSpans, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
@@ -54,7 +55,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
           { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
         ]} />
         <footer className="muted small">
-          Unofficial. From the RDL "Tons of Newsletter", issue #{week.issue}. Stats through week {week.week - 1}.
+          Unofficial. From the RDL "Tons of Newsletter", week {week.week}. Stats through week {week.week - 1}.
           <NewsletterLink />
         </footer>
       </main>
@@ -119,9 +120,15 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
       <h2 id="tonight">{heading} <span className="muted">{shortDate(fixture.date)}</span></h2>
       <p className="big">vs <Link to={teamPath(week.team.division, fixture.opponent)}>{fixture.opponent}</Link></p>
       {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
-      <p className="hero-where">{fixture.home ? "Home" : "Away"} at {fixture.venue}</p>
-      <VenueAddress venue={fixture.venue} venues={venues} />
-      <Directions venue={fixture.venue} venues={venues} />
+      {/* The bar's photo sits beside the address; it opens (or its send form does) full width below. */}
+      <div className="hero-venue">
+        <div>
+          <p className="hero-where">{fixture.home ? "Home" : "Away"} at {fixture.venue}</p>
+          <VenueAddress venue={fixture.venue} venues={venues} />
+          <Directions venue={fixture.venue} venues={venues} />
+        </div>
+        <BarPhoto barName={resolveVenue(fixture.venue, venues ?? [])?.name ?? null} />
+      </div>
     </section>
   );
 }

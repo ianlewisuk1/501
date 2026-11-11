@@ -4,7 +4,8 @@
  * data/{season}/league-week-NN.json (every division, see src/parser/league.ts), data/{season}/index.json, data/latest.json (a copy of the newest week)
  * and records the file in data/manifest.json. A season's first issue also gives data/{season}/venues.json
  * (the league's directory of host bars, for map links). data/updated.json gets today's date (Raleigh time),
- * which the lander shows as "Last updated".
+ * which the lander shows as "Last updated". data/photo-check.json gets the newest two issue codes
+ * (this week's photo word, and last week's) and the season's bars, for api/photos.ts.
  */
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -12,6 +13,7 @@ import { parseDivisionTeams, parseDivisionWorkbook, parseLeague, parseWorkbook }
 import { loadWorkbook } from "../src/parser/workbook";
 import { parseVenueDirectory } from "../src/parser/venues";
 import { TEAM } from "../src/parser/team";
+import { barKey, type PhotoCheck } from "../src/photos/core";
 
 const DATA = "data";
 const write = (path: string, value: unknown) => writeFileSync(path, JSON.stringify(value, null, 2) + "\n");
@@ -65,8 +67,25 @@ export function parseFiles(files: string[]): string[] {
   if (latest) {
     write(join(DATA, "latest.json"), JSON.parse(readFileSync(latest.path, "utf8")));
     console.log(`latest -> ${latest.season} week ${latest.week}`);
+    writePhotoCheck(latest.season);
   }
   write(manifestPath, Object.fromEntries(Object.entries(manifest).sort()));
   write(join(DATA, "updated.json"), { date: new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" }) });
   return written;
+}
+
+/** This week's and last week's photo words (issue codes) and the season's bars, for api/photos.ts. */
+export function writePhotoCheck(season: string) {
+  const dir = join(DATA, season);
+  const weeks = readdirSync(dir)
+    .map((f) => f.match(/^week-(\d+)\.json$/))
+    .filter((m): m is RegExpMatchArray => m !== null)
+    .map((m) => Number(m[1]))
+    .sort((a, b) => b - a)
+    .slice(0, 2);
+  const words = weeks.map((w) => JSON.parse(readFileSync(join(dir, `week-${String(w).padStart(2, "0")}.json`), "utf8")).issue as string);
+  const venuesPath = join(dir, "venues.json");
+  const venues: { name: string }[] = existsSync(venuesPath) ? JSON.parse(readFileSync(venuesPath, "utf8")) : [];
+  const check: PhotoCheck = { words, bars: Object.fromEntries(venues.map((v) => [barKey(v.name), v.name])) };
+  write(join(DATA, "photo-check.json"), check);
 }

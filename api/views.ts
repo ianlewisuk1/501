@@ -5,20 +5,13 @@
  * sent or stored, only the number. Without the database connected it answers 503, and the page
  * simply doesn't show a count.
  */
+import { redis as call } from "./_redis.js";
+
 const KEY = "rdl:views";
 
 async function redis(command: string[]): Promise<number | null> {
-  const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify(command),
-  });
-  if (!res.ok) return null;
-  const { result } = (await res.json()) as { result: string | number | null };
-  return result == null ? 0 : Number(result);
+  const result = await call(command);
+  return result == null ? null : Number(result);
 }
 
 const reply = (views: number | null) =>

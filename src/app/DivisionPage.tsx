@@ -53,7 +53,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} week={issue.week - 1} /> },
       ]} />
       <footer className="muted small">
-        Unofficial. From the RDL "Tons of Newsletter", issue #{issue.issue}. Stats through week {issue.week - 1}.
+        Unofficial. From the RDL "Tons of Newsletter", week {issue.week}. Stats through week {issue.week - 1}.
         <NewsletterLink />
       </footer>
     </main>
