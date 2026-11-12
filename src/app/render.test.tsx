@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { parse } from "../parser/index";
 import { TEAM } from "../parser/team";
 import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
@@ -14,6 +14,13 @@ const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 
 let data: SeasonData;
 beforeAll(async () => { data = (await loadSeason())!; });
+// Pages follow the calendar, so pin "today" to the newest issue's match day (morning, local time):
+// otherwise the tests change once that night has passed, sooner on a UTC build server.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(`${data.issues.at(-1)!.issueDate}T09:00:00`));
+});
+afterEach(() => { vi.useRealTimers(); });
 const at = (path: string) => renderToStaticMarkup(<Screen data={data} route={parseRoute(path)} />);
 const section = (html: string, id: string) => html.slice(html.indexOf(`id="${id}"`), html.indexOf("</section>", html.indexOf(`id="${id}"`)));
 
