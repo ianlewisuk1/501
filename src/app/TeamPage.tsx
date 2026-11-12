@@ -312,7 +312,7 @@ function Players({ week }: { week: TeamWeek }) {
             <tbody>
               {rows.map((p) => (
                 <tr key={p.number}>
-                  <th scope="row" className="sticky">{p.name} <span className="muted small">#{p.number}</span></th>
+                  <th scope="row" className="sticky">{p.name}</th>
                   {PLAYER_COLUMNS.map((c, i) => (
                     <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
                   ))}
