@@ -51,8 +51,12 @@ export const Pin = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
-/** Page 2's clinch marker as a small pill, only for a team sure to finish first; top-two and bottom-two clinches get none. */
-export function ClinchBadge({ mark }: { mark: Standing["clinched"] }) {
+/**
+ * Page 2's clinch marker as a small pill, only for a team sure to finish first; top-two and bottom-two
+ * clinches get none. Once the regular season is over (`final`), the first-place team is "Season champs".
+ */
+export function ClinchBadge({ mark, final = false }: { mark: Standing["clinched"]; final?: boolean }) {
+  if (mark === "G" && final) return <span className="clinch" title="Finished 1st in the regular season">Season champs</span>;
   if (mark === "G") return <span className="clinch" title="Sure to finish 1st">Clinched</span>;
   return null;
 }

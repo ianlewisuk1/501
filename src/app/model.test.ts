@@ -224,6 +224,8 @@ describe("clinch news", () => {
       headline: "Area 501 clinches the C Division title",
       detail: "11–0 record · 14 pts clear · 3 weeks still to play",
     });
+    // Once the season's last week is in (the tournament issue is "week 15"), it's old news.
+    expect(clinchNews({ ...won, week: 15 }, 14)).toBeNull();
   });
 });
 

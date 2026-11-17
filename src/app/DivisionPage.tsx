@@ -31,8 +31,9 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   const next = issue.divisions[(i + 1) % n].division;
   // Under the title: which week's results the page is from ("Final standings, after week 14, Nov 11").
   const results = division.results;
+  const final = !!results && !!seasonWeeks && results.week >= seasonWeeks;
   const resultsLine = results
-    ? `${seasonWeeks && results.week >= seasonWeeks ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`
+    ? `${final ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`
     : weekLabel(issue.week, seasonWeeks).replace(/^w/, "W");
   // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
   const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
@@ -55,7 +56,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           body: (
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail="Tap a team to see its page." />
-              <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
+              <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
             </section>
@@ -79,11 +80,12 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
  * fit rather than wrapped), then its record and its points big on the right. The leader is ringed,
  * with its record and how far clear it is on a second line.
  */
-function Ladder({ standings, division }: { standings: Standing[]; division: string }) {
+function Ladder({ standings, division, final }: { standings: Standing[]; division: string; final: boolean }) {
   const mine = useMine(division);
   const [top, second] = standings;
   const clear = top && second ? top.points - second.points : 0;
-  const clinched = standings.some((s) => s.clinched === "G");
+  // "Clinched" needs a key; after the season the leader's pill says "Season champs", which doesn't.
+  const clinched = !final && standings.some((s) => s.clinched === "G");
   return (
     <>
     {/* --n lets the rows share out the screen's height (styles.css), so the table fits without scrolling. */}
@@ -93,9 +95,9 @@ function Ladder({ standings, division }: { standings: Standing[]; division: stri
           <Link to={teamPath(division, s.team)}>
             <span className="ladder-rank">{s.rank}</span>
             <span className="ladder-team">
-              <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} />}</span>
+              <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} final={final} />}</span>
               {/* The leader's second line carries its clinch mark, leaving the name the whole width. */}
-              {i === 0 && <span className="ladder-clear"><span>{s.wins}–{s.losses}{clear > 0 && `, ${clear} points clear`}</span><ClinchBadge mark={s.clinched} /></span>}
+              {i === 0 && <span className="ladder-clear"><span>{s.wins}–{s.losses}{clear > 0 && `, ${clear} points clear`}</span><ClinchBadge mark={s.clinched} final={final} /></span>}
             </span>
             {i > 0 && <span className="ladder-rec">{s.wins}–{s.losses}</span>}
             <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>

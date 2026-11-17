@@ -202,6 +202,8 @@ describe("team page", () => {
 
   it("badges only a team sure to finish first, not top-two or bottom-two clinches", () => {
     expect(renderToStaticMarkup(<ClinchBadge mark="G" />)).toContain(">Clinched<");
+    expect(renderToStaticMarkup(<ClinchBadge mark="G" final />)).toContain(">Season champs<");
+    expect(renderToStaticMarkup(<ClinchBadge mark="C" final />)).toBe("");
     expect(renderToStaticMarkup(<ClinchBadge mark="C" />)).toBe("");
     expect(renderToStaticMarkup(<ClinchBadge mark="D" />)).toBe("");
     expect(renderToStaticMarkup(<ClinchBadge mark={undefined} />)).toBe("");
@@ -430,6 +432,10 @@ describe("tournament issue", () => {
     // Final standings and the last regular night's scores come with it.
     expect(div).toContain("14–0, 34 points clear");
     expect(div).toContain("Final standings, after week 14, Nov 11<");
+    // The leader is "Season champs" now, with no "Clinched" pill or key.
+    expect(div).toContain(">Season champs<");
+    expect(div).not.toContain("Clinched");
+    expect(atFull("/c/area-501")).not.toContain("Breaking");
     expect(atFull("/c/area-501")).toContain("C Division, tournaments");
   });
 

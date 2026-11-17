@@ -86,6 +86,8 @@ export function clinchNews(current: TeamWeek, seasonWeeks: number): { headline: 
   if (me?.clinched !== "G") return null;
   const headline = `${me.team} clinches the ${current.team.division} Division title`;
   const left = seasonWeeks - (current.week - 1);
+  // Old news once the season is over: no "Breaking" strip on the final standings.
+  if (left <= 0) return null;
   const next = standings.find((s) => s !== me && s.rank > me.rank) ?? standings.find((s) => s !== me);
   const parts = [`${me.wins}–${me.losses} record`];
   if (next && me.rank === 1) parts.push(`${me.points - next.points} pts clear`);
