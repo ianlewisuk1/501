@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { divisionRounds, headlineStories, seasonLabel, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, headlineStories, seasonLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -29,6 +29,13 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   const i = issue.divisions.findIndex((x) => x.division === d);
   const prev = issue.divisions[(i - 1 + n) % n].division;
   const next = issue.divisions[(i + 1) % n].division;
+  // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
+  const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
+  const seasonOver = !!lastNight && todayIso() > lastNight;
+  const bracketTab = {
+    id: "bracket", label: "Bracket", show: !!division.bracket,
+    body: division.bracket ? <BracketBoard division={division} data={data} /> : null,
+  };
   return (
     <main className="division-page">
       <div className="div-head">
@@ -37,6 +44,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         {n > 1 && <Link className="div-step" to={divisionPath(next)} aria-label={`Next: ${next} Division`}><Arrow dir="right" /></Link>}
       </div>
       <Tabs label="Division sections" tabs={[
+        ...(seasonOver ? [bracketTab] : []),
         {
           id: "standings", label: "Standings", show: true,
           body: (
@@ -51,6 +59,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         { id: "matches", label: "Matches", show: rounds.length > 0, body: <Matches rounds={rounds} now={issue.week} division={division} /> },
         { id: "leaderboard", label: "Players", show: players.length > 0, body: <Leaderboard week={issue.week} division={d} players={players} /> },
         { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} week={issue.week - 1} /> },
+        ...(seasonOver ? [] : [bracketTab]),
       ]} />
       <footer className="muted small">
         Unofficial. From the RDL "Tons of Newsletter", week {issue.week}. Stats through week {issue.week - 1}.
@@ -292,7 +301,6 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
       {round.played && round.headline && <Headlines text={round.headline} week={round.week} division={division} />}
-      {!round.played && round.week === now && division.titleRace && <TitleRace text={division.titleRace} week={round.week} division={division} />}
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
       <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
         {round.played
@@ -501,3 +509,80 @@ export function Leaderboard({ week, division, players }: { week: number; divisio
   );
 }
 
+
+/**
+ * The divisional tournament, start to finish: quarterfinals, semifinals, the final and the winner,
+ * left to right, with lines joining each pair of matches to the one they feed. The draw is fixed
+ * before the first round, so every bar and night is known; teams fill in as they're decided.
+ * On a phone it scrolls sideways inside its own box.
+ */
+function BracketBoard({ division, data }: { division: LeagueDivision; data: SeasonData }) {
+  const view = useMemo(
+    () => bracketView(withBracketFile(division.bracket!, data.bracket, division.division), division.standings), [division, data.bracket]);
+  const [qf, sf, fin] = view.rounds;
+  // Page 2's short names ("Menace", "Projectile") fit the boxes; the full name stays in the title.
+  const short = useMemo(() => new Map(division.results?.matches.flatMap((m) => [[m.away.team, m.away.short], [m.home.team, m.home.short]]) ?? []), [division]);
+  const ctx = { division, short };
+  return (
+    <section aria-labelledby="bracket">
+      <SectionHead id="bracket" title="Tournament" detail="Matches start at 7:00 pm." />
+      <div className="scroll-x bracket-scroll">
+        <div className="bracket">
+          {view.rounds.map((r) => (
+            <p key={r.name} className="b-head"><span>{r.name}</span>{r.date && <span className="muted">{shortDate(r.date, false)}</span>}</p>
+          ))}
+          <p className="b-head"><span>Champion</span></p>
+          <div className="b-col b-qf">
+            {[0, 1].map((p) => (
+              <div key={p} className="b-pair">
+                {qf.games.slice(p * 2, p * 2 + 2).map((g, i) => <BracketCell key={i} game={g} {...ctx} />)}
+              </div>
+            ))}
+          </div>
+          <div className="b-col b-sf">
+            <div className="b-pair">{sf.games.map((g, i) => <BracketCell key={i} game={g} {...ctx} />)}</div>
+          </div>
+          <div className="b-col b-final"><BracketCell game={fin.games[0]} {...ctx} /></div>
+          <div className="b-col b-champ">
+            <div className={`b-trophy${view.champion ? " won" : ""}`}>
+              {view.champion
+                ? <Link to={teamPath(division.division, view.champion)} style={{ color: chalkFor(view.champion) }} title={view.champion}>{short.get(view.champion) ?? view.champion}</Link>
+                : <span className="muted">{fin.date ? shortDate(fin.date, false) : ""}</span>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+interface BracketCtx { division: LeagueDivision; short: Map<string, string> }
+
+function BracketCell({ game, division, short }: { game: BracketGame } & BracketCtx) {
+  const bye = game.entries.some((e) => e.placeholder === "Bye");
+  return (
+    <div className="b-cell">
+      <div className={`b-match${bye ? " bye" : ""}`}>
+        {game.entries.map((e, i) => <BracketLine key={i} entry={e} game={game} division={division} short={short} />)}
+        {game.venue && <p className="b-venue">{game.venue.replace(/\*$/, "")}</p>}
+      </div>
+    </div>
+  );
+}
+
+function BracketLine({ entry, game, division, short }: { entry: BracketEntry; game: BracketGame } & BracketCtx) {
+  const mine = useMine(division.division);
+  const won = !!entry.team && game.winner === entry.team;
+  const lost = !!entry.team && !!game.winner && game.winner !== entry.team;
+  const cls = ["b-line", won && "won", lost && "lost", entry.projected && "projected", !entry.team && "open", entry.team === mine && "mine"].filter(Boolean).join(" ");
+  const seed = <span className="b-seed">{entry.seed ?? ""}</span>;
+  if (!entry.team) return <p className={cls}>{seed}<span className="b-name">{entry.placeholder}</span></p>;
+  return (
+    <Link className={cls} to={teamPath(division.division, entry.team)} title={entry.projected ? `${entry.team}, if the standings hold` : entry.team}>
+      {seed}
+      <span className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }}>{short.get(entry.team) ?? entry.team}</span>
+      {entry.team === mine && <MyStar />}
+      {won && <span className="card-mark" aria-label="went through">◂</span>}
+    </Link>
+  );
+}

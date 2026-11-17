@@ -1,0 +1,14 @@
+{
+  "season": "Fa26",
+  "source": "Fa26 tournament bracket page (quarterfinals issue), sent by the owner 2026-11-16. Seeds are final.",
+  "divisions": {
+    "A": { "seeds": ["The Inflationary Element", "Jonesing for Mugs", "Appetite for Destruction", "Son of a Beach", "Wing & A Plaque", "Dart Attack", "Darty Minds", null] },
+    "B": { "seeds": ["Why So Serious?", "The Kids who say \"Ni!\"", "Liquor Possee", "Angry Birds", "Consistently Inconsistent", "OnlyDarts", "Bottoms Up", null] },
+    "C": { "seeds": ["Area 501", "Darty Little Secrets", "Mulligans Mafia", "Menace 2 Sobriety", "Brutha Ducks", "Projectile Dysfunction", "Pints and Points", "Still Hump'N"] },
+    "D": { "seeds": ["Point & Rally", "Dart Knights", "Darty Sanchez", "Shooter McGavin", "Nine Lives", "Double In Stumble Out", "One Armed Bandits", "The Bullies"] },
+    "E": { "seeds": ["What's the Point?", "Runs with Corks", "Shooting Blanks", "Heart of Dartness", "Off Constantly-Reboot", "Main St Mayhem", "Outlaw Arrows", null] },
+    "F": { "seeds": ["Down to F, Again", "Cheap Shots", "Death Throw", "Nein Mark", "Two Time", "That's What She Said", "Shark Shooters", null] },
+    "G": { "seeds": ["Banging the Wire", "Rippin Darts", "Sharky's Machine", "We're Sexy & We Throw It", "Flight Club", "Aim-ing For Trouble", "Cary On Our Wayward Darts", null] },
+    "H": { "seeds": ["SofaKings", "Double Vision", "Dirty Darts (Done Dirt Cheap)", "Red-eye Rangers", "Bright Side of Flights", "Are You Afraid of the Dart", "The Blonde Leading the Blind", "Calm Under Pressure"] }
+  }
+}

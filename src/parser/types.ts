@@ -205,6 +205,24 @@ export interface LeagueDivision {
   hotDarts: DivisionHotDart[];
   /** The editor's picks for this issue's matches (thisWeek). Missing in data parsed before 2026-11-05. */
   picks?: Pick[];
+  /** The divisional tournament bracket, printed in the regular season's last two issues. */
+  bracket?: Bracket;
+}
+
+/** One first-round line: a seed (null for the bye) and the team once it's locked in. */
+export interface BracketSlot { seed: number | null; team: string | null }
+/** A bracket match: its bar, and the team that went through once the newsletter writes it in. */
+export interface BracketMatch { venue: string | null; winner: string | null }
+/**
+ * Eight first-round slots, top to bottom: slots 0-1 meet in quarterfinal 0, and so on; the winners
+ * of quarterfinals 0-1 meet in semifinal 0, of 2-3 in semifinal 1.
+ */
+export interface Bracket {
+  dates: { quarterfinals: string | null; semifinals: string | null; final: string | null };
+  slots: BracketSlot[];
+  quarterfinals: BracketMatch[];
+  semifinals: BracketMatch[];
+  final: BracketMatch;
 }
 
 export interface LeagueWeek {

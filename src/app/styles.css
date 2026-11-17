@@ -1,7 +1,7 @@
 /*
  * The pub scoreboard: a green slate board in a wooden frame, written on in chalk.
- * Headings and names in sketchy chalk lettering (Cabin Sketch); everything else in plain,
- * very legible handwriting (Patrick Hand), set large for reading in a dim bar.
+ * Type (2026-11-16, "sports page"): headings and names in Barlow Condensed, everything else in
+ * Barlow, set large for reading in a dim bar. (Was Cabin Sketch and Patrick Hand.)
  * Two boards (decided 2026-11-05): the chalkboard (dark) and a whiteboard written in marker
  * (light). <html data-theme> picks one; index.html sets it before first paint from the visitor's
  * choice, else the phone's setting. Every colour below comes from these tokens.
@@ -65,8 +65,9 @@
   --p8: #b9d97a;
   --p9: #d8b48a;
 
-  --hand: "Patrick Hand", "Segoe Print", system-ui, sans-serif;
-  --sketch: "Cabin Sketch", "Patrick Hand", Georgia, serif;
+  /* Names kept from the chalk lettering days: --hand is the body face, --sketch the display face. */
+  --hand: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sketch: "Barlow Condensed", "Arial Narrow", "Barlow", sans-serif;
   /* A wobbly chalk stroke, drawn once and repeated along rules. */
   --rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='6' viewBox='0 0 240 6'%3E%3Cpath d='M0 3.2 C 30 1.6 60 4.4 92 2.9 S 160 1.8 190 3.6 S 228 2.6 240 3' fill='none' stroke='%23ece8dc' stroke-opacity='.42' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
 }
@@ -1130,3 +1131,52 @@ section tbody td:first-child { padding-left: 8px; }
 /* The dartboard is drawn in marker on the whiteboard: clean lines, no chalk grain. */
 :root[data-theme="light"] .dartboard g, :root[data-theme="light"] .more-below g { filter: none; }
 
+
+/*
+ * The tournament bracket: four columns (quarterfinals, semifinals, final, winner) on one grid, so
+ * each round's matches sit level with the middle of the pair that feeds them. Lines are drawn
+ * with borders: a stub out of each match, a bar joining a pair, a stub into the next match.
+ */
+.bracket-scroll { margin-inline: -4px; padding: 0 4px 8px; }
+.bracket {
+  --gap: 1rem;
+  display: grid; grid-template-columns: repeat(3, minmax(8rem, 1fr)) minmax(5.5rem, 0.7fr);
+  column-gap: var(--gap); min-width: 33rem; font-variant-numeric: tabular-nums;
+}
+.b-head { margin: 0 0 6px; display: flex; flex-direction: column; font-family: var(--sketch); font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
+.b-head .muted { font-family: var(--hand); font-weight: 400; font-size: 0.9rem; }
+.b-col { display: flex; flex-direction: column; }
+.b-pair { flex: 1; display: flex; flex-direction: column; position: relative; }
+.b-cell { flex: 1; display: flex; align-items: center; position: relative; padding-block: 6px; }
+.b-match { width: 100%; background: var(--panel); border: 1px solid var(--chalk-faint); border-radius: 6px; overflow: hidden; }
+.b-match.bye { opacity: 0.85; }
+.b-qf .b-cell::after, .b-sf .b-cell::after, .b-final .b-cell::after {
+  content: ""; position: absolute; left: 100%; top: 50%; width: calc(var(--gap) / 2); border-top: 1.5px solid var(--chalk-line);
+}
+.b-final .b-cell::after { width: var(--gap); }
+.b-pair::after {
+  content: ""; position: absolute; right: calc(var(--gap) / -2); top: 25%; bottom: 25%; border-right: 1.5px solid var(--chalk-line);
+}
+.b-pair::before {
+  content: ""; position: absolute; left: calc(100% + var(--gap) / 2); top: 50%; width: calc(var(--gap) / 2); border-top: 1.5px solid var(--chalk-line);
+}
+.b-line {
+  display: grid; grid-template-columns: 1.1rem minmax(0, 1fr) auto auto; align-items: center; column-gap: 6px;
+  margin: 0; padding: 5px 8px; min-height: 34px; color: var(--chalk); text-decoration: none;
+}
+.b-line + .b-line { border-top: 1px solid var(--chalk-faint); }
+a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--chalk-line); }
+.b-seed { font-size: 0.85rem; color: var(--chalk-2); text-align: right; }
+.b-name { font-family: var(--sketch); font-weight: 600; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-line.projected .b-name, .b-line.open .b-name { color: var(--chalk-2); font-weight: 400; font-family: var(--hand); font-size: 0.95rem; }
+.b-line.open .b-name { white-space: normal; line-height: 1.2; font-size: 0.85rem; }
+.b-line.lost .b-name { color: var(--chalk-2) !important; text-decoration: line-through; text-decoration-color: rgb(var(--loss-rgb) / 0.7); }
+.b-line.mine { background: rgb(var(--hi-rgb) / 0.08); }
+.b-venue { margin: 0; padding: 3px 8px 4px; font-size: 0.8rem; color: var(--chalk-2); border-top: 1px dashed var(--chalk-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-champ { justify-content: center; }
+.b-trophy {
+  border: 1.5px dashed var(--chalk-line); border-radius: 6px; padding: 10px 8px; text-align: center;
+  font-family: var(--sketch); font-weight: 700; font-size: 1.1rem; min-height: 3rem; display: grid; place-items: center;
+}
+.b-trophy.won { border: 2px solid var(--yellow); }
+.b-trophy a { text-decoration: none; }

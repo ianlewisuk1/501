@@ -116,12 +116,27 @@ describe("routes", () => {
     for (const id of ["standings", "matches", "division"]) expect(html).toContain(`id="${id}"`);
     expect(section(html, "matches")).toContain('<span class="card-status">Bye</span>');
     const tabs = html.slice(html.indexOf('role="tablist"'), html.indexOf("</div>", html.indexOf('role="tablist"')));
-    expect([...tabs.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(["Standings", "Matches", "Players", "Records"]);
+    expect([...tabs.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1])).toEqual(["Standings", "Matches", "Players", "Records", "Bracket"]);
     expect(html).toContain('id="tab-standings" role="tab" aria-selected="true"'); // opens on the standings
     expect(html).not.toContain("Show leaderboard"); // the tab is the fold
     // Arrows to the divisions either side, instead of a dropdown.
     expect(html).toContain('aria-label="Previous: F Division" href="/f"');
     expect(html).toContain('aria-label="Next: H Division" href="/h"');
+  });
+
+  it("opens a division on its tournament bracket once the regular season is over", () => {
+    vi.setSystemTime(new Date("2026-11-16T09:00:00"));
+    try {
+      const html = at("/c");
+      expect(html).toContain('id="tab-bracket" role="tab" aria-selected="true"');
+      const bracket = section(html, "bracket");
+      expect(bracket).toContain("Quarterfinals");
+      expect(bracket).toContain("Upper Deck 1&amp;2");
+      expect(bracket).toContain("Seed 1 or 8");
+      expect(bracket).not.toContain("bracket-key");
+    } finally {
+      vi.setSystemTime(new Date(`${data.issues.at(-1)!.issueDate}T09:00:00`));
+    }
   });
 
   it("writes a division's standings up as a chalk ladder, leader ringed, and lists its records", () => {
@@ -136,6 +151,7 @@ describe("routes", () => {
     if (data.issues.at(-1)!.divisions.find((x) => x.division === "C")!.titleRace) {
       expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p><a class="team-mention" title="Area 501"');
       expect(html.indexOf("Title race")).toBeLessThan(html.indexOf("Kilt&#x27;s headlines"));
+      expect(section(html, "matches")).not.toContain("Title race"); // once, under the ladder only
     }
     // The arrows wrap round: before A comes H.
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');

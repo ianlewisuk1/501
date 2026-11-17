@@ -2,7 +2,7 @@
 import { teamWeekOf } from "../parser/league";
 import { norm } from "../parser/names";
 import { TEAM } from "../parser/team";
-import type { DivisionWeek, LeagueDivision, LeagueWeek, Match, Pick, Round, TeamWeek } from "../parser/types";
+import type { Bracket, DivisionWeek, LeagueDivision, LeagueWeek, Match, Pick, Round, Standing, TeamWeek } from "../parser/types";
 import { addDays, teamSchedule, teamSlug, type SeasonSchedule } from "./model";
 import type { SeasonData } from "./store";
 
@@ -203,4 +203,95 @@ export function divisionRounds(data: SeasonData, division: string): DivisionRoun
       rounds.set(d.results.week, { week: d.results.week, date: d.results.date, played: true, matches: d.results.matches, byes: d.results.byes, picks: picksFor.get(d.results.week) ?? [], headline: d.headline });
   }
   return [...rounds.values()].sort((a, b) => a.week - b.week);
+}
+
+/**
+ * Hand-entered tournament facts (data/{season}/bracket.json), for when the league sends a bracket
+ * outside the newsletter: final seeds (index 0 = seed 1, null for the bye) and, as rounds are
+ * played, the winners in bracket order. They win over what the newsletter printed.
+ */
+export interface BracketFile {
+  season: string;
+  divisions: Record<string, {
+    seeds?: (string | null)[];
+    quarterfinals?: (string | null)[];
+    semifinals?: (string | null)[];
+    final?: string | null;
+  }>;
+}
+
+export function withBracketFile(b: Bracket, file: BracketFile | undefined, division: string): Bracket {
+  const o = file?.divisions[division];
+  if (!o) return b;
+  const pick = (given: string | null | undefined, parsed: string | null) => given ?? parsed;
+  return {
+    ...b,
+    slots: b.slots.map((s) => ({ seed: s.seed, team: s.seed !== null && o.seeds ? o.seeds[s.seed - 1] ?? null : s.team })),
+    quarterfinals: b.quarterfinals.map((m, i) => ({ ...m, winner: pick(o.quarterfinals?.[i], m.winner) })),
+    semifinals: b.semifinals.map((m, i) => ({ ...m, winner: pick(o.semifinals?.[i], m.winner) })),
+    final: { ...b.final, winner: pick(o.final, b.final.winner) },
+  };
+}
+
+/** One team line in a bracket match: who, their seed, and whether the newsletter has placed them yet. */
+export interface BracketEntry {
+  seed: number | null;
+  /** Placed by the newsletter, or (with `projected`) where the latest standings put that seed. */
+  team: string | null;
+  projected: boolean;
+  /** "Winner of 1 v 8" for a later round's line not decided yet; "Bye" for the bye. */
+  placeholder: string | null;
+}
+export interface BracketGame { entries: [BracketEntry, BracketEntry]; venue: string | null; winner: string | null; date: string | null }
+export interface BracketView { rounds: { name: string; date: string | null; games: BracketGame[] }[]; champion: string | null }
+
+/**
+ * A division's bracket laid out round by round. First-round lines the newsletter hasn't filled yet
+ * take the team in that place in the standings, marked projected, unless that team is already
+ * placed somewhere else in the bracket. Later rounds carry the winners written in so far.
+ */
+export function bracketView(b: Bracket, standings: Standing[]): BracketView {
+  // A bye's partner goes straight through, whether the newsletter has written it in or not.
+  b = { ...b, quarterfinals: b.quarterfinals.map((m, i) => {
+    const [x, y] = [b.slots[2 * i], b.slots[2 * i + 1]];
+    const through = x.seed === null ? y.team : y.seed === null ? x.team : null;
+    return m.winner || !through ? m : { ...m, winner: through };
+  }) };
+  const placed = new Set(b.slots.map((s) => s.team).filter(Boolean));
+  const first: BracketEntry[] = b.slots.map((s) => {
+    if (s.seed === null) return { seed: null, team: null, projected: false, placeholder: "Bye" };
+    if (s.team) return { seed: s.seed, team: s.team, projected: false, placeholder: null };
+    const guess = standings.find((x) => x.rank === s.seed && !placed.has(x.team))?.team ?? null;
+    return { seed: s.seed, team: guess, projected: guess !== null, placeholder: guess ? null : `Seed ${s.seed}` };
+  });
+  const seedOf = (team: string) => first.find((e) => e.team === team)?.seed ?? null;
+  // The seeds that could still turn up on a line: the line's own seed once known, else everyone in the half below it.
+  const could = (e: BracketEntry, from: number[]): number[] => (e.team && !e.projected ? [e.seed!].filter((x) => x !== null) : from);
+  const orList = (seeds: number[]) => seeds.length > 1 ? `${seeds.slice(0, -1).join(", ")} or ${seeds.at(-1)}` : String(seeds[0] ?? "");
+  const next = (games: BracketGame[], pools: number[][]): { entries: BracketEntry[]; pools: number[][] } => {
+    const entries: BracketEntry[] = [];
+    const out: number[][] = [];
+    games.forEach((g, i) => {
+      const pool = [...could(g.entries[0], pools[2 * i]), ...could(g.entries[1], pools[2 * i + 1])];
+      out.push(g.winner ? [seedOf(g.winner)].filter((x): x is number => x !== null) : pool);
+      entries.push(g.winner
+        ? { seed: seedOf(g.winner), team: g.winner, projected: false, placeholder: null }
+        : { seed: null, team: null, projected: false, placeholder: `Seed ${orList(pool)}` });
+    });
+    return { entries, pools: out };
+  };
+  const pairUp = (entries: BracketEntry[], matches: { venue: string | null; winner: string | null }[], date: string | null): BracketGame[] =>
+    matches.map((m, i) => ({ entries: [entries[2 * i], entries[2 * i + 1]], venue: m.venue, winner: m.winner, date }));
+  const qf = pairUp(first, b.quarterfinals, b.dates.quarterfinals);
+  const r2 = next(qf, first.map((e) => (e.seed === null ? [] : [e.seed])));
+  const sf = pairUp(r2.entries, b.semifinals, b.dates.semifinals);
+  const fin = pairUp(next(sf, r2.pools).entries, [b.final], b.dates.final);
+  return {
+    rounds: [
+      { name: "Quarterfinals", date: b.dates.quarterfinals, games: qf },
+      { name: "Semifinals", date: b.dates.semifinals, games: sf },
+      { name: "Final", date: b.dates.final, games: fin },
+    ],
+    champion: b.final.winner,
+  };
 }

@@ -12,6 +12,7 @@ import { norm } from "./names";
 import { resolveTeam } from "./resolve";
 import { divisionRecords, leagueHotDarts, perfectThrows, type DivisionNames } from "./records";
 import { Sheet } from "./sheet";
+import { bracketSheet, parseBrackets } from "./bracket";
 import type { Fixture, LastResult, LeagueDivision, LeagueWeek, Round, TeamWeek } from "./types";
 
 export function parseLeague(wb: XLSX.WorkBook): LeagueWeek {
@@ -56,6 +57,8 @@ export function parseLeague(wb: XLSX.WorkBook): LeagueWeek {
   const picks = leaguePicks(pg5, names.map((n) => ({ division: n.division, names: n.teams, matches: rounds.get(n.division)?.thisWeek?.matches ?? [] })));
   const hot = leagueHotDarts(pg3, names);
   const races = titleRaces(pg5);
+  const bracketWs = bracketSheet(wb);
+  const brackets = bracketWs ? parseBrackets(bracketWs, (div) => names.find((n) => n.division === div)?.teams ?? [], info.issueDate.slice(0, 4)) : new Map();
 
   const divisions: LeagueDivision[] = base.map((d) => ({
     division: d.division,
@@ -69,6 +72,7 @@ export function parseLeague(wb: XLSX.WorkBook): LeagueWeek {
     hotDarts: hot.get(d.division) ?? [],
     picks: picks.get(d.division) ?? [],
     ...(races.has(d.division) ? { titleRace: races.get(d.division)! } : {}),
+    ...(brackets.has(d.division) ? { bracket: brackets.get(d.division)! } : {}),
   }));
   return { season, week, ...info, divisions, perfectThrows: perfectThrows(pg3, names, year) };
 }
