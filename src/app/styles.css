@@ -502,17 +502,22 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 /* Your team: the shortcut back for someone who has been here before. */
 .your-team { margin: clamp(8px, 1.6svh, 14px) 0 0; }
 .your-team-link {
-  display: grid; gap: 0; padding: clamp(6px, 1.2svh, 12px) 16px; text-decoration: none;
+  position: relative; display: grid; gap: 0; padding: clamp(6px, 1.2svh, 12px) 16px; text-decoration: none;
   border: 2px dashed rgb(var(--hi-rgb) / 0.7); border-radius: 14px;
 }
-.your-team-link:hover { background: rgb(var(--hi-rgb) / 0.07); }
+.your-team-link:has(.your-team-go:hover) { background: rgb(var(--hi-rgb) / 0.07); }
+/* The team name's link covers the whole box; the opponent's link sits above it. */
+.your-team-go { text-decoration: none; }
+.your-team-go::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+.your-team-opp { position: relative; z-index: 1; }
 /* Name on the left, "Your team" on the right of the same line, so the box says what it is without a line of its own. */
 .your-team-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .your-team-label { display: flex; flex: none; align-items: center; gap: 5px; color: var(--yellow); font-size: 1rem; line-height: 1.15; }
 .your-team-name { min-width: 0; }
 .your-team-why { margin-top: 2px; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.2; }
 .your-team-name { font: 700 clamp(1.5rem, 3.6svh, 1.9rem)/1.1 var(--sketch); color: var(--yellow); }
-.your-team-now { font-size: 1.1rem; }
+.your-team-now { display: grid; font-size: 1.1rem; line-height: 1.25; }
+.your-team-when { color: var(--chalk-2); }
 
 .last-looked { margin: clamp(6px, 1.2svh, 12px) 0 0; text-align: center; font-size: 1.1rem; color: var(--chalk-2); }
 .last-looked a { color: var(--chalk); }

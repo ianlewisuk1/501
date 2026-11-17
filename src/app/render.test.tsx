@@ -70,7 +70,7 @@ describe("routes", () => {
     // Says what the box is, and names the next match: this issue's, or the week after once that night has passed.
     expect(mine).toContain("Your team</span>");
     expect(mine).toContain("You picked this team.");
-    expect(mine).toMatch(/Next: \w{3} \d+, (home to|away at) (Pints and Points|Menace 2 Sobriety)/);
+    expect(mine).toMatch(/Next: \w{3} \d+<\/span><span class=\"your-team-what\">(Home to|Away at) <a[^>]*>(Pints and Points|Menace 2 Sobriety)<\/a>/);
     expect(html).toContain('class="seg" aria-label="C Division, 8 teams"'); // nothing chalked in from last time
   });
 
@@ -442,7 +442,7 @@ describe("tournament issue", () => {
     expect(team).toContain("Map (Apple)");
     expect(team).not.toContain("Pairings and venues come from the league");
     const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    expect(home).toContain("Next: Nov 18, quarterfinal vs Still Hump&#x27;N");
+    expect(home).toMatch(/Next: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*href="\/c\/still-hump-n"[^>]*>Still Hump&#x27;N<\/a>/);
   });
 });
 

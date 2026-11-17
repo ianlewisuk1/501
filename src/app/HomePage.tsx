@@ -5,7 +5,7 @@
  * ("This is my team" on its page) gets a shortcut back to it at the top, and the team page looked at
  * last gets a quieter link.
  */
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
 import { divisionIn, headlineStories, matchWinner, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
@@ -13,7 +13,7 @@ import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { sameTeam, type TeamRef } from "./myTeam";
-import { useBlackStatusBar } from "./ui";
+import { chalkFor, useBlackStatusBar } from "./ui";
 import { setTheme, useThemeSetting } from "./theme";
 import { promptInstall, useInstalled, useInstallPrompt, usePlatform } from "./install";
 import { useViewCount } from "./views";
@@ -341,21 +341,33 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   // The bracket names the opponent and bar once the seeds are placed.
   const game = !ahead ? tournamentMatch(data, mine.division, mine.team, today) : null;
   const [fixture, date] = ahead ?? [null, null];
-  const next = game ? `Next: ${shortDate(game.date, false)}, ${game.round.toLowerCase()} vs ${game.opponent ?? game.opponentText ?? "to be decided"}`
-    : tournament ? `Next: ${tournament.label.replace(/^RDL /, "")}, ${shortDate(tournament.date, false)}`
+  // The opponent is its own link (underlined, in its chalk), so it reads as something to tap.
+  const opp = (team: string) => (
+    <Link className="team-mention your-team-opp" to={teamPath(mine.division, team)} style={{ color: chalkFor(team) }}>{team}</Link>
+  );
+  // Two lines: when, then what.
+  const next: [string, ReactNode] | null = game
+    ? [shortDate(game.date, false), <>{game.round} vs {game.opponent ? opp(game.opponent) : game.opponentText ?? "to be decided"}</>]
+    : tournament ? [shortDate(tournament.date, false), tournament.label.replace(/^RDL /, "")]
     : !fixture || !date ? null
-    : "bye" in fixture ? `Next: a bye week, ${shortDate(date, false)}`
-    : `Next: ${shortDate(date, false)}, ${fixture.home ? "home to" : "away at"} ${fixture.opponent}`;
+    : "bye" in fixture ? [shortDate(date, false), "Bye week"]
+    : [shortDate(date, false), <>{fixture.home ? "Home to" : "Away at"} {opp(fixture.opponent)}</>];
+  // The whole box opens the team page (the name's link is stretched over it); the opponent's link sits on top.
   return (
     <div className="your-team">
-      <Link className="your-team-link" to={teamPath(mine.division, mine.team)}>
+      <div className="your-team-link">
         <span className="your-team-top">
-          <span className="your-team-name">{mine.team}</span>
+          <Link className="your-team-name your-team-go" to={teamPath(mine.division, mine.team)}>{mine.team}</Link>
           <span className="your-team-label"><Star />Your team</span>
         </span>
-        {next && <span className="your-team-now">{next}</span>}
+        {next && (
+          <span className="your-team-now">
+            <span className="your-team-when">Next: {next[0]}</span>
+            <span className="your-team-what">{next[1]}</span>
+          </span>
+        )}
         <span className="your-team-why">You picked this team. Change it on any team's page.</span>
-      </Link>
+      </div>
     </div>
   );
 }
