@@ -428,7 +428,7 @@ describe("tournament issue", () => {
     expect(tabs[0]).toBe("Bracket");
     // Final standings and the last regular night's scores come with it.
     expect(div).toContain("14–0, 34 points clear");
-    expect(div).toContain("After week 14, Nov 11.");
+    expect(div).toContain("Final standings, after week 14, Nov 11.");
     expect(atFull("/c/area-501")).toContain("C Division, tournaments");
   });
 
