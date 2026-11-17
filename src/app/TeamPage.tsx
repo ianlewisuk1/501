@@ -15,6 +15,7 @@ import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
 import { BarPhoto } from "./BarPhoto";
+import { PHOTOS_ON } from "../photos/core";
 import { Arrow, groupSpans, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
@@ -127,7 +128,7 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
           <VenueAddress venue={fixture.venue} venues={venues} />
           <Directions venue={fixture.venue} venues={venues} />
         </div>
-        <BarPhoto barName={resolveVenue(fixture.venue, venues ?? [])?.name ?? null} />
+        {PHOTOS_ON && <BarPhoto barName={resolveVenue(fixture.venue, venues ?? [])?.name ?? null} />}
       </div>
     </section>
   );

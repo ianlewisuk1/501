@@ -71,3 +71,9 @@ export function uploadProblem(u: Upload, check: PhotoCheck): string | null {
 }
 
 export const publicPhoto = ({ id, url, credit }: PhotoRecord): PublicPhoto => ({ id, url, credit });
+
+/**
+ * Bar photos are switched off for now (owner, 2026-11-16): no photo square on team pages, and the
+ * API turns every request away. Set to true to bring the feature back; nothing else changes.
+ */
+export const PHOTOS_ON = false;

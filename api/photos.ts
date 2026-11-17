@@ -6,7 +6,7 @@
  */
 import { del, put } from "@vercel/blob";
 import check from "../data/photo-check.json" with { type: "json" };
-import type { PhotoRecord } from "../src/photos/core.js";
+import { PHOTOS_ON, type PhotoRecord } from "../src/photos/core.js";
 import { handlePhotos } from "../src/photos/server.js";
 import type { FileStore, PhotoStore } from "../src/photos/store.js";
 import { redis, redisReady } from "./_redis.js";
@@ -50,6 +50,7 @@ const files: FileStore = {
 };
 
 const handle = async (req: Request) => {
+  if (!PHOTOS_ON) return Response.json({ error: "Photos are switched off." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   if (!redisReady() || !process.env.BLOB_READ_WRITE_TOKEN) {
     return Response.json({ error: "Photos aren't set up yet." }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
