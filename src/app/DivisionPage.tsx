@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, headlineStories, seasonLabel, weekLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, headlineStories, weekLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -29,6 +29,11 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   const i = issue.divisions.findIndex((x) => x.division === d);
   const prev = issue.divisions[(i - 1 + n) % n].division;
   const next = issue.divisions[(i + 1) % n].division;
+  // Under the title: which week's results the page is from ("Final standings, after week 14, Nov 11").
+  const results = division.results;
+  const resultsLine = results
+    ? `${seasonWeeks && results.week >= seasonWeeks ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`
+    : weekLabel(issue.week, seasonWeeks).replace(/^w/, "W");
   // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
   const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
   const seasonOver = !!lastNight && todayIso() > lastNight;
@@ -40,7 +45,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
     <main className="division-page">
       <div className="div-head">
         {n > 1 && <Link className="div-step" to={divisionPath(prev)} aria-label={`Previous: ${prev} Division`}><Arrow dir="left" /></Link>}
-        <PageHead chalk title={`${d} Division`} meta={`${seasonLabel(issue.season)}, ${weekLabel(issue.week, seasonWeeks)}`} />
+        <PageHead chalk title={`${d} Division`} meta={resultsLine} />
         {n > 1 && <Link className="div-step" to={divisionPath(next)} aria-label={`Next: ${next} Division`}><Arrow dir="right" /></Link>}
       </div>
       <Tabs label="Division sections" tabs={[
@@ -49,7 +54,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           id: "standings", label: "Standings", show: true,
           body: (
             <section aria-labelledby="standings">
-              <SectionHead id="standings" title="Standings" detail={`${division.results ? `${seasonWeeks && division.results.week >= seasonWeeks ? "Final standings, after" : "After"} week ${division.results.week}, ${shortDate(division.results.date, false)}. ` : ""}Tap a team to see its page.`} />
+              <SectionHead id="standings" title="Standings" detail="Tap a team to see its page." />
               <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
