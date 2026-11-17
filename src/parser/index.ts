@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { leaderboard } from "./leaderboards";
+import { findLeaderboard, leaderboard } from "./leaderboards";
 import { headline, issueInfo } from "./page1";
 import { page2 } from "./page2";
 import { hotDarts, trophies } from "./page3";
@@ -43,6 +43,11 @@ export function parseWorkbook(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek {
   const pg10 = wb.Sheets[`${season}-Wk${week}-Pg10${team.division}`];
   const { code, players } = pg10 ? page10(new Sheet(pg10), team) : { code: "", players: [] };
   const { trophyDarts, perfectThrows } = trophies(pg3, team);
+  const sheets = wb.SheetNames.filter((n) => n.startsWith(`${season}-Wk${week}-`)).map((n) => new Sheet(wb.Sheets[n]));
+  const board = <K extends readonly [string, string, string]>(title: RegExp, keys: K) => {
+    const at = findLeaderboard(sheets, title);
+    return at ? leaderboard(at.ws, team, keys, at.start) : [];
+  };
 
   return {
     season,
@@ -57,9 +62,9 @@ export function parseWorkbook(wb: XLSX.WorkBook, team: TeamConfig): TeamWeek {
     headline: headline(pg1, team),
     players,
     leaderboards: {
-      singles: leaderboard(page("Pg6"), team, ["w", "l", "pct"] as const) as WinPctRow[],
-      singlesPlusDoubles: leaderboard(page("Pg7"), team, ["w", "l", "pct"] as const) as WinPctRow[],
-      allStarAverage: leaderboard(page("Pg8"), team, ["asp", "gamesPlayed", "average"] as const) as AspRow[],
+      singles: board(/Top Singles Records/i, ["w", "l", "pct"] as const) as WinPctRow[],
+      singlesPlusDoubles: board(/Top Singles\+Doubles Records/i, ["w", "l", "pct"] as const) as WinPctRow[],
+      allStarAverage: board(/Top All-Star Point Averages/i, ["asp", "gamesPlayed", "average"] as const) as AspRow[],
     },
     hotDarts: hotDarts(pg3, team),
     trophyDarts,

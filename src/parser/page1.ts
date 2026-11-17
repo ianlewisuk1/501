@@ -3,14 +3,19 @@ import type { TeamConfig } from "./team";
 
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
-/** Match date and issue number from B2. */
+/**
+ * Match date and issue number from B2. The tournament issue runs onto B3 and lists every
+ * tournament night ("tournament weeks #15/16/17, Wednesdays, November 18, and" / "Dec. 2 & 9, 2026
+ * Issue #JK959"); its date is the first night.
+ */
 export function issueInfo(ws: Sheet): { issueDate: string; issue: string } {
-  const s = String(ws.get("B", 2));
-  const m = s.match(/week #(\d+), \w+, (\w+) (\d+), (\d{4})\s+Issue #(\w+)/);
+  let s = String(ws.get("B", 2));
+  if (!/Issue #/.test(s)) s += " " + String(ws.get("B", 3) ?? "");
+  const m = s.match(/weeks? #[\d/]+, \w+, (\w+) (\d+),.*?(\d{4})\s+Issue #(\w+)/);
   if (!m) throw new Error(`Unrecognised issue line in Pg1!B2: ${s}`);
-  const month = MONTHS.indexOf(m[2].toLowerCase()) + 1;
-  const issueDate = `${m[4]}-${String(month).padStart(2, "0")}-${m[3].padStart(2, "0")}`;
-  return { issueDate, issue: m[5] };
+  const [, mon, day, year, issue] = m;
+  const month = MONTHS.indexOf(mon.toLowerCase()) + 1;
+  return { issueDate: `${year}-${String(month).padStart(2, "0")}-${day.padStart(2, "0")}`, issue };
 }
 
 /** Our division's line under RDL HEADLINES, with its indented continuation lines. */

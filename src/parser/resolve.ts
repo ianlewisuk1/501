@@ -32,9 +32,16 @@ function subsequence(short: string, full: string): boolean {
   return true;
 }
 
+/** `short` fits `full` letters-in-order once one stray letter is dropped ("Shartk" for "Shark"). */
+function oneStray(short: string, full: string): boolean {
+  for (let i = 0; i < short.length; i++) if (subsequence(short.slice(0, i) + short.slice(i + 1), full)) return true;
+  return false;
+}
+
 /**
  * The one candidate team a shortened or misspelt name refers to, or null when no single team fits.
- * Tries, strictest first: exact, whole-word phrase, word prefixes in order, letters in order.
+ * Tries, strictest first: exact, whole-word phrase, word prefixes in order, letters in order,
+ * then letters in order with one stray letter (a typo: "Shartk Shooters").
  * Stops at the first rule that finds anything, so a looser rule never overrides a stricter one.
  */
 export function resolveTeam(raw: string, candidates: readonly string[]): string | null {
@@ -46,6 +53,7 @@ export function resolveTeam(raw: string, candidates: readonly string[]): string 
     (c) => new RegExp(`(^|\\s)${escapeRe(t)}(\\s|$)`).test(plain(c)),
     (c) => prefixWords(words(text), words(c)),
     (c) => letters(text).length >= 4 && subsequence(letters(text), letters(c)),
+    (c) => letters(text).length >= 8 && oneStray(letters(text), letters(c)),
   ];
   for (const rule of rules) {
     const hits = candidates.filter(rule);

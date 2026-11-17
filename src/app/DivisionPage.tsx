@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, headlineStories, seasonLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, headlineStories, seasonLabel, weekLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -40,7 +40,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
     <main className="division-page">
       <div className="div-head">
         {n > 1 && <Link className="div-step" to={divisionPath(prev)} aria-label={`Previous: ${prev} Division`}><Arrow dir="left" /></Link>}
-        <PageHead chalk title={`${d} Division`} meta={`${seasonLabel(issue.season)}, week ${issue.week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`} />
+        <PageHead chalk title={`${d} Division`} meta={`${seasonLabel(issue.season)}, ${weekLabel(issue.week, seasonWeeks)}`} />
         {n > 1 && <Link className="div-step" to={divisionPath(next)} aria-label={`Next: ${next} Division`}><Arrow dir="right" /></Link>}
       </div>
       <Tabs label="Division sections" tabs={[

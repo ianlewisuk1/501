@@ -1,0 +1,572 @@
+{
+  "season": "Fa26",
+  "week": 15,
+  "issueDate": "2026-11-18",
+  "issue": "JK959",
+  "team": {
+    "name": "Area 501",
+    "division": "C",
+    "code": "C6"
+  },
+  "standings": [
+    {
+      "rank": 1,
+      "team": "Area 501",
+      "wins": 14,
+      "losses": 0,
+      "points": 224,
+      "clinched": "C"
+    },
+    {
+      "rank": 2,
+      "team": "Darty Little Secrets",
+      "wins": 10,
+      "losses": 4,
+      "points": 190,
+      "clinched": "C"
+    },
+    {
+      "rank": 3,
+      "team": "Mulligans Mafia",
+      "wins": 9,
+      "losses": 5,
+      "points": 184
+    },
+    {
+      "rank": 4,
+      "team": "Menace 2 Sobriety",
+      "wins": 8,
+      "losses": 6,
+      "points": 182
+    },
+    {
+      "rank": 5,
+      "team": "Brutha Ducks",
+      "wins": 7,
+      "losses": 7,
+      "points": 154
+    },
+    {
+      "rank": 6,
+      "team": "Projectile Dysfunction",
+      "wins": 6,
+      "losses": 8,
+      "points": 166
+    },
+    {
+      "rank": 7,
+      "team": "Pints and Points",
+      "wins": 1,
+      "losses": 13,
+      "points": 124,
+      "clinched": "D"
+    },
+    {
+      "rank": 8,
+      "team": "Still Hump'N",
+      "wins": 1,
+      "losses": 13,
+      "points": 117,
+      "clinched": "D"
+    }
+  ],
+  "lastResult": {
+    "week": 14,
+    "date": "2026-11-11",
+    "opponentShort": "Menace",
+    "home": false,
+    "score": {
+      "us": 19,
+      "them": 5
+    },
+    "gamesWon": {
+      "singles301": 6,
+      "singlesCricket": 3,
+      "doublesCricket": 6,
+      "doubles501": 4
+    },
+    "tiebreaker1001": null,
+    "allStarPoints": 16.5,
+    "shortHanded": null,
+    "penalties": null
+  },
+  "thisWeek": null,
+  "nextWeek": null,
+  "prediction": null,
+  "headline": "Area sweeps two sets from Menace, coasts to 14-0 season; Secrets squeeze by Projectile in 1001 to lock down 2nd",
+  "players": [
+    {
+      "number": 60,
+      "name": "Steve Massey",
+      "singles": {
+        "w": 22,
+        "l": 5
+      },
+      "doubles": {
+        "w": 19,
+        "l": 5
+      },
+      "total": {
+        "w": 41,
+        "l": 10
+      },
+      "singles301": {
+        "w": 9,
+        "l": 4
+      },
+      "singlesCricket": {
+        "w": 13,
+        "l": 1
+      },
+      "doublesCricket": {
+        "w": 11,
+        "l": 2
+      },
+      "doubles501": {
+        "w": 8,
+        "l": 3
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 52.5,
+      "gamesPlayed": 51,
+      "aspAverage": 1.0294,
+      "matchesPlayed": 14
+    },
+    {
+      "number": 61,
+      "name": "Ian Lewis",
+      "singles": {
+        "w": 26,
+        "l": 1
+      },
+      "doubles": {
+        "w": 14,
+        "l": 4
+      },
+      "total": {
+        "w": 40,
+        "l": 5
+      },
+      "singles301": {
+        "w": 12,
+        "l": 1
+      },
+      "singlesCricket": {
+        "w": 14,
+        "l": 0
+      },
+      "doublesCricket": {
+        "w": 10,
+        "l": 1
+      },
+      "doubles501": {
+        "w": 4,
+        "l": 3
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 43,
+      "gamesPlayed": 45,
+      "aspAverage": 0.9556,
+      "matchesPlayed": 14
+    },
+    {
+      "number": 62,
+      "name": "Jamie Bender",
+      "singles": {
+        "w": 8,
+        "l": 8
+      },
+      "doubles": {
+        "w": 12,
+        "l": 6
+      },
+      "total": {
+        "w": 20,
+        "l": 14
+      },
+      "singles301": {
+        "w": 3,
+        "l": 5
+      },
+      "singlesCricket": {
+        "w": 5,
+        "l": 3
+      },
+      "doublesCricket": {
+        "w": 7,
+        "l": 1
+      },
+      "doubles501": {
+        "w": 5,
+        "l": 5
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 16.5,
+      "gamesPlayed": 34,
+      "aspAverage": 0.4853,
+      "matchesPlayed": 12
+    },
+    {
+      "number": 63,
+      "name": "Nick Beach",
+      "singles": {
+        "w": 8,
+        "l": 11
+      },
+      "doubles": {
+        "w": 11,
+        "l": 6
+      },
+      "total": {
+        "w": 19,
+        "l": 17
+      },
+      "singles301": {
+        "w": 6,
+        "l": 5
+      },
+      "singlesCricket": {
+        "w": 2,
+        "l": 6
+      },
+      "doublesCricket": {
+        "w": 5,
+        "l": 2
+      },
+      "doubles501": {
+        "w": 6,
+        "l": 4
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 8.5,
+      "gamesPlayed": 36,
+      "aspAverage": 0.2361,
+      "matchesPlayed": 13
+    },
+    {
+      "number": 64,
+      "name": "Andrew Hagarty",
+      "singles": {
+        "w": 3,
+        "l": 4
+      },
+      "doubles": {
+        "w": 4,
+        "l": 5
+      },
+      "total": {
+        "w": 7,
+        "l": 9
+      },
+      "singles301": {
+        "w": 1,
+        "l": 0
+      },
+      "singlesCricket": {
+        "w": 2,
+        "l": 4
+      },
+      "doublesCricket": {
+        "w": 1,
+        "l": 2
+      },
+      "doubles501": {
+        "w": 3,
+        "l": 3
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 7.5,
+      "gamesPlayed": 16,
+      "aspAverage": 0.4688,
+      "matchesPlayed": 7
+    },
+    {
+      "number": 65,
+      "name": "Anthony Lawless",
+      "singles": {
+        "w": 5,
+        "l": 6
+      },
+      "doubles": {
+        "w": 12,
+        "l": 5
+      },
+      "total": {
+        "w": 17,
+        "l": 11
+      },
+      "singles301": {
+        "w": 4,
+        "l": 4
+      },
+      "singlesCricket": {
+        "w": 1,
+        "l": 2
+      },
+      "doublesCricket": {
+        "w": 7,
+        "l": 1
+      },
+      "doubles501": {
+        "w": 5,
+        "l": 4
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 13,
+      "gamesPlayed": 28,
+      "aspAverage": 0.4643,
+      "matchesPlayed": 10
+    },
+    {
+      "number": 66,
+      "name": "Russell Riley",
+      "singles": {
+        "w": 14,
+        "l": 7
+      },
+      "doubles": {
+        "w": 13,
+        "l": 8
+      },
+      "total": {
+        "w": 27,
+        "l": 15
+      },
+      "singles301": {
+        "w": 9,
+        "l": 3
+      },
+      "singlesCricket": {
+        "w": 5,
+        "l": 4
+      },
+      "doublesCricket": {
+        "w": 4,
+        "l": 4
+      },
+      "doubles501": {
+        "w": 9,
+        "l": 4
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 25,
+      "gamesPlayed": 42,
+      "aspAverage": 0.5952,
+      "matchesPlayed": 13
+    },
+    {
+      "number": 67,
+      "name": "Juan Mata-Adams",
+      "singles": {
+        "w": 9,
+        "l": 3
+      },
+      "doubles": {
+        "w": 8,
+        "l": 7
+      },
+      "total": {
+        "w": 17,
+        "l": 10
+      },
+      "singles301": {
+        "w": 4,
+        "l": 2
+      },
+      "singlesCricket": {
+        "w": 5,
+        "l": 1
+      },
+      "doublesCricket": {
+        "w": 5,
+        "l": 4
+      },
+      "doubles501": {
+        "w": 3,
+        "l": 3
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 11,
+      "gamesPlayed": 27,
+      "aspAverage": 0.4074,
+      "matchesPlayed": 10
+    },
+    {
+      "number": 68,
+      "name": "Ryley Edmonds",
+      "singles": {
+        "w": 11,
+        "l": 9
+      },
+      "doubles": {
+        "w": 14,
+        "l": 6
+      },
+      "total": {
+        "w": 25,
+        "l": 15
+      },
+      "singles301": {
+        "w": 4,
+        "l": 5
+      },
+      "singlesCricket": {
+        "w": 7,
+        "l": 4
+      },
+      "doublesCricket": {
+        "w": 10,
+        "l": 2
+      },
+      "doubles501": {
+        "w": 4,
+        "l": 4
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 20,
+      "gamesPlayed": 40,
+      "aspAverage": 0.5,
+      "matchesPlayed": 12
+    },
+    {
+      "number": 69,
+      "name": "John Geraghty",
+      "singles": {
+        "w": 4,
+        "l": 4
+      },
+      "doubles": {
+        "w": 7,
+        "l": 2
+      },
+      "total": {
+        "w": 11,
+        "l": 6
+      },
+      "singles301": {
+        "w": 1,
+        "l": 2
+      },
+      "singlesCricket": {
+        "w": 3,
+        "l": 2
+      },
+      "doublesCricket": {
+        "w": 4,
+        "l": 1
+      },
+      "doubles501": {
+        "w": 3,
+        "l": 1
+      },
+      "tiebreaker": {
+        "w": 0,
+        "l": 0
+      },
+      "allStarPoints": 6,
+      "gamesPlayed": 17,
+      "aspAverage": 0.3529,
+      "matchesPlayed": 6
+    }
+  ],
+  "leaderboards": {
+    "singles": [
+      {
+        "rank": 1,
+        "player": "Ian Lewis",
+        "w": 26,
+        "l": 1,
+        "pct": 0.963
+      },
+      {
+        "rank": 2,
+        "player": "Steve Massey",
+        "w": 22,
+        "l": 5,
+        "pct": 0.8148
+      }
+    ],
+    "singlesPlusDoubles": [
+      {
+        "rank": 1,
+        "player": "Ian Lewis",
+        "w": 40,
+        "l": 5,
+        "pct": 0.8889
+      },
+      {
+        "rank": 2,
+        "player": "Steve Massey",
+        "w": 41,
+        "l": 10,
+        "pct": 0.8039
+      }
+    ],
+    "allStarAverage": [
+      {
+        "rank": 1,
+        "player": "Steve Massey",
+        "asp": 52.5,
+        "gamesPlayed": 51,
+        "average": 1.0294
+      },
+      {
+        "rank": 2,
+        "player": "Ian Lewis",
+        "asp": 43,
+        "gamesPlayed": 45,
+        "average": 0.9556
+      }
+    ]
+  },
+  "hotDarts": [],
+  "trophyDarts": [
+    {
+      "category": "Fast Singles 301",
+      "value": "9 darts",
+      "date": "2026-08-12",
+      "players": [
+        "Ian Lewis"
+      ]
+    },
+    {
+      "category": "Fast Doubles 501",
+      "value": "21 darts",
+      "date": "2026-09-02",
+      "players": [
+        "Ian Lewis",
+        "Steve Massey"
+      ]
+    }
+  ],
+  "perfectThrows": [
+    "Ian Lewis (Area 501, 9/23)"
+  ]
+}

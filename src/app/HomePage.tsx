@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
-import { divisionIn, headlineStories, matchWinner, seasonLabel, teamHistory } from "./league";
+import { divisionIn, headlineStories, matchWinner, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
 import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -53,7 +53,7 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
       <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={104} height={104} />
       <ChalkTitle text="Raleigh Dart League" />
       <p className="board-when">
-        {seasonLabel(issue.season)}, week {issue.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}
+        {seasonLabel(issue.season)}, {weekLabel(issue.week, seasonWeeks)}
       </p>
       <p className="board-updated">Last updated {shortDate(__DATA_UPDATED__)}</p>
       </div>
@@ -111,7 +111,7 @@ function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: numbe
         </ul>
         <NavSearch issue={issue} />
         <p className="desk-when">
-          <span>{seasonLabel(issue.season)}, week {issue.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}</span>
+          <span>{seasonLabel(issue.season)}, {weekLabel(issue.week, seasonWeeks)}</span>
           <span className="desk-updated">Updated {shortDate(__DATA_UPDATED__)}</span>
         </p>
       </div>
@@ -328,7 +328,8 @@ function MoreBelow() {
  * The team picked with "This is my team", as one big link back to it, saying plainly that it's
  * the visitor's pick and what its next match is. Once this issue's match night has passed (its
  * result waits for the next newsletter), the next match is the following week's; once that has
- * passed too and the season is over, it's the next division tournament night.
+ * passed too and the season is over, it's the team's next game in the bracket (else the next
+ * division tournament night).
  */
 function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   const latest = teamHistory(data, mine.team).at(-1);
@@ -337,8 +338,11 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   const ahead = latest ? ([[latest.thisWeek, latest.issueDate], [latest.nextWeek, addDays(latest.issueDate, 7)]] as const)
     .find(([f, d]) => f && d >= today) : undefined;
   const tournament = !ahead ? nextTournament(data.schedule?.season === latest?.season ? data.schedule : undefined, today) : null;
+  // The bracket names the opponent and bar once the seeds are placed.
+  const game = !ahead ? tournamentMatch(data, mine.division, mine.team, today) : null;
   const [fixture, date] = ahead ?? [null, null];
-  const next = tournament ? `Next: ${tournament.label.replace(/^RDL /, "")}, ${shortDate(tournament.date, false)}`
+  const next = game ? `Next: ${shortDate(game.date, false)}, ${game.round.toLowerCase()} vs ${game.opponent ?? game.opponentText ?? "to be decided"}`
+    : tournament ? `Next: ${tournament.label.replace(/^RDL /, "")}, ${shortDate(tournament.date, false)}`
     : !fixture || !date ? null
     : "bye" in fixture ? `Next: a bye week, ${shortDate(date, false)}`
     : `Next: ${shortDate(date, false)}, ${fixture.home ? "home to" : "away at"} ${fixture.opponent}`;

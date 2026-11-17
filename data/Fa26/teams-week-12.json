@@ -508,8 +508,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 1,
           "player": "Ian Lewis",
@@ -532,6 +531,7 @@
           "pct": 0.6471
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 1,
@@ -976,8 +976,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 5,
           "player": "Brady Price",
@@ -1000,6 +999,7 @@
           "pct": 0.6667
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 5,
@@ -1539,8 +1539,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 3,
           "player": "Matt Wilson",
@@ -1563,6 +1562,7 @@
           "pct": 0.6667
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 6,
@@ -2057,8 +2057,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 12,
           "player": "Dustin Jones",
@@ -2067,6 +2066,7 @@
           "pct": 0.6364
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 8,
@@ -2537,8 +2537,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 13,
           "player": "Dan Clark",
@@ -2554,6 +2553,7 @@
           "pct": 0.6
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 9,
@@ -3062,8 +3062,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 8,
           "player": "Somchai Samaluk",
@@ -3072,6 +3071,7 @@
           "pct": 0.6667
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 3,
@@ -4041,8 +4041,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 6,
           "player": "Dave McEwen",
@@ -4051,6 +4050,7 @@
           "pct": 0.7
         }
       ],
+      "singlesPlusDoubles": [],
       "allStarAverage": [
         {
           "rank": 4,

@@ -13,6 +13,13 @@ export const seasonLabel = (season: string): string =>
   `${TERM_NAMES[season.slice(0, 2)] ?? season.slice(0, 2)} 20${season.slice(2)}`;
 
 /**
+ * "week 13 of 14", or "tournaments" for the issue that comes out after the regular season
+ * (the tournament issue is numbered week 15 of a 14-week season).
+ */
+export const weekLabel = (week: number, seasonWeeks?: number | null): string =>
+  seasonWeeks && week > seasonWeeks ? "tournaments" : `week ${week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`;
+
+/**
  * Page 1's RDL Headlines for a division, one story each: the newsletter runs them together with
  * semicolons. Each starts with a capital.
  */
@@ -295,3 +302,52 @@ export function bracketView(b: Bracket, standings: Standing[]): BracketView {
     champion: b.final.winner,
   };
 }
+
+export interface TournamentMatch {
+  /** "Quarterfinal", "Semifinal" or "Final". */
+  round: string;
+  date: string;
+  seed: number | null;
+  /** The other team once it's known, else null and `opponentText` says who it could be ("Seed 3 or 6"). */
+  opponent: string | null;
+  opponentSeed: number | null;
+  opponentText: string | null;
+  /** The bar, without the newsletter's "*" (a third board may be free). */
+  venue: string | null;
+}
+
+/**
+ * A team's next tournament match, from the newest issue's bracket and the hand-entered winners:
+ * the first round on or after today. Null when there's no bracket, the team was knocked out, or
+ * it waits on a result not entered yet. A bye carries straight on to the next round.
+ */
+export function tournamentMatch(data: SeasonData, division: string, team: string, today: string): TournamentMatch | null {
+  const issue = data.issues.at(-1);
+  const d = issue?.divisions.find((x) => x.division === division);
+  if (!d?.bracket) return null;
+  const view = bracketView(withBracketFile(d.bracket, data.bracket, division), d.standings);
+  const mine = (e: BracketEntry) => !e.projected && e.team !== null && sameName(e.team, team);
+  for (const r of view.rounds) {
+    const g = r.games.find((x) => x.entries.some(mine));
+    if (!g) return null; // not through to this round (or not decided yet)
+    if (g.winner) {
+      if (!sameName(g.winner, team)) return null; // knocked out
+      continue; // won it, or a bye
+    }
+    if (!r.date || r.date < today) return null; // played, result not entered yet
+    const [me, them] = mine(g.entries[0]) ? g.entries : [g.entries[1], g.entries[0]];
+    const known = them.team !== null && !them.projected;
+    return {
+      round: r.name.replace(/s$/, ""),
+      date: r.date,
+      seed: me.seed,
+      opponent: known ? them.team : null,
+      opponentSeed: known ? them.seed : null,
+      opponentText: known ? null : them.placeholder,
+      venue: g.venue?.replace(/\*$/, "").trim() || null,
+    };
+  }
+  return null;
+}
+
+const sameName = (a: string, b: string) => norm(a) === norm(b);

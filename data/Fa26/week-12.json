@@ -507,8 +507,7 @@
     }
   ],
   "leaderboards": {
-    "singles": [],
-    "singlesPlusDoubles": [
+    "singles": [
       {
         "rank": 1,
         "player": "Ian Lewis",
@@ -531,6 +530,7 @@
         "pct": 0.6471
       }
     ],
+    "singlesPlusDoubles": [],
     "allStarAverage": [
       {
         "rank": 1,

@@ -91,7 +91,9 @@ for (const L of issues) {
     // Fixtures: each team once per week.
     for (const [label, round] of [["this week", d.thisWeek], ["next week", d.nextWeek]] as const) {
       if (!round) {
-        if (L.week > 1) warn(at, `no ${label} fixtures`); // the week 1 page 5 recaps last season
+        // The week 1 page 5 recaps last season; once the brackets are printed, the regular season's
+        // matches run out (week 14 has no next week, the tournament issue has none at all).
+        if (L.week > 1 && !d.bracket) warn(at, `no ${label} fixtures`);
         continue;
       }
       const seen = [...round.matches.flatMap((m) => [m.away, m.home]), ...round.byes];

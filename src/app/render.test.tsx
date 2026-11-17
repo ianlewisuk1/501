@@ -12,8 +12,14 @@ import { loadSeason, type SeasonData } from "./store";
 
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 
+// Most tests read the newest regular-season issue; the tournament issue (week 15) has its own block below.
+let full: SeasonData;
 let data: SeasonData;
-beforeAll(async () => { data = (await loadSeason())!; });
+beforeAll(async () => {
+  full = (await loadSeason())!;
+  const weeks = full.schedule?.weeks.length ?? Infinity;
+  data = { ...full, issues: full.issues.filter((i) => i.week <= weeks) };
+});
 // Pages follow the calendar, so pin "today" to the newest issue's match day (morning, local time):
 // otherwise the tests change once that night has passed, sooner on a UTC build server.
 beforeEach(() => {
@@ -358,11 +364,20 @@ describe("the team page's match card follows the calendar, not the newsletter", 
     expect(html).not.toContain("This week");
   });
 
-  it("points at the division tournament after the last night of the season", () => {
+  it("points at the team's first tournament match after the last night of the season", () => {
     const html = card("2026-11-12");
+    // The bracket is printed from week 13, so the card names the quarterfinal and its bar.
+    expect(html).toContain("Next match");
+    expect(html).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
+    expect(html).toContain("Wed, Nov 18");
+  });
+
+  it("falls back to the tournament night when the bracket hasn't placed the team", () => {
+    const bare = { ...data, issues: data.issues.map((i) => ({ ...i, divisions: i.divisions.map(({ bracket: _, ...d }) => d) })) };
+    vi.setSystemTime(new Date("2026-11-12T09:00:00"));
+    const html = renderToStaticMarkup(<Screen data={bare} route={parseRoute("/c/area-501")} />);
     expect(html).toContain("Next up");
     expect(html).toContain("Division tournaments (night 1)");
-    expect(html).toContain("Wed, Nov 18");
   });
 });
 
@@ -392,3 +407,42 @@ describe("from the newsletter itself", () => {
     }
   });
 });
+
+describe("tournament issue", () => {
+  const atFull = (path: string, search = "") => renderToStaticMarkup(<Screen data={full} route={parseRoute(path, search)} />);
+  const tourney = () => full.issues.find((i) => i.week > (full.schedule?.weeks.length ?? Infinity));
+  beforeEach(() => {
+    const t = tourney();
+    if (t) vi.setSystemTime(new Date(`${t.issueDate}T09:00:00`));
+  });
+
+  it("says tournaments, not week 15 of 14, and opens divisions on the bracket over final standings", () => {
+    const t = tourney();
+    if (!t) return;
+    const home = atFull("/");
+    expect(home).toContain("Fall 2026, tournaments");
+    expect(home).not.toMatch(/week 15 of 14/);
+    const div = atFull("/c");
+    expect(div).toContain("Fall 2026, tournaments");
+    const tabs = [...div.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1]);
+    expect(tabs[0]).toBe("Bracket");
+    // Final standings and the last regular night's scores come with it.
+    expect(div).toContain("14–0, 34 points clear");
+    expect(div).toContain("After week 14, Nov 11.");
+    expect(atFull("/c/area-501")).toContain("C Division, tournaments");
+  });
+
+  it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {
+    if (!tourney()) return;
+    const team = atFull("/c/area-501");
+    expect(team).toMatch(/vs <a href="\/c\/still-hump-n">Still Hump&#x27;N<\/a>/);
+    expect(team).toContain("8th in C, 1–13");
+    expect(team).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
+    expect(team).toContain("At Upper Deck 1&amp;2");
+    expect(team).toContain("Map (Apple)");
+    expect(team).not.toContain("Pairings and venues come from the league");
+    const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
+    expect(home).toContain("Next: Nov 18, quarterfinal vs Still Hump&#x27;N");
+  });
+});
+

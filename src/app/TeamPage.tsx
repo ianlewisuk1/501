@@ -4,7 +4,7 @@ import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold, SectionHead } from "./Fold";
-import { divisionWeeks, scheduleFor } from "./league";
+import { divisionWeeks, scheduleFor, tournamentMatch, weekLabel, type TournamentMatch } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow,
@@ -42,13 +42,14 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
       <main className={news ? "team-page under-banner" : "team-page"}>
         <div className="div-head">
           {order.length > 1 && <Link className="div-step" to={teamPath(division, prev)} aria-label={`Previous team: ${prev}`}><Arrow dir="left" /></Link>}
-          <PageHead team chalk title={week.team.name} meta={`${division} Division, week ${week.week}${teamSchedule?.weeks.length ? ` of ${teamSchedule.weeks.length}` : ""}`}>
+          <PageHead team chalk title={week.team.name} meta={`${division} Division, ${weekLabel(week.week, teamSchedule?.weeks.length)}`}>
             <MyTeamButton team={week.team.name} division={division} />
           </PageHead>
           {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
         </div>
         {current ? <Tonight week={week} fixture={current} today={today} venues={data.venues} />
-          : <Tournament next={nextTournament(data.schedule?.season === week.season ? data.schedule : undefined, today)} today={today} />}
+          : <Tournament next={nextTournament(data.schedule?.season === week.season ? data.schedule : undefined, today)}
+              game={tournamentMatch(data, division, week.team.name, today)} week={week} today={today} venues={data.venues} />}
         <Tabs label="Team sections" tabs={[
           { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
           { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
@@ -134,8 +135,33 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
   );
 }
 
-/** After the regular season's last night: the next division tournament night, if the schedule has one. */
-function Tournament({ next, today }: { next: { date: string; label: string } | null; today: string }) {
+/**
+ * After the regular season's last night: the team's next game in the bracket (opponent, seeds, bar
+ * and map links), else the next division tournament night, if the schedule has one.
+ */
+function Tournament({ next, game, week, today, venues }: {
+  next: { date: string; label: string } | null; game: TournamentMatch | null; week: TeamWeek; today: string; venues: Venue[] | undefined;
+}) {
+  if (game) {
+    const opp = game.opponent ? findStanding(game.opponent, week.standings) : undefined;
+    return (
+      <section className="card hero" aria-labelledby="tonight">
+        <h2 id="tonight">{game.date === today ? "Tonight" : "Next match"} <span className="muted">{shortDate(game.date)}</span></h2>
+        <p className="big">vs {game.opponent ? <Link to={teamPath(week.team.division, game.opponent)}>{game.opponent}</Link> : game.opponentText ?? "to be decided"}</p>
+        {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
+        <p className="hero-opp muted">{game.round}{game.seed && game.opponentSeed ? `, seed ${game.seed} v ${game.opponentSeed}` : ""}, 7:00 pm</p>
+        {game.venue && (
+          <div className="hero-venue">
+            <div>
+              <p className="hero-where">At {game.venue}</p>
+              <VenueAddress venue={game.venue} venues={venues} />
+              <Directions venue={game.venue} venues={venues} />
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  }
   if (!next) return null;
   return (
     <section className="card hero" aria-labelledby="tonight">

@@ -23,6 +23,7 @@ describe("resolveTeam", () => {
     ["Jonesing forMugs", A, "Jonesing for Mugs"],
     ["Wing & a Plaque", A, "Wing & A Plaque"],
     ["Projetile", C, "Projectile Dysfunction"], // page 2's typo
+    ["Shartk Shooters", ["Shark Shooters", "Down to F", "Two Time", "Death Throw"], "Shark Shooters"], // the tournament issue's typo
     ["Pints", C, "Pints and Points"],
     ["Dirty Darts (Cheap)", H, "Dirty Darts (Done Dirt Cheap)"],
     ["Blonde Leading / Blind", H, "The Blonde Leading the Blind"],

@@ -152,7 +152,13 @@ export function leagueHotDarts(ws: Sheet, divisions: DivisionNames[]): Map<strin
       }
       if (!isBlank(who)) entry.teams.push(str(who).trim());
       const value = ws.get(valC, r);
-      const unit = str(ws.get(unitC, r)).trim();
+      let unit = str(ws.get(unitC, r)).trim();
+      // The team can slip into the feat's cell, set off by a wide gap: "Element        8m (trip,trip,Dbull)".
+      const slipped = isBlank(who) && !entry.teams.length && division ? unit.match(/^(.+?)\s{4,}(\S.*)$/) : null;
+      if (slipped && resolveTeam(slipped[1], division!.teams)) {
+        entry.teams.push(slipped[1]);
+        unit = slipped[2];
+      }
       if (isBlank(value) && !unit) continue; // a doubles pair or team name continues below
       if (division) out.get(division.division)!.push(hotDart(entry, value, unit, division.teams));
       entry = null;
