@@ -1455,36 +1455,7 @@
     ],
     "leaderboards": {
       "singles": [],
-      "singlesPlusDoubles": [
-        {
-          "rank": 1,
-          "player": "Olivia Mathews",
-          "w": 15,
-          "l": 3,
-          "pct": 0.8333
-        },
-        {
-          "rank": 2,
-          "player": "Samantha Pausback",
-          "w": 6,
-          "l": 4,
-          "pct": 0.6
-        },
-        {
-          "rank": 2,
-          "player": "Theresa Mathews",
-          "w": 3,
-          "l": 2,
-          "pct": 0.6
-        },
-        {
-          "rank": 5,
-          "player": "Joanna Tompkins",
-          "w": 1,
-          "l": 1,
-          "pct": 0.5
-        }
-      ],
+      "singlesPlusDoubles": [],
       "allStarAverage": []
     },
     "hotDarts": [
@@ -3413,15 +3384,7 @@
     ],
     "leaderboards": {
       "singles": [],
-      "singlesPlusDoubles": [
-        {
-          "rank": 4,
-          "player": "Michelle Brady",
-          "w": 7,
-          "l": 5,
-          "pct": 0.5833
-        }
-      ],
+      "singlesPlusDoubles": [],
       "allStarAverage": []
     },
     "hotDarts": [],
@@ -3857,15 +3820,7 @@
     ],
     "leaderboards": {
       "singles": [],
-      "singlesPlusDoubles": [
-        {
-          "rank": 6,
-          "player": "Dawn Bordeaux",
-          "w": 1,
-          "l": 11,
-          "pct": 0.0833
-        }
-      ],
+      "singlesPlusDoubles": [],
       "allStarAverage": []
     },
     "hotDarts": [

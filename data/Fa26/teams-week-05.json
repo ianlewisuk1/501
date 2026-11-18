@@ -387,8 +387,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 1,
           "player": "Spencer Rogers",
@@ -411,27 +410,50 @@
           "pct": 0.75
         }
       ],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 3,
           "player": "Spencer Rogers",
-          "asp": 8,
-          "gamesPlayed": 2,
-          "average": 0.8
+          "w": 8,
+          "l": 2,
+          "pct": 0.8
         },
         {
           "rank": 9,
           "player": "James Gartland",
-          "asp": 10,
-          "gamesPlayed": 4,
-          "average": 0.7143
+          "w": 10,
+          "l": 4,
+          "pct": 0.7143
         },
         {
           "rank": 10,
           "player": "Brady Price",
-          "asp": 11,
-          "gamesPlayed": 5,
-          "average": 0.6875
+          "w": 11,
+          "l": 5,
+          "pct": 0.6875
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 4,
+          "player": "Dave Johnson",
+          "asp": 9.5,
+          "gamesPlayed": 12,
+          "average": 0.7917
+        },
+        {
+          "rank": 11,
+          "player": "Brady Price",
+          "asp": 10,
+          "gamesPlayed": 16,
+          "average": 0.625
+        },
+        {
+          "rank": 12,
+          "player": "James Gartland",
+          "asp": 8.5,
+          "gamesPlayed": 14,
+          "average": 0.6071
         }
       ]
     },
@@ -956,8 +978,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 3,
           "player": "Ian Lewis",
@@ -980,20 +1001,43 @@
           "pct": 0.75
         }
       ],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 1,
           "player": "Ian Lewis",
-          "asp": 13,
-          "gamesPlayed": 2,
-          "average": 0.8667
+          "w": 13,
+          "l": 2,
+          "pct": 0.8667
         },
         {
           "rank": 6,
           "player": "Steve Massey",
-          "asp": 12,
-          "gamesPlayed": 4,
-          "average": 0.75
+          "w": 12,
+          "l": 4,
+          "pct": 0.75
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 1,
+          "player": "Steve Massey",
+          "asp": 18.5,
+          "gamesPlayed": 16,
+          "average": 1.1563
+        },
+        {
+          "rank": 3,
+          "player": "Ian Lewis",
+          "asp": 15.5,
+          "gamesPlayed": 15,
+          "average": 1.0333
+        },
+        {
+          "rank": 14,
+          "player": "Ryley Edmonds",
+          "asp": 8.5,
+          "gamesPlayed": 15,
+          "average": 0.5667
         }
       ]
     },
@@ -1468,35 +1512,50 @@
     ],
     "leaderboards": {
       "singles": [],
-      "singlesPlusDoubles": [],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 3,
           "player": "Jimmy Arnold",
-          "asp": 12,
-          "gamesPlayed": 3,
-          "average": 0.8
+          "w": 12,
+          "l": 3,
+          "pct": 0.8
         },
         {
           "rank": 6,
           "player": "Dustin Jones",
-          "asp": 12,
-          "gamesPlayed": 4,
-          "average": 0.75
+          "w": 12,
+          "l": 4,
+          "pct": 0.75
         },
         {
           "rank": 12,
           "player": "Brandon Roper",
-          "asp": 10,
-          "gamesPlayed": 5,
-          "average": 0.6667
+          "w": 10,
+          "l": 5,
+          "pct": 0.6667
         },
         {
           "rank": 12,
           "player": "Denny Williams",
+          "w": 10,
+          "l": 5,
+          "pct": 0.6667
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 10,
+          "player": "Jimmy Arnold",
           "asp": 10,
-          "gamesPlayed": 5,
+          "gamesPlayed": 15,
           "average": 0.6667
+        },
+        {
+          "rank": 13,
+          "player": "James Creech",
+          "asp": 7,
+          "gamesPlayed": 12,
+          "average": 0.5833
         }
       ]
     },
@@ -2031,8 +2090,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 1,
           "player": "Olivia Mathews",
@@ -2048,12 +2106,28 @@
           "pct": 0.875
         }
       ],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 10,
           "player": "Olivia Mathews",
+          "w": 11,
+          "l": 5,
+          "pct": 0.6875
+        }
+      ],
+      "allStarAverage": [
+        {
+          "rank": 5,
+          "player": "Olivia Mathews",
+          "asp": 12.5,
+          "gamesPlayed": 16,
+          "average": 0.7813
+        },
+        {
+          "rank": 9,
+          "player": "Matt Wilson",
           "asp": 11,
-          "gamesPlayed": 5,
+          "gamesPlayed": 16,
           "average": 0.6875
         }
       ]
@@ -2515,8 +2589,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 6,
           "player": "J.J. Tant",
@@ -2539,22 +2612,23 @@
           "pct": 0.7143
         }
       ],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 2,
           "player": "J.J. Tant",
-          "asp": 13,
-          "gamesPlayed": 3,
-          "average": 0.8125
+          "w": 13,
+          "l": 3,
+          "pct": 0.8125
         },
         {
           "rank": 3,
           "player": "Dan Clark",
-          "asp": 12,
-          "gamesPlayed": 3,
-          "average": 0.8
+          "w": 12,
+          "l": 3,
+          "pct": 0.8
         }
-      ]
+      ],
+      "allStarAverage": []
     },
     "hotDarts": [
       {
@@ -3081,8 +3155,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 6,
           "player": "Matt Haney",
@@ -3091,15 +3164,16 @@
           "pct": 0.75
         }
       ],
-      "allStarAverage": [
+      "singlesPlusDoubles": [
         {
           "rank": 6,
           "player": "Matt Haney",
-          "asp": 12,
-          "gamesPlayed": 4,
-          "average": 0.75
+          "w": 12,
+          "l": 4,
+          "pct": 0.75
         }
-      ]
+      ],
+      "allStarAverage": []
     },
     "hotDarts": [
       {
@@ -3580,8 +3654,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 6,
           "player": "Somchai Samaluk",
@@ -3590,7 +3663,23 @@
           "pct": 0.75
         }
       ],
-      "allStarAverage": []
+      "singlesPlusDoubles": [],
+      "allStarAverage": [
+        {
+          "rank": 2,
+          "player": "Dave Finney",
+          "asp": 11,
+          "gamesPlayed": 10,
+          "average": 1.1
+        },
+        {
+          "rank": 6,
+          "player": "Somchai Samaluk",
+          "asp": 10,
+          "gamesPlayed": 13,
+          "average": 0.7692
+        }
+      ]
     },
     "hotDarts": [],
     "trophyDarts": [
@@ -4035,8 +4124,7 @@
       }
     ],
     "leaderboards": {
-      "singles": [],
-      "singlesPlusDoubles": [
+      "singles": [
         {
           "rank": 3,
           "player": "Dave McEwen",
@@ -4045,7 +4133,23 @@
           "pct": 0.875
         }
       ],
-      "allStarAverage": []
+      "singlesPlusDoubles": [],
+      "allStarAverage": [
+        {
+          "rank": 7,
+          "player": "Andy Krestalude",
+          "asp": 11.5,
+          "gamesPlayed": 15,
+          "average": 0.7667
+        },
+        {
+          "rank": 8,
+          "player": "Dave McEwen",
+          "asp": 12,
+          "gamesPlayed": 16,
+          "average": 0.75
+        }
+      ]
     },
     "hotDarts": [
       {

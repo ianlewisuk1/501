@@ -506,8 +506,7 @@
     }
   ],
   "leaderboards": {
-    "singles": [],
-    "singlesPlusDoubles": [
+    "singles": [
       {
         "rank": 1,
         "player": "Ian Lewis",
@@ -523,34 +522,57 @@
         "pct": 0.7857
       }
     ],
-    "allStarAverage": [
+    "singlesPlusDoubles": [
       {
         "rank": 1,
         "player": "Ian Lewis",
-        "asp": 22,
-        "gamesPlayed": 2,
-        "average": 0.9167
+        "w": 22,
+        "l": 2,
+        "pct": 0.9167
       },
       {
         "rank": 3,
         "player": "Steve Massey",
-        "asp": 21,
-        "gamesPlayed": 6,
-        "average": 0.7778
+        "w": 21,
+        "l": 6,
+        "pct": 0.7778
       },
       {
         "rank": 9,
         "player": "Ryley Edmonds",
-        "asp": 17,
-        "gamesPlayed": 8,
-        "average": 0.68
+        "w": 17,
+        "l": 8,
+        "pct": 0.68
       },
       {
         "rank": 14,
         "player": "Jamie Bender",
-        "asp": 11,
-        "gamesPlayed": 7,
-        "average": 0.6111
+        "w": 11,
+        "l": 7,
+        "pct": 0.6111
+      }
+    ],
+    "allStarAverage": [
+      {
+        "rank": 1,
+        "player": "Steve Massey",
+        "asp": 31.5,
+        "gamesPlayed": 27,
+        "average": 1.1667
+      },
+      {
+        "rank": 2,
+        "player": "Ian Lewis",
+        "asp": 25.5,
+        "gamesPlayed": 24,
+        "average": 1.0625
+      },
+      {
+        "rank": 14,
+        "player": "Russell Riley",
+        "asp": 10.5,
+        "gamesPlayed": 19,
+        "average": 0.5526
       }
     ]
   },

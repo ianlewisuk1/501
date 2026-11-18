@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, headlineStories, weekLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, headlineStories, isFinal, resultsLabel, weekLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -31,10 +31,8 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   const next = issue.divisions[(i + 1) % n].division;
   // Under the title: which week's results the page is from ("Final standings, after week 14, Nov 11").
   const results = division.results;
-  const final = !!results && !!seasonWeeks && results.week >= seasonWeeks;
-  const resultsLine = results
-    ? `${final ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`
-    : weekLabel(issue.week, seasonWeeks).replace(/^w/, "W");
+  const final = isFinal(results?.week, seasonWeeks);
+  const resultsLine = results ? resultsLabel(results, seasonWeeks) : weekLabel(issue.week, seasonWeeks).replace(/^w/, "W");
   // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
   const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
   const seasonOver = !!lastNight && todayIso() > lastNight;
@@ -56,7 +54,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           body: (
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail="Tap a team to see its page." />
-              <Ladder standings={withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} />
+              <Ladder standings={final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
             </section>
@@ -80,6 +78,12 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
  * fit rather than wrapped), then its record and its points big on the right. The leader is ringed,
  * with its record and how far clear it is on a second line.
  */
+/** After the season: the first-place team is the champion, whether or not the newsletter marked it. */
+function withChampion(standings: Standing[]): Standing[] {
+  if (standings.some((s) => s.clinched === "G")) return standings;
+  return standings.map((s, i) => (i === 0 ? { ...s, clinched: "G" as const } : s));
+}
+
 function Ladder({ standings, division, final }: { standings: Standing[]; division: string; final: boolean }) {
   const mine = useMine(division);
   const [top, second] = standings;

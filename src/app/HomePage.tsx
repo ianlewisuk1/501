@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
-import { divisionIn, headlineStories, matchWinner, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
+import { divisionIn, headlineStories, isFinal, matchWinner, resultsLabel, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
 import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -53,7 +53,7 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
       <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={104} height={104} />
       <ChalkTitle text="Raleigh Dart League" />
       <p className="board-when">
-        {seasonLabel(issue.season)}, {weekLabel(issue.week, seasonWeeks)}
+        {whenLine(issue, seasonWeeks)}
       </p>
       <p className="board-updated">Last updated {shortDate(__DATA_UPDATED__)}</p>
       </div>
@@ -93,6 +93,17 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
  * home; then one item per division (the dartboard's job on phones); then the week and when the
  * data was last updated (the phone's title block). The Light/Dark button sits at its right end.
  */
+/**
+ * Under the title: "Fall 2026, week 13 of 14", or once the season is over, "Final standings, after
+ * week 14, Nov 11" ("Final standings" alone in the desktop menu bar, which has no room for more).
+ */
+function whenLine(issue: LeagueWeek, seasonWeeks: number | null, short = false): string {
+  const results = issue.divisions.find((d) => d.results)?.results;
+  return results && isFinal(results.week, seasonWeeks)
+    ? short ? "Final standings" : resultsLabel(results, seasonWeeks)
+    : `${seasonLabel(issue.season)}, ${weekLabel(issue.week, seasonWeeks)}`;
+}
+
 function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: number | null }) {
   return (
     <nav className="desk-nav desk-only" aria-label="Divisions">
@@ -111,7 +122,7 @@ function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: numbe
         </ul>
         <NavSearch issue={issue} />
         <p className="desk-when">
-          <span>{seasonLabel(issue.season)}, {weekLabel(issue.week, seasonWeeks)}</span>
+          <span>{whenLine(issue, seasonWeeks, true)}</span>
           <span className="desk-updated">Updated {shortDate(__DATA_UPDATED__)}</span>
         </p>
       </div>

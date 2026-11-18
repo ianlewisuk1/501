@@ -19,16 +19,18 @@ function standingsBlock(ws: Sheet, division: string): { standings: Standing[]; b
   // A blank rank means tied with the row above, so the block runs on team name.
   // Late in the season column B marks clinched teams (G champion, C top two,
   // D bottom two) and those rows drop their rank, so rank them by position
-  // unless their points tie the row above.
+  // unless their record and points tie the row above. Column E carries the
+  // division champion's G (Fa26 wk14 on), column B the C and D marks.
   for (let r = top; r <= ws.maxRow && !isBlank(ws.get("D", r)); r++) {
     const prev = standings.at(-1);
     const points = ws.get("H", r) as number;
     let rank = ws.get("C", r) as number;
     if (isBlank(rank)) {
-      if (!isBlank(ws.get("B", r)) && (!prev || prev.points !== points)) rank = standings.length + 1;
+      const wins = ws.get("F", r) as number;
+      if (!isBlank(ws.get("B", r)) && (!prev || prev.points !== points || prev.wins !== wins)) rank = standings.length + 1;
       else rank = prev ? prev.rank : (ws.get("C", r) as number);
     }
-    const marker = str(ws.get("B", r)).trim().toUpperCase();
+    const marker = str(ws.get("E", r)).trim().toUpperCase() === "G" ? "G" : str(ws.get("B", r)).trim().toUpperCase();
     standings.push({
       rank,
       team: str(ws.get("D", r)).trim(),

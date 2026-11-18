@@ -419,11 +419,12 @@ describe("tournament issue", () => {
     if (t) vi.setSystemTime(new Date(`${t.issueDate}T09:00:00`));
   });
 
-  it("says tournaments, not week 15 of 14, and opens divisions on the bracket over final standings", () => {
+  it("says final standings, not week 15 of 14, and opens divisions on the bracket", () => {
     const t = tourney();
     if (!t) return;
     const home = atFull("/");
-    expect(home).toContain("Fall 2026, tournaments");
+    expect(home).toContain("Final standings, after week 14, Nov 11");
+    expect(home).not.toContain("Fall 2026, tournaments");
     expect(home).not.toMatch(/week 15 of 14/);
     const div = atFull("/c");
     expect(div).not.toContain("Fall 2026");
@@ -435,8 +436,15 @@ describe("tournament issue", () => {
     // The leader is "Season champs" now, with no "Clinched" pill or key.
     expect(div).toContain(">Season champs<");
     expect(div).not.toContain("Clinched");
+    // Every division's winner reads the same, ranked by wins (F: Cheap Shots has Down to F's points but fewer wins).
+    for (const d of ["a", "b", "d", "e", "f", "g", "h"]) {
+      const page = atFull(`/${d}`);
+      expect(page.match(/>Season champs</g)).toHaveLength(1);
+      expect(page).not.toContain("Clinched");
+    }
+    expect(atFull("/f")).toMatch(/ladder-top.*Down to F, Again/);
     expect(atFull("/c/area-501")).not.toContain("Breaking");
-    expect(atFull("/c/area-501")).toContain("C Division, tournaments");
+    expect(atFull("/c/area-501")).toContain("C Division, final standings");
   });
 
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {

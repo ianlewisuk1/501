@@ -3,7 +3,7 @@ import { teamWeekOf } from "../parser/league";
 import { norm } from "../parser/names";
 import { TEAM } from "../parser/team";
 import type { Bracket, DivisionWeek, LeagueDivision, LeagueWeek, Match, Pick, Round, Standing, TeamWeek } from "../parser/types";
-import { addDays, teamSchedule, teamSlug, type SeasonSchedule } from "./model";
+import { addDays, shortDate, teamSchedule, teamSlug, type SeasonSchedule } from "./model";
 import type { SeasonData } from "./store";
 
 const TERM_NAMES: Record<string, string> = { Wi: "Winter", Sp: "Spring", Su: "Summer", Fa: "Fall" };
@@ -18,6 +18,14 @@ export const seasonLabel = (season: string): string =>
  */
 export const weekLabel = (week: number, seasonWeeks?: number | null): string =>
   seasonWeeks && week > seasonWeeks ? "tournaments" : `week ${week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`;
+
+/** True once an issue's results cover the regular season's last week. */
+export const isFinal = (resultsWeek: number | null | undefined, seasonWeeks?: number | null): boolean =>
+  !!resultsWeek && !!seasonWeeks && resultsWeek >= seasonWeeks;
+
+/** "Final standings, after week 14, Nov 11", or "After week 12, Oct 28" during the season. */
+export const resultsLabel = (results: { week: number; date: string }, seasonWeeks?: number | null): string =>
+  `${isFinal(results.week, seasonWeeks) ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`;
 
 /**
  * Page 1's RDL Headlines for a division, one story each: the newsletter runs them together with

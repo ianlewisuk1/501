@@ -4,7 +4,7 @@ import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold, SectionHead } from "./Fold";
-import { divisionWeeks, scheduleFor, tournamentMatch, weekLabel, type TournamentMatch } from "./league";
+import { divisionWeeks, isFinal, scheduleFor, tournamentMatch, weekLabel, type TournamentMatch } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow,
@@ -42,7 +42,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
       <main className={news ? "team-page under-banner" : "team-page"}>
         <div className="div-head">
           {order.length > 1 && <Link className="div-step" to={teamPath(division, prev)} aria-label={`Previous team: ${prev}`}><Arrow dir="left" /></Link>}
-          <PageHead team chalk title={week.team.name} meta={`${division} Division, ${weekLabel(week.week, teamSchedule?.weeks.length)}`}>
+          <PageHead team chalk title={week.team.name} meta={`${division} Division, ${isFinal(week.week - 1, teamSchedule?.weeks.length) ? "final standings" : weekLabel(week.week, teamSchedule?.weeks.length)}`}>
             <MyTeamButton team={week.team.name} division={division} />
           </PageHead>
           {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
