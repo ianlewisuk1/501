@@ -1184,4 +1184,5 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
   font-family: var(--sketch); font-weight: 700; font-size: 1.1rem; min-height: 3rem; display: grid; place-items: center;
 }
 .b-trophy.won { border: 2px solid var(--yellow); }
-.b-trophy a { text-decoration: none; }
+.b-trophy a { text-decoration: none; max-width: 100%; min-width: 0; }
+.b-trophy-name { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

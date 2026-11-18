@@ -139,6 +139,8 @@ describe("routes", () => {
       expect(bracket).toContain("Quarterfinals");
       expect(bracket).toContain("Upper Deck 1&amp;2");
       expect(bracket).toContain("Seed 1 or 8");
+      // Full names first; the page swaps in page 2's short name only when one won't fit its box.
+      expect(bracket).toMatch(/class="b-name"[^>]*>Menace 2 Sobriety</);
       expect(bracket).not.toContain("bracket-key");
     } finally {
       vi.setSystemTime(new Date(`${data.issues.at(-1)!.issueDate}T09:00:00`));

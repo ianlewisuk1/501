@@ -336,6 +336,34 @@ interface CardRow { team: string; score?: number | null; won?: boolean; lost?: b
  * A team name that always fits on one line: when it is too wide for its space, its text is
  * scaled down just enough (re-measured whenever the space changes size).
  */
+/**
+ * A team's full name if it fits its box on one line, else page 2's short name ("Wing & A Plaque"
+ * or "Wing"). Measured after layout and again when the box changes size or the lettering loads.
+ */
+function BracketName({ team, short, className, style }: { team: string; short?: string; className?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [useShort, setUseShort] = useState(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !short || short === team) return;
+    // Measure the full name in the box's own lettering, without touching what React rendered.
+    const ctx = document.createElement("canvas").getContext("2d");
+    const fit = () => {
+      if (!ctx || !el.clientWidth) return;
+      const cs = getComputedStyle(el);
+      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      setUseShort(ctx.measureText(team).width > el.clientWidth + 0.5);
+    };
+    fit();
+    let live = true;
+    document.fonts?.ready.then(() => { if (live) fit(); });
+    const watch = new ResizeObserver(fit);
+    watch.observe(el.parentElement ?? el);
+    return () => { live = false; watch.disconnect(); };
+  }, [team, short]);
+  return <span ref={ref} className={className} style={style}>{useShort && short ? short : team}</span>;
+}
+
 function FitName({ name, className = "side-name" }: { name: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   useLayoutEffect(() => {
@@ -531,7 +559,7 @@ function BracketBoard({ division, data }: { division: LeagueDivision; data: Seas
   const view = useMemo(
     () => bracketView(withBracketFile(division.bracket!, data.bracket, division.division), division.standings), [division, data.bracket]);
   const [qf, sf, fin] = view.rounds;
-  // Page 2's short names ("Menace", "Projectile") fit the boxes; the full name stays in the title.
+  // Full names where they fit the box, else page 2's short names ("Menace", "Projectile").
   const short = useMemo(() => new Map(division.results?.matches.flatMap((m) => [[m.away.team, m.away.short], [m.home.team, m.home.short]]) ?? []), [division]);
   const ctx = { division, short };
   return (
@@ -557,7 +585,7 @@ function BracketBoard({ division, data }: { division: LeagueDivision; data: Seas
           <div className="b-col b-champ">
             <div className={`b-trophy${view.champion ? " won" : ""}`}>
               {view.champion
-                ? <Link to={teamPath(division.division, view.champion)} style={{ color: chalkFor(view.champion) }} title={view.champion}>{short.get(view.champion) ?? view.champion}</Link>
+                ? <Link to={teamPath(division.division, view.champion)} style={{ color: chalkFor(view.champion) }} title={view.champion}><BracketName team={view.champion} short={short.get(view.champion)} className="b-trophy-name" /></Link>
                 : <span className="muted">{fin.date ? shortDate(fin.date, false) : ""}</span>}
             </div>
           </div>
@@ -591,7 +619,7 @@ function BracketLine({ entry, game, division, short }: { entry: BracketEntry; ga
   return (
     <Link className={cls} to={teamPath(division.division, entry.team)} title={entry.projected ? `${entry.team}, if the standings hold` : entry.team}>
       {seed}
-      <span className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }}>{short.get(entry.team) ?? entry.team}</span>
+      <BracketName team={entry.team} short={short.get(entry.team)} className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }} />
       {entry.team === mine && <MyStar />}
       {won && <span className="card-mark" aria-label="went through">◂</span>}
     </Link>
