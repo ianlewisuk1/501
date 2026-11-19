@@ -1214,7 +1214,8 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .b-name { font-family: var(--sketch); font-weight: 600; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .b-line.projected .b-name, .b-line.open .b-name { color: var(--chalk-2); font-weight: 400; font-family: var(--hand); font-size: 0.95rem; }
 .b-line.open .b-name { white-space: normal; line-height: 1.2; font-size: 0.85rem; }
-.b-line.lost .b-name { color: var(--chalk-2) !important; text-decoration: line-through; text-decoration-color: rgb(var(--loss-rgb) / 0.7); }
+/* Knocked out: struck through in solid loss colour, thick enough to read at a glance (owner, 2026-11-19). */
+.b-line.lost .b-name { color: var(--chalk-2) !important; text-decoration: line-through; text-decoration-color: rgb(var(--loss-rgb)); text-decoration-thickness: 3px; }
 .b-line.mine { background: rgb(var(--hi-rgb) / 0.08); }
 .b-venue { display: flex; flex-wrap: wrap; column-gap: 8px; margin: 0; padding: 3px 8px 4px; font-size: 0.8rem; color: var(--chalk-2); border-top: 1px dashed var(--chalk-faint); white-space: nowrap; }
 .b-bar { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -1222,8 +1223,7 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 /* Games won, right after the name; the loser's in faded chalk like its name. */
 .b-score { font-family: var(--sketch); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; text-align: right; }
 .b-line.lost .b-score { color: var(--chalk-2); }
-/* Won and lost said outright, with the Fixtures list's W and L, a size down to fit the box. */
-.b-wl { font-size: 0.85rem; }
+
 .b-champ { justify-content: center; }
 .b-trophy {
   border: 1.5px dashed var(--chalk-line); border-radius: 6px; padding: 10px 8px; text-align: center;
