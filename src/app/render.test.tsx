@@ -157,7 +157,8 @@ describe("routes", () => {
     const ladder = html.slice(html.indexOf('class="ladder"'), html.indexOf("</ol>", html.indexOf('class="ladder"')));
     expect(ladder.match(/<li/g)).toHaveLength(8);
     expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
-    expect(ladder).toContain("13–0, 27 points clear");
+    expect(ladder).toContain('aria-label="13 wins, 0 losses">13–0<');
+    expect(ladder).not.toContain("points clear");
     // Says the rows can be tapped.
     expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
     // The last issue's title race sits under the ladder, before the headlines.
@@ -439,7 +440,7 @@ describe("tournament issue", () => {
     const tabs = [...div.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((m) => m[1]);
     expect(tabs[0]).toBe("Bracket");
     // Final standings and the last regular night's scores come with it.
-    expect(div).toContain("14–0, 34 points clear");
+    expect(div).toContain('aria-label="14 wins, 0 losses">14–0<');
     expect(div).toContain("Final standings, after week 14, Nov 11. Tap a team");
     expect(div).toMatch(/class="week-pill"><span class="week-long">(Quarterfinals|Semifinals|Final)/);
     // The leader is "Season champs" now, with no "Clinched" pill or key.

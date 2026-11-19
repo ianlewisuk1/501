@@ -85,8 +85,6 @@ function withChampion(standings: Standing[]): Standing[] {
 
 function Ladder({ standings, division, final }: { standings: Standing[]; division: string; final: boolean }) {
   const mine = useMine(division);
-  const [top, second] = standings;
-  const clear = top && second ? top.points - second.points : 0;
   // "Clinched" needs a key; after the season the leader's pill says "Season champs", which doesn't.
   const clinched = !final && standings.some((s) => s.clinched === "G");
   return (
@@ -99,11 +97,12 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
             <span className="ladder-rank">{s.rank}</span>
             <span className="ladder-team">
               <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} final={final} />}</span>
-              {/* The leader's second line carries its clinch mark, leaving the name the whole width. */}
-              {i === 0 && <span className="ladder-clear"><span>{s.wins}–{s.losses}{clear > 0 && `, ${clear} points clear`}</span><ClinchBadge mark={s.clinched} final={final} /></span>}
+              {/* The leader's clinch mark gets a line of its own, leaving the name the whole width. */}
+              {i === 0 && s.clinched === "G" && <span className="ladder-clear"><ClinchBadge mark={s.clinched} final={final} /></span>}
             </span>
-            {i > 0 && <span className="ladder-rec">{s.wins}–{s.losses}</span>}
-            <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>
+            {/* The record ranks the table, so it's the big number; points come second. */}
+            <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
+            <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}<span className="ladder-pts-unit"> pts</span></span>
           </Link>
         </li>
       ))}
