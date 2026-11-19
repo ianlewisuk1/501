@@ -16,8 +16,12 @@ import { ClinchBadge, ordinal } from "./ui";
 import barWebsites from "../../data/bar-websites.json";
 import barPhotos from "../../data/bar-photos.json";
 
-/** Each bar's own website, by its name in the league's directory (hand-kept; a bar with none is left out). */
+/** Each bar's own website, else its Facebook or Instagram page, by its name in the league's directory (hand-kept). */
 const BAR_WEBSITES: Record<string, string> = barWebsites.sites;
+/** Each bar's food menu, where it has one online. */
+const BAR_MENUS: Record<string, string> = barWebsites.menus;
+/** A bar's link says where it goes: its own site, or its Facebook or Instagram page. */
+export const siteLabel = (url: string) => /facebook\.com/.test(url) ? "Facebook" : /instagram\.com/.test(url) ? "Instagram" : "Website";
 
 /**
  * A picture of each bar's front (public/bars/): a Google Street View screenshot, credited to Google with
@@ -60,6 +64,8 @@ export function TeamInfo({ week, rows, venues, seasonWeeks, tournament, today }:
 function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
   const urls = mapsUrls(bar.name, [bar]);
   const street = BAR_PHOTOS[bar.name];
+  const site = BAR_WEBSITES[bar.name];
+  const menu = BAR_MENUS[bar.name];
   return (
     <section className="ti-section" aria-labelledby="ti-bar">
       <h3 id="ti-bar" className="ti-head">Home Bar</h3>
@@ -83,7 +89,8 @@ function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
       <div className="maps">
         <a className="map-link" href={urls.apple} target="_blank" rel="noopener">Map (Apple)</a>
         <a className="map-link" href={urls.google} target="_blank" rel="noopener">Map (Google)</a>
-        {BAR_WEBSITES[bar.name] && <a className="map-link" href={BAR_WEBSITES[bar.name]} target="_blank" rel="noopener">Website</a>}
+        {site && <a className="map-link" href={site} target="_blank" rel="noopener">{siteLabel(site)}</a>}
+        {menu && <a className="map-link" href={menu} target="_blank" rel="noopener">Menu</a>}
       </div>
       {nights.length > 0 && <p className="ti-nights">Home nights: {nights.map((r) => shortDate(r.date, false)).join(", ")}</p>}
     </section>

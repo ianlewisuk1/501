@@ -9,7 +9,7 @@ import { divisionBest, playerLine, teamLine, verdict } from "./form";
 import { divisionIn, divisionRounds, divisionWeeks } from "./league";
 import { parseRoute } from "./route";
 import { SHORT_NAMES } from "./ui";
-import { topPlayers } from "./TeamInfo";
+import { siteLabel, topPlayers } from "./TeamInfo";
 import type { TeamWeek } from "../parser/types";
 import tournament from "../../data/Fa26/league-week-15.json";
 import barWebsites from "../../data/bar-websites.json";
@@ -341,7 +341,11 @@ describe("team page", () => {
     // Its home bar, The Flying Saucer, has its own website.
     expect(panel).toContain('href="https://www.beerknurd.com/raleigh-flying-saucer/" target="_blank" rel="noopener">Website</a>');
     // Every bar named in the websites file is a bar in the league's directory.
-    for (const name of Object.keys(barWebsites.sites)) expect(names).toContain(name);
+    for (const name of [...Object.keys(barWebsites.sites), ...Object.keys(barWebsites.menus)]) expect(names).toContain(name);
+    // A Facebook or Instagram page is labelled as one, not as the bar's website.
+    expect(siteLabel("https://www.facebook.com/MacsTavern/")).toBe("Facebook");
+    expect(siteLabel("https://www.instagram.com/natural_science_bar/")).toBe("Instagram");
+    expect(siteLabel("https://www.sharkysnc.com/")).toBe("Website");
   });
 
   it("puts the sections in tabs under tonight's match, the players open first", () => {
