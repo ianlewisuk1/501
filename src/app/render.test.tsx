@@ -73,7 +73,7 @@ describe("routes", () => {
     expect(mine).toContain('href="/c/area-501"');
     // Says what the box is, and names the next match: this issue's, or the week after once that night has passed.
     expect(mine).toContain("Your team</span>");
-    expect(mine).toContain("You picked this team.");
+    expect(mine).toContain("Change it on any team&#x27;s page.");
     expect(mine).toMatch(/Next: \w{3} \d+<\/span><span class=\"your-team-what\">(Home to|Away at) <a[^>]*>(Pints and Points|Menace 2 Sobriety)<\/a>/);
     expect(html).toContain('class="seg" aria-label="C Division, 8 teams"'); // nothing chalked in from last time
   });

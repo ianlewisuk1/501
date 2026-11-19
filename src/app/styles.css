@@ -525,7 +525,7 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .your-team-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .your-team-label { display: flex; flex: none; align-items: center; gap: 5px; color: var(--yellow); font-size: 1rem; line-height: 1.15; }
 .your-team-name { min-width: 0; }
-.your-team-why { margin-top: 2px; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.2; }
+.your-team-why { margin-top: 2px; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .your-team-name { font: 700 clamp(1.5rem, 3.6svh, 1.9rem)/1.1 var(--sketch); color: var(--yellow); }
 .your-team-now { display: grid; font-size: 1.1rem; line-height: 1.25; }
 .your-team-when { color: var(--chalk-2); }

@@ -382,7 +382,7 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
             {next[1] && <span className="your-team-what">{next[1]}</span>}
           </span>
         )}
-        <span className="your-team-why">You picked this team. Change it on any team's page.</span>
+        <span className="your-team-why">Change it on any team's page.</span>
       </div>
     </div>
   );
