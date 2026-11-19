@@ -1,5 +1,5 @@
 /** Pieces shared by the league, division and team pages. */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { Player, Standing, WL } from "../parser/types";
 import { fmtPct, fmtWL, pct } from "./model";
 import { ChalkTitle } from "./ChalkTitle";
@@ -167,4 +167,76 @@ export function Arrow({ dir }: { dir: "left" | "right" }) {
 export const NEWSLETTER_URL = "https://raleighdartleague.org/newsletter/";
 export function NewsletterLink() {
   return <> <a href={NEWSLETTER_URL} target="_blank" rel="noopener">Read the full newsletter</a></>;
+}
+
+/** A team name kept on one line: a long one is scaled down just enough to fit its box (floor 11px). */
+export function FitName({ name, className = "side-name" }: { name: string; className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.fontSize = "";
+      // Text doesn't shrink exactly in proportion, so step down until it fits (or hits the floor).
+      for (let i = 0; i < 6 && el.scrollWidth > el.clientWidth; i++) {
+        const size = parseFloat(getComputedStyle(el).fontSize);
+        if (size <= 11) break;
+        el.style.fontSize = `${Math.max(11, Math.floor((size * el.clientWidth) / el.scrollWidth * 10) / 10 - 0.2)}px`;
+      }
+    };
+    fit();
+    // The chalk lettering arrives after first paint and is wider, so measure again once it's in.
+    let live = true;
+    document.fonts?.ready.then(() => { if (live) fit(); });
+    const watch = new ResizeObserver(fit);
+    watch.observe(el.parentElement ?? el);
+    return () => { live = false; watch.disconnect(); };
+  }, [name]);
+  return <span ref={ref} className={className}>{name}</span>;
+}
+
+/**
+ * Hand-picked short names (the bracket, the Fixtures list), tried in order after the full name
+ * and before page 2's short one, where the newsletter's shortening reads badly ("the Point?", "Calm", "The Blind") or there
+ * is none and the full name won't fit (owner, 2026-11-18). Mostly in Kilt's own words.
+ */
+export const SHORT_NAMES: Record<string, string[]> = {
+  "What's the Point?": ["What's the Point", "The Point"],
+  "Banging the Wire": ["Banging Wire"],
+  "Sharky's Machine": ["Sharky's"],
+  "Calm Under Pressure": ["Under Pressure"],
+  "Are You Afraid of the Dart": ["Are You Afraid"],
+  "The Blonde Leading the Blind": ["Blonde Leading", "Blonde"],
+  "Heart of Dartness": ["Dartness"],
+  "Aim-ing For Trouble": ["Trouble"],
+};
+
+/**
+ * A team's full name if it fits its box on one line, else the first of the hand-picked names and
+ * page 2's short name that does ("Wing & A Plaque" or "Wing"); the last one if none fits.
+ * Measured after layout and again when the box changes size or the lettering loads.
+ */
+export function TeamName({ team, short, className, style }: { team: string; short?: string; className?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const names = useMemo(() => [...new Set([team, ...(SHORT_NAMES[team] ?? []), ...(short ? [short] : [])])], [team, short]);
+  const [shown, setShown] = useState(team);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || names.length < 2) return;
+    // Measure the full name in the box's own lettering, without touching what React rendered.
+    const ctx = document.createElement("canvas").getContext("2d");
+    const fit = () => {
+      if (!ctx || !el.clientWidth) return;
+      const cs = getComputedStyle(el);
+      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      setShown(names.find((n) => ctx.measureText(n).width <= el.clientWidth + 0.5) ?? names.at(-1)!);
+    };
+    fit();
+    let live = true;
+    document.fonts?.ready.then(() => { if (live) fit(); });
+    const watch = new ResizeObserver(fit);
+    watch.observe(el.parentElement ?? el);
+    return () => { live = false; watch.disconnect(); };
+  }, [names]);
+  return <span ref={ref} className={className} style={style}>{names.includes(shown) ? shown : team}</span>;
 }

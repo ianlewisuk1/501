@@ -3,7 +3,7 @@
  * tabs: the standings written up as a chalk ladder, every week's matches, the players, and the
  * division's records. A team picked with "This is my team" is starred wherever it appears.
  */
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
 import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
@@ -13,7 +13,7 @@ import type { SeasonData } from "./store";
 import { Tabs } from "./Tabs";
 import { TeamText } from "./TeamText";
 import { useMyTeams } from "./myTeam";
-import { Arrow, ClinchBadge, chalkFor, GROUPS, NewsletterLink, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
+import { Arrow, TeamName, ClinchBadge, chalkFor, FitName, GROUPS, NewsletterLink, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
 
 export function DivisionPage({ data, issue, division }: { data: SeasonData; issue: LeagueWeek; division: LeagueDivision }) {
   const d = division.division;
@@ -339,76 +339,6 @@ interface CardRow { team: string; score?: number | null; won?: boolean; lost?: b
  * A team name that always fits on one line: when it is too wide for its space, its text is
  * scaled down just enough (re-measured whenever the space changes size).
  */
-/**
- * Hand-picked names for the bracket, tried in order after the full name and before page 2's short
- * one, where the newsletter's shortening reads badly ("the Point?", "Calm", "The Blind") or there
- * is none and the full name won't fit (owner, 2026-11-18). Mostly in Kilt's own words.
- */
-export const BRACKET_NAMES: Record<string, string[]> = {
-  "What's the Point?": ["What's the Point", "The Point"],
-  "Banging the Wire": ["Banging Wire"],
-  "Sharky's Machine": ["Sharky's"],
-  "Calm Under Pressure": ["Under Pressure"],
-  "Are You Afraid of the Dart": ["Are You Afraid"],
-  "The Blonde Leading the Blind": ["Blonde Leading", "Blonde"],
-  "Heart of Dartness": ["Dartness"],
-  "Aim-ing For Trouble": ["Trouble"],
-};
-
-/**
- * A team's full name if it fits its box on one line, else the first of the hand-picked names and
- * page 2's short name that does ("Wing & A Plaque" or "Wing"); the last one if none fits.
- * Measured after layout and again when the box changes size or the lettering loads.
- */
-function BracketName({ team, short, className, style }: { team: string; short?: string; className?: string; style?: CSSProperties }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const names = useMemo(() => [...new Set([team, ...(BRACKET_NAMES[team] ?? []), ...(short ? [short] : [])])], [team, short]);
-  const [shown, setShown] = useState(team);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el || names.length < 2) return;
-    // Measure the full name in the box's own lettering, without touching what React rendered.
-    const ctx = document.createElement("canvas").getContext("2d");
-    const fit = () => {
-      if (!ctx || !el.clientWidth) return;
-      const cs = getComputedStyle(el);
-      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-      setShown(names.find((n) => ctx.measureText(n).width <= el.clientWidth + 0.5) ?? names.at(-1)!);
-    };
-    fit();
-    let live = true;
-    document.fonts?.ready.then(() => { if (live) fit(); });
-    const watch = new ResizeObserver(fit);
-    watch.observe(el.parentElement ?? el);
-    return () => { live = false; watch.disconnect(); };
-  }, [names]);
-  return <span ref={ref} className={className} style={style}>{names.includes(shown) ? shown : team}</span>;
-}
-
-function FitName({ name, className = "side-name" }: { name: string; className?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const fit = () => {
-      el.style.fontSize = "";
-      // Text doesn't shrink exactly in proportion, so step down until it fits (or hits the floor).
-      for (let i = 0; i < 6 && el.scrollWidth > el.clientWidth; i++) {
-        const size = parseFloat(getComputedStyle(el).fontSize);
-        if (size <= 11) break;
-        el.style.fontSize = `${Math.max(11, Math.floor((size * el.clientWidth) / el.scrollWidth * 10) / 10 - 0.2)}px`;
-      }
-    };
-    fit();
-    // The chalk lettering arrives after first paint and is wider, so measure again once it's in.
-    let live = true;
-    document.fonts?.ready.then(() => { if (live) fit(); });
-    const watch = new ResizeObserver(fit);
-    watch.observe(el.parentElement ?? el);
-    return () => { live = false; watch.disconnect(); };
-  }, [name]);
-  return <span ref={ref} className={className}>{name}</span>;
-}
 
 /**
  * One match as a scoreboard card: a strip along the top with the status (Final, or the
@@ -607,7 +537,7 @@ function BracketBoard({ division, data }: { division: LeagueDivision; data: Seas
           <div className="b-col b-champ">
             <div className={`b-trophy${view.champion ? " won" : ""}`}>
               {view.champion
-                ? <Link to={teamPath(division.division, view.champion)} style={{ color: chalkFor(view.champion) }} title={view.champion}><BracketName team={view.champion} short={short.get(view.champion)} className="b-trophy-name" /></Link>
+                ? <Link to={teamPath(division.division, view.champion)} style={{ color: chalkFor(view.champion) }} title={view.champion}><TeamName team={view.champion} short={short.get(view.champion)} className="b-trophy-name" /></Link>
                 : <span className="muted">{fin.date ? shortDate(fin.date, false) : ""}</span>}
             </div>
           </div>
@@ -641,7 +571,7 @@ function BracketLine({ entry, game, division, short }: { entry: BracketEntry; ga
   return (
     <Link className={cls} to={teamPath(division.division, entry.team)} title={entry.projected ? `${entry.team}, if the standings hold` : entry.team}>
       {seed}
-      <BracketName team={entry.team} short={short.get(entry.team)} className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }} />
+      <TeamName team={entry.team} short={short.get(entry.team)} className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }} />
       {entry.team === mine && <MyStar />}
       {won && <span className="card-mark" aria-label="went through">◂</span>}
     </Link>

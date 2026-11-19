@@ -17,7 +17,7 @@ import { Tabs } from "./Tabs";
 import { TeamInfo } from "./TeamInfo";
 import { BarPhoto } from "./BarPhoto";
 import { PHOTOS_ON } from "../photos/core";
-import { Arrow, groupSpans, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
+import { Arrow, groupSpans, TeamName, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
   const division = week.team.division;
@@ -30,6 +30,9 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const current = fixtures.find((f) => f.status === "current");
   const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, data.news);
   const scout = current && !current.bye ? scoutReport(current.opponent, week, divisions) : null;
+  // Page 2's short names for the division's teams ("Menace", "Projectile"), for names that won't fit.
+  const shorts = useMemo(() => new Map(data.issues.flatMap((i) => i.divisions.find((d) => d.division === division)?.results?.matches
+    .flatMap((m) => [[m.away.team, m.away.short], [m.home.team, m.home.short]] as [string, string][]) ?? [])), [data, division]);
   const cup = useMemo(() => tournamentMatch(data, division, week.team.name, today), [data, division, week, today]);
   useBlackStatusBar();
   // The teams either side in the standings, wrapping round, for the arrows by the name.
@@ -56,7 +59,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
           { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
           { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
           { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
-          { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
+          { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} shorts={shorts} division={division} expanded /> },
           { id: "team", label: "Team", show: true, body: <TeamInfo week={week} rows={fixtures} venues={data.venues}
               seasonWeeks={teamSchedule?.weeks.length ?? null} tournament={cup} today={today} /> },
         ]} />
@@ -306,7 +309,9 @@ function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: Fixtu
   );
 }
 
-function Fixtures({ rows, maps, names, division, expanded = false }: { rows: FixtureRow[]; maps: (v: string) => string; names: string[]; division: string; expanded?: boolean }) {
+function Fixtures({ rows, maps, names, shorts, division, expanded = false }: {
+  rows: FixtureRow[]; maps: (v: string) => string; names: string[]; shorts: Map<string, string>; division: string; expanded?: boolean;
+}) {
   const [more, setAll] = useState(false);
   const all = expanded || more;
   if (!rows.length) return null;
@@ -326,7 +331,11 @@ function Fixtures({ rows, maps, names, division, expanded = false }: { rows: Fix
             <span className="fwk">{f.week}</span>
             <span className="fdate">{shortDate(f.date, false)}</span>
             <span className="fopp">
-              {f.bye ? "Bye" : <>vs <Link to={teamPath(division, f.result ? fullTeamName(f.result.opponentShort, names) : f.opponent)}>{f.result ? fullTeamName(f.result.opponentShort, names) : f.opponent}</Link></>}
+              {f.bye ? "Bye" : (() => {
+                const opp = f.result ? fullTeamName(f.result.opponentShort, names) : f.opponent;
+                // One line always, same size: the full name if it fits, else a short one ("Calm", "Blonde Leading").
+                return <span className="fname">vs <Link to={teamPath(division, opp)} title={opp}><TeamName team={opp} short={shorts.get(opp)} className="fname-text" /></Link></span>;
+              })()}
               {!f.bye && (
                 <span className="fwhere">
                   {f.home ? "Home" : "Away"}
@@ -336,10 +345,11 @@ function Fixtures({ rows, maps, names, division, expanded = false }: { rows: Fix
                 </span>
               )}
             </span>
+            {/* A fixed column, badge then score, so every W and L lines up down the list. */}
             <span className="fres">
               {f.score ? (
-                <><Outcome f={f} /> {f.score.us}–{f.score.them}</>
-              ) : f.status === "current" ? <span className="tag">Next</span> : f.status === "past" ? <span className="muted small">{f.week === lastPast ? "Score next issue" : "–"}</span> : null}
+                <><Outcome f={f} /><span className="fscore">{f.score.us}–{f.score.them}</span></>
+              ) : f.status === "current" ? <span className="tag">Next</span> : f.status === "past" ? <span className="muted small">{f.week === lastPast ? "Score to come" : "–"}</span> : null}
             </span>
           </li>
         ))}

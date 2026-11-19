@@ -295,16 +295,22 @@ table.wide .sticky a.team { color: var(--chalk-2); text-decoration: none; }
 
 /* ---- Fixtures ---- */
 .fixtures { list-style: none; padding: 0; margin: 0; }
-.fixtures li { display: grid; grid-template-columns: 1.6rem 3.8rem 1fr auto; gap: 8px; align-items: baseline; padding: 9px 4px; border-bottom: 1px solid var(--chalk-faint); }
+.fixtures li { display: grid; grid-template-columns: 1.6rem 3.6rem minmax(0, 1fr) 5rem; gap: 6px; align-items: baseline; padding: 9px 4px; border-bottom: 1px solid var(--chalk-faint); }
 .fixtures li:last-child { border-bottom: 0; }
 .fixtures li.past { color: var(--chalk-2); }
 .fixtures li.current { color: var(--yellow); background: rgb(var(--hi-rgb) / 0.07); }
 .fwk { color: var(--chalk-2); font-size: 0.95rem; text-align: right; }
 .fdate { font-size: 1rem; white-space: nowrap; }
 .fopp { min-width: 0; }
+/* "vs" and the name on one line; FitName shrinks a long name to fit. */
+.fname { display: flex; align-items: baseline; gap: 0.3em; min-width: 0; }
+.fname a { min-width: 0; flex: 1 1 auto; display: flex; }
+.fname-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fwhere { display: block; font-size: 0.95rem; color: var(--chalk-2); }
 .fvenue { display: inline-flex; align-items: center; gap: 3px; padding: 8px 6px 8px 0; margin: -8px 0; }
-.fres { white-space: nowrap; text-align: right; }
+.fres { display: grid; grid-template-columns: 1.9rem 1fr; align-items: baseline; white-space: nowrap; }
+.fres > :only-child { grid-column: 1 / -1; justify-self: end; }
+.fscore { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* Big plain buttons, written on the board inside a dashed chalk outline. */
 .showall {
