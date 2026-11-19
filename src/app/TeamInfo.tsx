@@ -20,8 +20,9 @@ import barPhotos from "../../data/bar-photos.json";
 const BAR_WEBSITES: Record<string, string> = barWebsites.sites;
 /** Each bar's food menu, where it has one online. */
 const BAR_MENUS: Record<string, string> = barWebsites.menus;
-/** A bar's link says where it goes: its own site, or its Facebook or Instagram page. */
-export const siteLabel = (url: string) => /facebook\.com/.test(url) ? "Facebook" : /instagram\.com/.test(url) ? "Instagram" : "Website";
+/** A bar's link says where it goes: its own site, or its Facebook, Instagram or Yelp page. */
+export const siteLabel = (url: string) =>
+  /facebook\.com/.test(url) ? "Facebook" : /instagram\.com/.test(url) ? "Instagram" : /yelp\.com/.test(url) ? "Yelp" : "Website";
 
 /**
  * A picture of each bar's front (public/bars/): a Google Street View screenshot, credited to Google with

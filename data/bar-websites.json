@@ -1,5 +1,5 @@
 {
-  "note": "Each league bar's own web presence, keyed by its name in the league's directory (data/{season}/venues.json). sites: the bar's own website, else its Facebook or Instagram page (the link is labelled by where it goes). menus: its food menu (own site or Toast ordering page). From each bar's Google Maps listing, checked 2026-11-19 to load and name that location. Left out when there's none or it doesn't load (Main Street Taps and Main Street Tavern have no site found; Backstage Pub's Facebook page came from the owner; Buffalo Brothers' and Cleveland Draft House's menu links were dead).",
+  "note": "Each league bar's own web presence, keyed by its name in the league's directory (data/{season}/venues.json). sites: the bar's own website, else its Facebook, Instagram or Yelp page (the link is labelled by where it goes). menus: its food menu (own site, or an online ordering page). Mostly from each bar's Google Maps listing, the rest from the owner, 2026-11-19, each checked to load and name that location. Bars with no menu don't serve food or have none online (American Legion, Backstage, Brass Tap, D's Bottle Shop, Hot Shots, Main Street Taps, Main Street Tavern, Natural Science, Snooker's).",
   "sites": {
     "American Legion Fuquay-Varina": "https://alpost116nc.org/",
     "Backstage Pub": "https://www.facebook.com/JPiner2013",
@@ -14,8 +14,10 @@
     "High Park Bar & Grille": "https://www.highparkbarandgrill.com/",
     "Hot Shots Billiards & Pub": "https://hotshotshideaway.com/",
     "Lonerider Wake Forest": "https://loneriderbeer.com/hideouts/wake-forest",
-    "Mac's Tavern": "https://www.facebook.com/MacsTavern/",
+    "Mac's Tavern": "https://macs-tavern.wixsite.com/macstavern",
     "Mackey's Pub": "https://mackeys-pub.com/",
+    "Main Street Taps (was Walley's Tavern)": "https://www.instagram.com/mainstreettapsnc/",
+    "Main Street Tavern": "https://www.yelp.com/biz/main-street-tavern-rolesville",
     "Mulligans Arcade and Tavern": "https://www.mulligansarcadeandtavern.com/",
     "Natural Science": "https://www.instagram.com/natural_science_bar/",
     "The Pickled Onion #2": "https://thepickledonionrestaurant.com/",
@@ -29,15 +31,20 @@
   "menus": {
     "Benny's Billiards": "https://www.bennysbilliards.com/menu",
     "Break Time Billiards": "https://www.breaktimecary.com/menu",
+    "Buffalo Brothers - Capital Blvd": "https://buffalobrotherswakeforest.toast.site/order/buffalo-brothers-capital",
+    "Cleveland Draft House - Garner": "https://onlineordering.rmpos.com/Order/?wci=g0Cbd4gP",
+    "Dugout Tavern": "https://www.toasttab.com/local/order/the-dugout-tavern-grill-1413-kelly-road/r-271fb183-64bb-4286-9a96-9bc9a4e86d8b",
     "The Flying Saucer": "https://menus.beerknurd.com/pdf/fsral-food.pdf",
     "High Park Bar & Grille": "https://www.highparkbarandgrill.com/menu2.html",
     "Lonerider Wake Forest": "https://order.toasttab.com/online/lonerider-wake-forest-1839-s-main-st-suite-600",
+    "Mac's Tavern": "https://macstaverncary.hrpos.heartland.us/",
     "Mackey's Pub": "https://mackeys-pub.com/food-menu",
     "Mulligans Arcade and Tavern": "https://www.mulligansarcadeandtavern.com/food-menu",
     "The Pickled Onion #2": "https://thepickledonionrestaurant.com/food-menu-custom",
     "Rally Point Sport Grill": "https://rallypointsportgrill.com/menu/",
     "Scooters": "https://order.toasttab.com/online/scooters-1911-sego-ct",
     "Sharky's Place": "https://sharkysnc.com/food-menu/",
-    "The Taproom - Knightdale": "https://thetaproomknightdale.com/menu"
+    "The Taproom - Knightdale": "https://thetaproomknightdale.com/menu",
+    "The Upper Deck": "http://www.upperdecksportspub.com/menu.html"
   }
 }

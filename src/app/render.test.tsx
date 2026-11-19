@@ -345,6 +345,7 @@ describe("team page", () => {
     // A Facebook or Instagram page is labelled as one, not as the bar's website.
     expect(siteLabel("https://www.facebook.com/MacsTavern/")).toBe("Facebook");
     expect(siteLabel("https://www.instagram.com/natural_science_bar/")).toBe("Instagram");
+    expect(siteLabel("https://www.yelp.com/biz/main-street-tavern-rolesville")).toBe("Yelp");
     expect(siteLabel("https://www.sharkysnc.com/")).toBe("Website");
   });
 
