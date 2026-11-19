@@ -931,14 +931,11 @@ details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
 }
 
 /* ---- Form tab: a player, a game, one season line, and lines to compare with ---- */
-.form-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 4px 0 12px; }
-.form-pick button { min-height: 40px; padding: 4px 6px; font-size: 1.02rem; }
-.form-pick button, .form-games button, .form-refs button {
+.form-games button, .form-refs button {
   min-height: 44px; padding: 6px 10px; cursor: pointer; font: 400 1.1rem var(--hand); color: var(--chalk-2);
   background: none; border: 1.5px dashed var(--chalk-line); border-radius: 10px;
 }
-.form-pick button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.form-pick button[aria-pressed="true"], .form-games button[aria-pressed="true"] {
+.form-games button[aria-pressed="true"] {
   color: var(--yellow); border-style: solid; border-color: var(--yellow); background: rgb(var(--hi-rgb) / 0.1);
 }
 .form-games { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.5fr) minmax(0, 1.5fr); gap: 8px; align-items: end; margin-bottom: 12px; }
@@ -946,7 +943,6 @@ details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
 .g-head { text-align: center; font-size: 0.95rem; color: var(--chalk-2); }
 .g-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .form-games button { padding: 6px 4px; font-size: 1.05rem; white-space: nowrap; }
-@media (min-width: 640px) { .form-pick { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .form-verdict { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; font-size: 1.15rem; line-height: 1.35; background: rgb(var(--ink-rgb) / 0.05); }
 .form-word { font: 700 1.3rem var(--sketch); margin-right: 4px; }
 .form-verdict.hot { background: rgb(var(--green-rgb) / 0.14); }
@@ -976,6 +972,7 @@ details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
 .form-refs button[aria-pressed="true"] .sw { opacity: 1; }
 .form-note { margin: 2px 0 6px; color: var(--chalk-2); font-size: 1rem; }
 .form-compare { display: grid; gap: 4px; margin: 4px 0 8px; color: var(--chalk-2); }
+.form-who { margin: 4px 0 12px; }
 .form-compare select { width: 100%; }
 .tip .sw { width: 14px; height: 0; border-radius: 0; border-top: 3px solid var(--lc); vertical-align: 3px; background: none; }
 

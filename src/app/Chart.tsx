@@ -50,12 +50,14 @@ export function PerformanceChart({ current, divisions }: { current: TeamWeek; di
     <section className="form" aria-labelledby="form-h">
       <h2 id="form-h" className="sr-only">Form</h2>
 
-      <div className="form-pick" role="group" aria-label="Player">
-        {roster.map((p) => (
-          <button key={p.number} type="button" aria-pressed={who === p.number} onClick={() => setWho(p.number)}>{shortName(p.name)}</button>
-        ))}
-        <button type="button" aria-pressed={who === TEAM} onClick={() => setWho(TEAM)}>Whole team</button>
-      </div>
+      {/* A dropdown, like "Compare with" below: the same control for picking a player everywhere on the tab. */}
+      <label className="form-compare form-who">
+        <span>Player</span>
+        <select value={who} onChange={(e) => setWho(Number(e.target.value))}>
+          {roster.map((p) => <option key={p.number} value={p.number}>{p.name}</option>)}
+          <option value={TEAM}>Whole team</option>
+        </select>
+      </label>
 
       <div className="form-games" role="group" aria-label="Game">
         <button type="button" className="g-all" aria-pressed={game === "total"} onClick={() => setGame("total")}>All games</button>
@@ -180,8 +182,3 @@ function FormChart({ lines, half, title }: { lines: Line[]; half: boolean; title
   );
 }
 
-/** "John Geraghty" -> "John G.", so the player buttons fit across a phone. */
-const shortName = (name: string) => {
-  const parts = name.split(" ");
-  return parts.length > 1 ? `${parts[0]} ${parts.at(-1)![0]}.` : name;
-};

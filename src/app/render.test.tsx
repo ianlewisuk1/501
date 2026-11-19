@@ -254,8 +254,10 @@ describe("team page", () => {
     const html = at("/c/area-501");
     const panel = html.slice(html.indexOf('id="panel-form"'));
     expect(panel).toContain('aria-pressed="true">All games</button>');
-    expect(panel).toContain(">Whole team</button>");
-    expect(panel.match(/class="form-pick"/g)).toHaveLength(1);
+    // The player is picked from a dropdown, like "Compare with", with the whole team as the last choice.
+    expect(panel).toContain('class="form-compare form-who"');
+    expect(panel).toContain('<option value="-1">Whole team</option>');
+    expect(panel).not.toContain('class="form-pick"');
     expect(panel).toMatch(/class="form-verdict (hot|cold|steady|few)"/);
     expect(panel).toContain('class="ref-team" aria-pressed="true"');
     expect(panel).toContain('class="ref-best" aria-pressed="false"');
@@ -301,9 +303,9 @@ describe("team page", () => {
     expect(tie3.map((t) => `${t.rank} ${t.name}`)).toEqual(["1 A", "2 B", "3 C", "3 D"]);
   });
 
-  it("has a Team tab: home bar with map links, the season so far, and the team's records", () => {
+  it("has an Info tab: home bar with map links, the season so far, and the team's records", () => {
     const html = at("/c/area-501");
-    const panel = html.slice(html.indexOf('id="panel-team"'), html.indexOf("</main>"));
+    const panel = html.slice(html.indexOf('id="panel-info"'), html.indexOf("</main>"));
     expect(panel).toContain("Home Bar");
     expect(panel).toContain('class="ti-bar-name"');
     expect(panel).toContain("Map (Apple)");
@@ -320,7 +322,7 @@ describe("team page", () => {
     const html = at("/c/area-501");
     const tabs = [...html.matchAll(/role="tab" aria-selected="(true|false)"[^>]*>([^<]+)</g)].map((m) => [m[2], m[1]]);
     // No Standings tab: the division page has the same table, a tap away in the site bar.
-    expect(tabs).toEqual([["Players", "true"], ["Form", "false"], ["Opponent", "false"], ["Fixtures", "false"], ["Team", "false"]]);
+    expect(tabs).toEqual([["Players", "true"], ["Form", "false"], ["Opponent", "false"], ["Fixtures", "false"], ["Info", "false"]]);
     expect(html).toMatch(/id="panel-players" role="tabpanel"[^>]*class="tab-panel"/);
     expect(html).toMatch(/id="panel-opponent" role="tabpanel"[^>]*hidden=""/);
     // Inside a tab, sections open flat: no fold buttons.
