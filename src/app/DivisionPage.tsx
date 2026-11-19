@@ -512,10 +512,11 @@ function BracketBoard({ division, data }: { division: LeagueDivision; data: Seas
   return (
     <section aria-labelledby="bracket">
       <SectionHead id="bracket" title="Tournament" />
-      {/* Two short facts, hyphen-bulleted (owner, 2026-11-19). */}
+      {/* Short facts, hyphen-bulleted (owner, 2026-11-19). */}
       <ul className="tab-note b-facts">
         <li>Matches start at 7:00 pm.</li>
         <li>Each match is best of three.</li>
+        <li>Matches end when one team reaches 13 points.</li>
       </ul>
       <div className="scroll-x bracket-scroll">
         <div className="bracket">
