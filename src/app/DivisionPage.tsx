@@ -576,7 +576,8 @@ function BracketLine({ entry, game, division, short }: { entry: BracketEntry; ga
       <TeamName team={entry.team} short={short.get(entry.team)} className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }} />
       {entry.team === mine && <MyStar />}
       {game.score && !("forfeit" in game.score) && (won || lost) && <span className="b-score">{won ? game.score.winner : game.score.loser}</span>}
-      {won && <span className="card-mark" aria-label="went through">◂</span>}
+      {won && <span className="badge win b-wl" title="Won">W</span>}
+      {lost && <span className="badge loss b-wl" title="Lost">L</span>}
     </Link>
   );
 }

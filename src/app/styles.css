@@ -1219,6 +1219,8 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 /* Games won, right after the name; the loser's in faded chalk like its name. */
 .b-score { font-family: var(--sketch); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; text-align: right; }
 .b-line.lost .b-score { color: var(--chalk-2); }
+/* Won and lost said outright, with the Fixtures list's W and L, a size down to fit the box. */
+.b-wl { font-size: 0.85rem; }
 .b-champ { justify-content: center; }
 .b-trophy {
   border: 1.5px dashed var(--chalk-line); border-radius: 6px; padding: 10px 8px; text-align: center;
