@@ -23,9 +23,9 @@ export const weekLabel = (week: number, seasonWeeks?: number | null): string =>
 export const isFinal = (resultsWeek: number | null | undefined, seasonWeeks?: number | null): boolean =>
   !!resultsWeek && !!seasonWeeks && resultsWeek >= seasonWeeks;
 
-/** Which results a table is from, as a short label: "Final standings", or "After week 12 of 14" during the season. */
+/** Which results a table is from, as a short label: "Through week 12 of 14" (like the Players tab's "Through week 12"). */
 export const resultsLabel = (results: { week: number }, seasonWeeks?: number | null): string =>
-  isFinal(results.week, seasonWeeks) ? "Final standings" : `After week ${results.week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`;
+  `Through week ${results.week}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`;
 
 /**
  * The league's current match night, the same for every division, for the pill under a division's

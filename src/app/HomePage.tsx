@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import type { LeagueWeek } from "../parser/types";
 import { ChalkTitle } from "./ChalkTitle";
-import { divisionIn, headlineStories, isFinal, matchWinner, resultsLabel, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
+import { divisionIn, headlineStories, isFinal, matchWinner, seasonLabel, teamHistory, tournamentMatch, weekLabel } from "./league";
 import { addDays, nextTournament, shortDate, todayIso } from "./model";
 import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -100,7 +100,7 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
 function whenLine(issue: LeagueWeek, seasonWeeks: number | null): string {
   const results = issue.divisions.find((d) => d.results)?.results;
   return results && isFinal(results.week, seasonWeeks)
-    ? resultsLabel(results, seasonWeeks)
+    ? "Final standings"
     : `${seasonLabel(issue.season)}, ${weekLabel(issue.week, seasonWeeks)}`;
 }
 
