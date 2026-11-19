@@ -94,13 +94,13 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
  * data was last updated (the phone's title block). The Light/Dark button sits at its right end.
  */
 /**
- * Under the title: "Fall 2026, week 13 of 14", or once the season is over, "Final standings, after
- * week 14, Nov 11" ("Final standings" alone in the desktop menu bar, which has no room for more).
+ * Under the title (and in the desktop menu bar): "Fall 2026, week 13 of 14", or once the season
+ * is over, "Final standings".
  */
-function whenLine(issue: LeagueWeek, seasonWeeks: number | null, short = false): string {
+function whenLine(issue: LeagueWeek, seasonWeeks: number | null): string {
   const results = issue.divisions.find((d) => d.results)?.results;
   return results && isFinal(results.week, seasonWeeks)
-    ? short ? "Final standings" : resultsLabel(results, seasonWeeks)
+    ? resultsLabel(results, seasonWeeks)
     : `${seasonLabel(issue.season)}, ${weekLabel(issue.week, seasonWeeks)}`;
 }
 
@@ -122,7 +122,7 @@ function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: numbe
         </ul>
         <NavSearch issue={issue} />
         <p className="desk-when">
-          <span>{whenLine(issue, seasonWeeks, true)}</span>
+          <span>{whenLine(issue, seasonWeeks)}</span>
           <span className="desk-updated">Updated {shortDate(__DATA_UPDATED__)}</span>
         </p>
       </div>

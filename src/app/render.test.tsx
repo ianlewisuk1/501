@@ -160,7 +160,7 @@ describe("routes", () => {
     expect(ladder).toContain('aria-label="13 wins, 0 losses">13–0<');
     expect(ladder).not.toContain("points clear");
     // Says the rows can be tapped.
-    expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
+    expect(html).toContain('<p class="tab-note">After week 13 of 14</p>');
     // The last issue's title race sits under the ladder, before the headlines.
     if (data.issues.at(-1)!.divisions.find((x) => x.division === "C")!.titleRace) {
       expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p><a class="team-mention" title="Area 501"');
@@ -433,7 +433,7 @@ describe("tournament issue", () => {
     const t = tourney();
     if (!t) return;
     const home = atFull("/");
-    expect(home).toContain("Final standings, after week 14, Nov 11");
+    expect(home).toContain("Final standings");
     expect(home).not.toContain("Fall 2026, tournaments");
     expect(home).not.toMatch(/week 15 of 14/);
     const div = atFull("/c");
@@ -442,7 +442,7 @@ describe("tournament issue", () => {
     expect(tabs[0]).toBe("Bracket");
     // Final standings and the last regular night's scores come with it.
     expect(div).toContain('aria-label="14 wins, 0 losses">14–0<');
-    expect(div).toContain("Final standings, after week 14, Nov 11. Tap a team");
+    expect(div).toContain('<p class="tab-note">Final standings</p>');
     expect(div).toMatch(/<p class="week-pill">(Quarterfinals|Semifinals|Final)/);
     // The leader is "Season champs" now, with no "Clinched" pill or key.
     expect(div).toContain(">Season champs<");

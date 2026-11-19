@@ -56,7 +56,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           id: "standings", label: "Standings", show: true,
           body: (
             <section aria-labelledby="standings">
-              <SectionHead id="standings" title="Standings" detail={`${results ? `${resultsLabel(results, seasonWeeks)}. ` : ""}Tap a team to see its page.`} />
+              <SectionHead id="standings" title="Standings" detail={results ? resultsLabel(results, seasonWeeks) : undefined} />
               <Ladder standings={final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
