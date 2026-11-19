@@ -14,9 +14,13 @@ import { mapsUrls, shortDate, type FixtureRow } from "./model";
 import { Link, teamPath } from "./route";
 import { ClinchBadge, ordinal } from "./ui";
 import barWebsites from "../../data/bar-websites.json";
+import barPhotos from "../../data/bar-photos.json";
 
 /** Each bar's own website, by its name in the league's directory (hand-kept; a bar with none is left out). */
 const BAR_WEBSITES: Record<string, string> = barWebsites.sites;
+
+/** A Street View picture of each bar's front where Google has a clear one (public/bars/), credited to Google. */
+const BAR_PHOTOS: Record<string, { file: string; taken: string }> = barPhotos.photos;
 
 const same = (a: string, b: string) => norm(a) === norm(b);
 
@@ -52,10 +56,16 @@ export function TeamInfo({ week, rows, venues, seasonWeeks, tournament, today }:
 
 function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
   const urls = mapsUrls(bar.name, [bar]);
+  const street = BAR_PHOTOS[bar.name];
   return (
     <section className="ti-section" aria-labelledby="ti-bar">
       <h3 id="ti-bar" className="ti-head">Home Bar</h3>
-      {PHOTOS_ON ? <BarPhoto barName={bar.name} /> : (
+      {PHOTOS_ON ? <BarPhoto barName={bar.name} /> : street ? (
+        <figure className="ti-street">
+          <img src={`/bars/${street.file}`} alt={`${bar.name} from the street`} width={800} height={450} loading="lazy" />
+          <figcaption>Image © Google, Street View, {street.taken}</figcaption>
+        </figure>
+      ) : (
         <div className="ti-photo" role="img" aria-label="Photo to come">
           <svg viewBox="0 0 120 60" width="96" height="48" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="40" cy="30" r="24" /><circle cx="40" cy="30" r="15" /><circle cx="40" cy="30" r="4" />

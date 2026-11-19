@@ -13,6 +13,8 @@ import { topPlayers } from "./TeamInfo";
 import type { TeamWeek } from "../parser/types";
 import tournament from "../../data/Fa26/league-week-15.json";
 import barWebsites from "../../data/bar-websites.json";
+import barPhotos from "../../data/bar-photos.json";
+import { existsSync } from "node:fs";
 import { loadSeason, type SeasonData } from "./store";
 
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -315,6 +317,7 @@ describe("team page", () => {
 
   it("has an Info tab: home bar with map links, the season so far, and the team's records", () => {
     const html = at("/c/area-501");
+    const names = new Set((full.venues ?? []).map((v) => v.name));
     const panel = html.slice(html.indexOf('id="panel-info"'), html.indexOf("</main>"));
     expect(panel).toContain("Home Bar");
     expect(panel).toContain('class="ti-bar-name"');
@@ -326,10 +329,18 @@ describe("team page", () => {
     expect(panel).toContain("All-Star Points Per Game");
     expect(panel).toContain("Singles 301");
     expect(panel).not.toContain("Hot darts");
+    // Its home bar's front from Street View, credited to Google, in place of "Photo to come".
+    expect(panel).toContain('src="/bars/the-flying-saucer.jpg"');
+    expect(panel).toContain("Image © Google, Street View, Jan 2026");
+    expect(panel).not.toContain("Photo to come");
+    // Every bar in the photos file is a directory bar, and its picture is in public/bars.
+    for (const [name, p] of Object.entries(barPhotos.photos)) {
+      expect(names).toContain(name);
+      expect(existsSync(`public/bars/${p.file}`)).toBe(true);
+    }
     // Its home bar, The Flying Saucer, has its own website.
     expect(panel).toContain('href="https://www.beerknurd.com/raleigh-flying-saucer/" target="_blank" rel="noopener">Website</a>');
     // Every bar named in the websites file is a bar in the league's directory.
-    const names = new Set((full.venues ?? []).map((v) => v.name));
     for (const name of Object.keys(barWebsites.sites)) expect(names).toContain(name);
   });
 

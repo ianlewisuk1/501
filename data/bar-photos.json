@@ -1,0 +1,15 @@
+{
+  "note": "Google Street View pictures of each league bar's front, by its name in the league's directory (data/{season}/venues.json). Screenshots of Google Maps, cropped (no other changes), in public/bars/. Shown with 'Image © Google' per Google's Geo Guidelines. 'taken' is Google's capture date. Bars with no clear Street View of their front are left out.",
+  "photos": {
+    "Buffalo Brothers - Capital Blvd": { "file": "buffalo-brothers-capital-blvd.jpg", "taken": "Mar 2022" },
+    "Cleveland Draft House - Garner": { "file": "cleveland-draft-house-garner.jpg", "taken": "Nov 2022" },
+    "D's Bottle Shop": { "file": "ds-bottle-shop.jpg", "taken": "Oct 2025" },
+    "The Flying Saucer": { "file": "the-flying-saucer.jpg", "taken": "Jan 2026" },
+    "High Park Bar & Grille": { "file": "high-park-bar-grille.jpg", "taken": "Mar 2022" },
+    "Lonerider Wake Forest": { "file": "lonerider-wake-forest.jpg", "taken": "Oct 2025" },
+    "Mac's Tavern": { "file": "macs-tavern.jpg", "taken": "Nov 2018" },
+    "Main Street Tavern": { "file": "main-street-tavern.jpg", "taken": "Oct 2025" },
+    "The Pickled Onion #2": { "file": "the-pickled-onion-2.jpg", "taken": "Jun 2019" },
+    "The Upper Deck": { "file": "the-upper-deck.jpg", "taken": "Feb 2019" }
+  }
+}
