@@ -19,8 +19,11 @@ import barPhotos from "../../data/bar-photos.json";
 /** Each bar's own website, by its name in the league's directory (hand-kept; a bar with none is left out). */
 const BAR_WEBSITES: Record<string, string> = barWebsites.sites;
 
-/** A Street View picture of each bar's front where Google has a clear one (public/bars/), credited to Google. */
-const BAR_PHOTOS: Record<string, { file: string; taken: string }> = barPhotos.photos;
+/**
+ * A picture of each bar's front (public/bars/): a Google Street View screenshot, credited to Google with
+ * its capture date (`taken`), or the owner's own photo (`source: "own"`), which needs no credit.
+ */
+const BAR_PHOTOS: Record<string, { file: string; taken?: string; source?: "own" }> = barPhotos.photos as Record<string, { file: string; taken?: string; source?: "own" }>;
 
 const same = (a: string, b: string) => norm(a) === norm(b);
 
@@ -63,7 +66,7 @@ function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
       {PHOTOS_ON ? <BarPhoto barName={bar.name} /> : street ? (
         <figure className="ti-street">
           <img src={`/bars/${street.file}`} alt={`${bar.name} from the street`} width={800} height={450} loading="lazy" />
-          <figcaption>Image © Google, Street View, {street.taken}</figcaption>
+          {street.taken && <figcaption>Image © Google, Street View, {street.taken}</figcaption>}
         </figure>
       ) : (
         <div className="ti-photo" role="img" aria-label="Photo to come">
