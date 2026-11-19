@@ -328,7 +328,7 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
             ))}
         {round.byes.map((b) => <MatchCard key={b} division={division} rows={[{ team: b }]} status="Bye" />)}
       </ul>
-      <p className="muted small">Home team second.{round.played ? " Out of 24 games." : ""} Places and records are from the current standings.</p>
+      <p className="muted small cards-note">Home team second.{round.played ? " Out of 24 games." : ""} Places and records are from the current standings.</p>
     </section>
   );
 }
