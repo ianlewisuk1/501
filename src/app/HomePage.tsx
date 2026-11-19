@@ -358,7 +358,9 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   );
   // Two lines: when, then what.
   const next: [string, ReactNode] | null = game
-    ? [shortDate(game.date, false), <>{game.round} vs {game.opponent ? opp(game.opponent) : game.opponentText ?? "to be decided"}</>]
+    ? [shortDate(game.date, false), <>{game.round}{game.ifBeat ? " (if they win)" : ""} vs {game.opponents.length
+        ? game.opponents.map((t, i) => <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}{opp(t)}</span>)
+        : game.opponentText ?? "to be decided"}</>]
     : tournament ? [shortDate(tournament.date, false), tournament.label.replace(/^RDL /, "")]
     : !fixture || !date ? null
     : "bye" in fixture ? [shortDate(date, false), "Bye week"]

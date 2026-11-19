@@ -461,14 +461,26 @@ describe("tournament issue", () => {
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {
     if (!tourney()) return;
     const team = atFull("/c/area-501");
-    expect(team).toMatch(/vs <a href="\/c\/still-hump-n">Still Hump&#x27;N<\/a>/);
+    expect(team).toMatch(/vs <span><a href="\/c\/still-hump-n">Still Hump&#x27;N<\/a><\/span>/);
     expect(team).toContain("8th in C, 1–13");
     expect(team).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
     expect(team).toContain("At Upper Deck 1&amp;2");
     expect(team).toContain("Map (Apple)");
     expect(team).not.toContain("Pairings and venues come from the league");
     const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    expect(home).toMatch(/Next: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*href="\/c\/still-hump-n"[^>]*>Still Hump&#x27;N<\/a>/);
+    expect(home).toMatch(/Next: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <span><a[^>]*href="\/c\/still-hump-n"[^>]*>Still Hump&#x27;N<\/a>/);
+  });
+
+  it("looks ahead to the semifinal while the quarterfinal result is awaited", () => {
+    if (!tourney()) return;
+    vi.setSystemTime(new Date("2026-11-19T09:00:00"));
+    const team = atFull("/c/area-501");
+    expect(team).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
+    expect(team).toMatch(/vs <span><a href="\/c\/brutha-ducks">Brutha Ducks<\/a><\/span><span> or <a href="\/c\/menace-2-sobriety">Menace 2 Sobriety<\/a><\/span>/);
+    expect(team).toContain("If they beat Still Hump&#x27;N in the quarterfinal");
+    expect(team).toContain("At Break Time Billiards");
+    const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
+    expect(home).toContain("Next: Dec 2</span><span class=\"your-team-what\">Semifinal (if they win) vs ");
   });
 });
 

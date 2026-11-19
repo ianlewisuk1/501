@@ -341,40 +341,71 @@ export interface TournamentMatch {
   opponentText: string | null;
   /** The bar, without the newsletter's "*" (a third board may be free). */
   venue: string | null;
+  /** Everyone who could still be the opponent, by name ("Brutha Ducks", "Menace 2 Sobriety"). */
+  opponents: string[];
+  /** Set when an earlier round has been played but its result isn't in: this match is "if they beat …". */
+  ifBeat: { team: string; round: string } | null;
 }
 
 /**
  * A team's next tournament match, from the newest issue's bracket and the hand-entered winners:
- * the first round on or after today. Null when there's no bracket, the team was knocked out, or
- * it waits on a result not entered yet. A bye carries straight on to the next round.
+ * the first round on or after today. A round already played whose result isn't entered yet is
+ * taken as a win for the team, and the match says so (`ifBeat`), so the card can still name the
+ * next date, bar and possible opponents. Null when there's no bracket or the team was knocked out.
+ * A bye carries straight on to the next round.
  */
 export function tournamentMatch(data: SeasonData, division: string, team: string, today: string): TournamentMatch | null {
   const issue = data.issues.at(-1);
   const d = issue?.divisions.find((x) => x.division === division);
   if (!d?.bracket) return null;
   const view = bracketView(withBracketFile(d.bracket, data.bracket, division), d.standings);
-  const mine = (e: BracketEntry) => !e.projected && e.team !== null && sameName(e.team, team);
-  for (const r of view.rounds) {
-    const g = r.games.find((x) => x.entries.some(mine));
-    if (!g) return null; // not through to this round (or not decided yet)
+  const placed = (e: BracketEntry) => !e.projected && e.team !== null;
+  const mine = (e: BracketEntry) => placed(e) && sameName(e.team!, team);
+  // Everyone who could still come out of a game: its winner, else whoever could come out of the games feeding it.
+  const alive = (r: number, idx: number): string[] => {
+    const g = view.rounds[r].games[idx];
+    if (g.winner) return [g.winner];
+    if (r === 0) return g.entries.filter(placed).map((e) => e.team!);
+    return [...alive(r - 1, 2 * idx), ...alive(r - 1, 2 * idx + 1)];
+  };
+  let idx = view.rounds[0].games.findIndex((g) => g.entries.some(mine));
+  if (idx < 0) return null;
+  let ifBeat: TournamentMatch["ifBeat"] = null;
+  for (let r = 0; r < view.rounds.length; r++, idx = Math.floor(idx / 2)) {
+    const round = view.rounds[r];
+    const g = round.games[idx];
+    // Which line of this game is ours: in later rounds, the one fed by the game we came out of.
+    const meFirst = r === 0 ? mine(g.entries[0]) : alive(r - 1, 2 * idx).some((t) => sameName(t, team));
+    const [me, them] = meFirst ? g.entries : [g.entries[1], g.entries[0]];
     if (g.winner) {
       if (!sameName(g.winner, team)) return null; // knocked out
       continue; // won it, or a bye
     }
-    if (!r.date || r.date < today) return null; // played, result not entered yet
-    const [me, them] = mine(g.entries[0]) ? g.entries : [g.entries[1], g.entries[0]];
-    const known = them.team !== null && !them.projected;
+    const opponents = r === 0 ? (placed(them) ? [them.team!] : []) : alive(r - 1, meFirst ? 2 * idx + 1 : 2 * idx);
+    if (!round.date || round.date < today) {
+      // Played, result not in yet: carry on as if the team won, and say so.
+      if (opponents.length !== 1) return null;
+      ifBeat = { team: opponents[0], round: round.name.replace(/s$/, "").toLowerCase() };
+      continue;
+    }
+    const known = opponents.length === 1;
     return {
-      round: r.name.replace(/s$/, ""),
-      date: r.date,
-      seed: me.seed,
-      opponent: known ? them.team : null,
-      opponentSeed: known ? them.seed : null,
+      round: round.name.replace(/s$/, ""),
+      date: round.date,
+      seed: me.seed ?? first(view, team),
+      opponent: known ? opponents[0] : null,
+      opponentSeed: known ? (them.seed ?? first(view, opponents[0])) : null,
       opponentText: known ? null : them.placeholder,
+      opponents,
       venue: g.venue?.replace(/\*$/, "").trim() || null,
+      ifBeat,
     };
   }
   return null;
 }
+
+/** A team's seed, from the first round. */
+const first = (view: BracketView, team: string): number | null =>
+  view.rounds[0].games.flatMap((g) => g.entries).find((e) => e.team && sameName(e.team, team))?.seed ?? null;
 
 const sameName = (a: string, b: string) => norm(a) === norm(b);

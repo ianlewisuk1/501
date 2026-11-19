@@ -136,8 +136,9 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
 }
 
 /**
- * After the regular season's last night: the team's next game in the bracket (opponent, seeds, bar
- * and map links), else the next division tournament night, if the schedule has one.
+ * After the regular season's last night: the team's next game in the bracket (opponent, or everyone
+ * it could still be; seeds, bar and map links; "if they beat …" while the last result is awaited),
+ * else the next division tournament night, if the schedule has one.
  */
 function Tournament({ next, game, week, today, venues }: {
   next: { date: string; label: string } | null; game: TournamentMatch | null; week: TeamWeek; today: string; venues: Venue[] | undefined;
@@ -147,9 +148,14 @@ function Tournament({ next, game, week, today, venues }: {
     return (
       <section className="card hero" aria-labelledby="tonight">
         <h2 id="tonight">{game.date === today ? "Tonight" : "Next match"} <span className="muted">{shortDate(game.date)}</span></h2>
-        <p className="big">vs {game.opponent ? <Link to={teamPath(week.team.division, game.opponent)}>{game.opponent}</Link> : game.opponentText ?? "to be decided"}</p>
+        <p className="big">vs {game.opponents.length
+          ? game.opponents.map((t, i) => (
+            <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}<Link to={teamPath(week.team.division, t)}>{t}</Link></span>))
+          : game.opponentText ?? "to be decided"}</p>
         {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
         <p className="hero-opp muted">{game.round}{game.seed && game.opponentSeed ? `, seed ${game.seed} v ${game.opponentSeed}` : ""}, 7:00 pm</p>
+        {/* Last round's result isn't in yet: this is where they go next if they won it. */}
+        {game.ifBeat && <p className="hero-opp muted">If they beat {game.ifBeat.team} in the {game.ifBeat.round}</p>}
         {game.venue && (
           <div className="hero-venue">
             <div>
