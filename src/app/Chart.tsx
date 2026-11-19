@@ -146,6 +146,20 @@ function FormChart({ lines, half, title }: { lines: Line[]; half: boolean; title
   if (!weeks.length) return <p className="muted">No weeks to chart yet.</p>;
   return (
     <figure className="chart form-chart">
+      {/* Which line is who: each shown line, drawn in its own style, with its latest figure. */}
+      <ul className="form-legend" aria-label="Lines on the chart">
+        {[...lines].reverse().map((l) => {
+          const last = [...l.points].reverse().find((p) => p.pct !== null);
+          return (
+            <li key={l.id}>
+              <svg className={`fline ${l.className}`} width="26" height="10" aria-hidden="true"><path d="M2 5H24" /></svg>
+              <span className="form-legend-name">{l.label}</span>
+              {last && <span className="muted">{fmtPct(last.pct)}</span>}
+            </li>
+          );
+        })}
+        {half && <li><svg width="26" height="10" aria-hidden="true"><line className="ref-half-line" x1="2" x2="24" y1="5" y2="5" /></svg><span className="form-legend-name">50%</span></li>}
+      </ul>
       <div className="plot">
         <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title} onPointerLeave={() => setHover(null)}>
           {[0, 0.25, 0.5, 0.75, 1].map((t) => (
