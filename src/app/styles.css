@@ -1242,7 +1242,10 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .ti-street img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; border: 1px solid var(--chalk-faint); }
 .ti-street figcaption { margin-top: 4px; font-size: 0.8rem; color: var(--chalk-2); text-align: right; }
 .ti-bar-name { font: 700 1.45rem/1.15 var(--sketch); }
-.ti-section .maps { margin-top: 8px; }
+/* Maps, the bar's site and its menu on one line (owner, 2026-11-19): spread across the width,
+   the lettering a little smaller on narrow phones rather than wrapping onto a second line. */
+.ti-section .maps { margin-top: 8px; flex-wrap: nowrap; justify-content: space-between; gap: 10px; }
+.ti-section .maps .map-link { font-size: clamp(0.85rem, 4.4vw, 1.15rem); white-space: nowrap; }
 .ti-nights { margin-top: 8px !important; }
 .ti-big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; font: 700 1.45rem/1.15 var(--sketch); }
 .ti-cup { margin-top: 6px !important; }
