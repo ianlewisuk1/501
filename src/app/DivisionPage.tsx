@@ -337,22 +337,40 @@ interface CardRow { team: string; score?: number | null; won?: boolean; lost?: b
  * scaled down just enough (re-measured whenever the space changes size).
  */
 /**
- * A team's full name if it fits its box on one line, else page 2's short name ("Wing & A Plaque"
- * or "Wing"). Measured after layout and again when the box changes size or the lettering loads.
+ * Hand-picked names for the bracket, tried in order after the full name and before page 2's short
+ * one, where the newsletter's shortening reads badly ("the Point?", "Calm", "The Blind") or there
+ * is none and the full name won't fit (owner, 2026-11-18). Mostly in Kilt's own words.
+ */
+export const BRACKET_NAMES: Record<string, string[]> = {
+  "What's the Point?": ["What's the Point", "The Point"],
+  "Banging the Wire": ["Banging Wire"],
+  "Sharky's Machine": ["Sharky's"],
+  "Calm Under Pressure": ["Under Pressure"],
+  "Are You Afraid of the Dart": ["Are You Afraid"],
+  "The Blonde Leading the Blind": ["Blonde Leading", "Blonde"],
+  "Heart of Dartness": ["Dartness"],
+  "Aim-ing For Trouble": ["Trouble"],
+};
+
+/**
+ * A team's full name if it fits its box on one line, else the first of the hand-picked names and
+ * page 2's short name that does ("Wing & A Plaque" or "Wing"); the last one if none fits.
+ * Measured after layout and again when the box changes size or the lettering loads.
  */
 function BracketName({ team, short, className, style }: { team: string; short?: string; className?: string; style?: CSSProperties }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [useShort, setUseShort] = useState(false);
+  const names = useMemo(() => [...new Set([team, ...(BRACKET_NAMES[team] ?? []), ...(short ? [short] : [])])], [team, short]);
+  const [shown, setShown] = useState(team);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || !short || short === team) return;
+    if (!el || names.length < 2) return;
     // Measure the full name in the box's own lettering, without touching what React rendered.
     const ctx = document.createElement("canvas").getContext("2d");
     const fit = () => {
       if (!ctx || !el.clientWidth) return;
       const cs = getComputedStyle(el);
       ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-      setUseShort(ctx.measureText(team).width > el.clientWidth + 0.5);
+      setShown(names.find((n) => ctx.measureText(n).width <= el.clientWidth + 0.5) ?? names.at(-1)!);
     };
     fit();
     let live = true;
@@ -360,8 +378,8 @@ function BracketName({ team, short, className, style }: { team: string; short?: 
     const watch = new ResizeObserver(fit);
     watch.observe(el.parentElement ?? el);
     return () => { live = false; watch.disconnect(); };
-  }, [team, short]);
-  return <span ref={ref} className={className} style={style}>{useShort && short ? short : team}</span>;
+  }, [names]);
+  return <span ref={ref} className={className} style={style}>{names.includes(shown) ? shown : team}</span>;
 }
 
 function FitName({ name, className = "side-name" }: { name: string; className?: string }) {

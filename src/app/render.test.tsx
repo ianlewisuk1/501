@@ -8,6 +8,8 @@ import { todayIso, type SeasonSchedule } from "./model";
 import { divisionBest, playerLine, teamLine, verdict } from "./form";
 import { divisionIn, divisionRounds, divisionWeeks } from "./league";
 import { parseRoute } from "./route";
+import { BRACKET_NAMES } from "./DivisionPage";
+import tournament from "../../data/Fa26/league-week-15.json";
 import { loadSeason, type SeasonData } from "./store";
 
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -141,6 +143,9 @@ describe("routes", () => {
       expect(bracket).toContain("Seed 1 or 8");
       // Full names first; the page swaps in page 2's short name only when one won't fit its box.
       expect(bracket).toMatch(/class="b-name"[^>]*>Menace 2 Sobriety</);
+      // Every hand-picked bracket name belongs to a real team.
+      const teams = new Set(tournament.divisions.flatMap((d) => d.standings.map((t) => t.team)));
+      for (const name of Object.keys(BRACKET_NAMES)) expect(teams).toContain(name);
       expect(bracket).not.toContain("bracket-key");
     } finally {
       vi.setSystemTime(new Date(`${data.issues.at(-1)!.issueDate}T09:00:00`));
