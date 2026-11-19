@@ -14,6 +14,7 @@ import type { SeasonData } from "./store";
 import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
+import { TeamInfo } from "./TeamInfo";
 import { BarPhoto } from "./BarPhoto";
 import { PHOTOS_ON } from "../photos/core";
 import { Arrow, groupSpans, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
@@ -29,6 +30,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const current = fixtures.find((f) => f.status === "current");
   const news = breakingNews(week, teamSchedule?.weeks.length ?? 0, data.news);
   const scout = current && !current.bye ? scoutReport(current.opponent, week, divisions) : null;
+  const cup = useMemo(() => tournamentMatch(data, division, week.team.name, today), [data, division, week, today]);
   useBlackStatusBar();
   // The teams either side in the standings, wrapping round, for the arrows by the name.
   const order = week.standings.map((s) => s.team);
@@ -49,12 +51,14 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
         </div>
         {current ? <Tonight week={week} fixture={current} today={today} venues={data.venues} />
           : <Tournament next={nextTournament(data.schedule?.season === week.season ? data.schedule : undefined, today)}
-              game={tournamentMatch(data, division, week.team.name, today)} week={week} today={today} venues={data.venues} />}
+              game={cup} week={week} today={today} venues={data.venues} />}
         <Tabs label="Team sections" tabs={[
           { id: "players", label: "Players", show: week.players.length > 0, body: <Players week={week} /> },
           { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
           { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
           { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
+          { id: "team", label: "Team", show: true, body: <TeamInfo week={week} rows={fixtures} venues={data.venues} issues={data.issues}
+              seasonWeeks={teamSchedule?.weeks.length ?? null} tournament={cup} today={today} /> },
         ]} />
         <footer className="muted small">
           Unofficial. From the RDL "Tons of Newsletter", week {week.week}. Stats through week {week.week - 1}.

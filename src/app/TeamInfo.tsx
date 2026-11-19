@@ -1,0 +1,149 @@
+/**
+ * A team page's Team tab: things about the team rather than this week's game. Its home bar (a
+ * photo, the address and landmark, map links, its home nights still to come), how its season went
+ * (place, record, the tournament), and its records this season (trophy darts, perfect throws, hot
+ * darts, newest first). Laid out photo first so it doesn't read like the match card above the tabs.
+ */
+import type { LeagueWeek, Standing, TeamWeek } from "../parser/types";
+import { resolveVenue, type Venue } from "../parser/venueMatch";
+import { norm } from "../parser/names";
+import { PHOTOS_ON } from "../photos/core";
+import { BarPhoto } from "./BarPhoto";
+import { useState } from "react";
+import { featLabel, isFinal, type TournamentState } from "./league";
+import { mapsUrls, shortDate, type FixtureRow } from "./model";
+import { Link, teamPath } from "./route";
+import { ClinchBadge, ordinal } from "./ui";
+
+const same = (a: string, b: string) => norm(a) === norm(b);
+
+/** The bar a team plays its home matches at: the one its home fixtures name most often. */
+export function homeBar(rows: FixtureRow[], venues: Venue[] | undefined): Venue | null {
+  const counts = new Map<string, { venue: Venue; n: number }>();
+  for (const r of rows) {
+    if (r.bye || !r.home || !r.venue) continue;
+    const v = resolveVenue(r.venue, venues ?? []);
+    if (!v) continue;
+    const c = counts.get(v.name) ?? { venue: v, n: 0 };
+    counts.set(v.name, { venue: v, n: c.n + 1 });
+  }
+  return [...counts.values()].sort((a, b) => b.n - a.n)[0]?.venue ?? null;
+}
+
+export function TeamInfo({ week, rows, venues, issues, seasonWeeks, tournament, today }: {
+  week: TeamWeek; rows: FixtureRow[]; venues: Venue[] | undefined; issues: LeagueWeek[];
+  seasonWeeks: number | null; tournament: TournamentState | null; today: string;
+}) {
+  const team = week.team.name;
+  const division = week.team.division;
+  const bar = homeBar(rows, venues);
+  const homeNights = rows.filter((r) => !r.bye && r.home && r.date >= today);
+  const me = week.standings.find((s) => same(s.team, team));
+  return (
+    <div className="team-info">
+      {bar && <HomeBar bar={bar} nights={homeNights} />}
+      {me && <Season me={me} week={week} seasonWeeks={seasonWeeks} tournament={tournament} />}
+      <TeamRecords team={team} division={division} issues={issues} />
+    </div>
+  );
+}
+
+function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
+  const urls = mapsUrls(bar.name, [bar]);
+  return (
+    <section className="ti-section" aria-labelledby="ti-bar">
+      <h3 id="ti-bar" className="ti-head">Home bar</h3>
+      {PHOTOS_ON ? <BarPhoto barName={bar.name} /> : (
+        <div className="ti-photo" role="img" aria-label="Photo to come">
+          <svg viewBox="0 0 120 60" width="96" height="48" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="40" cy="30" r="24" /><circle cx="40" cy="30" r="15" /><circle cx="40" cy="30" r="4" />
+            <path d="M44 27 L96 6" /><path d="M86 10 l14 -8 l-2 10 z" />
+          </svg>
+          <span>Photo to come</span>
+        </div>
+      )}
+      <p className="ti-bar-name">{bar.name}</p>
+      <p className="muted">{bar.street}, {bar.area}</p>
+      {bar.landmark && <p className="muted">{bar.landmark[0].toUpperCase() + bar.landmark.slice(1)}</p>}
+      <div className="maps">
+        <a className="map-link" href={urls.apple} target="_blank" rel="noopener">Map (Apple)</a>
+        <a className="map-link" href={urls.google} target="_blank" rel="noopener">Map (Google)</a>
+      </div>
+      {nights.length > 0 && <p className="ti-nights">Home nights: {nights.map((r) => shortDate(r.date, false)).join(", ")}</p>}
+    </section>
+  );
+}
+
+/** Place and record, then where the team is in the tournament. */
+function Season({ me, week, seasonWeeks, tournament }: { me: Standing; week: TeamWeek; seasonWeeks: number | null; tournament: TournamentState | null }) {
+  const division = week.team.division;
+  const through = week.week - 1;
+  const final = isFinal(through, seasonWeeks);
+  const link = (t: string) => <Link to={teamPath(division, t)}>{t}</Link>;
+  const cup = !tournament ? null
+    : tournament.kind === "champion" ? <>Won the {division} Division tournament</>
+    : tournament.kind === "out" ? <>Out in the {tournament.round === "Final" ? "final" : `${tournament.round.toLowerCase()}s`}, beaten by {link(tournament.beatenBy)}</>
+    : tournament.kind === "pending" ? <>{tournament.round}{tournament.opponent && <> vs {link(tournament.opponent)}</>}, result to come</>
+    : <>{tournament.round} {tournament.opponent ? <>vs {link(tournament.opponent)}</> : ""} on {shortDate(tournament.date, false)}{tournament.seed ? `, seed ${tournament.seed}` : ""}</>;
+  return (
+    <section className="ti-section" aria-labelledby="ti-season">
+      <h3 id="ti-season" className="ti-head">This season</h3>
+      <p className="ti-big">
+        {ordinal(me.rank)} in {division}, {me.wins}–{me.losses}
+        {final && me.rank === 1 && <ClinchBadge mark="G" final />}
+      </p>
+      <p className="muted">{me.points} points, {final ? "final standings" : `through week ${through}${seasonWeeks ? ` of ${seasonWeeks}` : ""}`}</p>
+      {cup && <p className="ti-cup">Tournament: {cup}</p>}
+    </section>
+  );
+}
+
+/** The team's trophy darts (best this season), perfect throws (this season) and hot darts (every week). */
+function TeamRecords({ team, division, issues }: { team: string; division: string; issues: LeagueWeek[] }) {
+  const latest = issues.at(-1);
+  const div = latest?.divisions.find((d) => d.division === division);
+  const trophies = (div?.records ?? []).flatMap((r) => r.holders.filter((h) => same(h.team, team)).map((h) => ({ ...h, category: r.category, value: r.value })));
+  const throws = (latest?.perfectThrows ?? []).filter((p) => same(p.team, team));
+  const kinds = [...new Set(throws.map((p) => p.kind))];
+  // Hot darts are printed one week at a time, so gather every issue's (the issue for week N covers week N-1).
+  const hot = issues.flatMap((i) => (i.divisions.find((d) => d.division === division)?.hotDarts ?? [])
+    .filter((h) => same(h.team, team)).map((h) => ({ ...h, week: i.week - 1 }))).reverse();
+  const [allHot, setAllHot] = useState(false);
+  const HOT = 8;
+  if (!trophies.length && !throws.length && !hot.length) return null;
+  return (
+    <section className="ti-section" aria-labelledby="ti-records">
+      <h3 id="ti-records" className="ti-head">Records</h3>
+      {trophies.length > 0 && (
+        <>
+          <p className="ti-sub">Trophy darts <span className="muted">best in {division} this season</span></p>
+          <ul className="ti-list">
+            {trophies.map((t, i) => (
+              <li key={i}><b>{t.value}</b> {t.category}: {t.players.join(" & ")}{t.date && <span className="muted">, {shortDate(t.date, false)}</span>}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {throws.length > 0 && (
+        <>
+          <p className="ti-sub">Perfect throws <span className="muted">this season</span></p>
+          <ul className="ti-list">
+            {kinds.map((k) => {
+              const who = throws.filter((p) => p.kind === k);
+              return <li key={k}><b>{k}</b>: {who.map((p) => `${p.player}${p.dates.length > 1 ? ` ×${p.dates.length}` : ""}`).join(", ")}</li>;
+            })}
+          </ul>
+        </>
+      )}
+      {hot.length > 0 && (
+        <>
+          <p className="ti-sub">Hot darts <span className="muted">this season</span></p>
+          <ul className="ti-list">
+            {(allHot ? hot : hot.slice(0, HOT)).map((h, i) => <li key={i}><b>{featLabel(h.feat)}</b>: {h.players.join(" & ")}<span className="muted">, week {h.week}</span></li>)}
+          </ul>
+          {hot.length > HOT && <button type="button" className="ti-more" onClick={() => setAllHot(!allHot)}>{allHot ? "Show fewer" : `Show all ${hot.length}`}</button>}
+        </>
+      )}
+    </section>
+  );
+}

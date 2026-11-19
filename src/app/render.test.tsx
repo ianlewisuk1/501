@@ -291,11 +291,22 @@ describe("team page", () => {
     expect(scout).toContain('aria-sort="descending"');
   });
 
+  it("has a Team tab: home bar with map links, the season so far, and the team's records", () => {
+    const html = at("/c/area-501");
+    const panel = html.slice(html.indexOf('id="panel-team"'), html.indexOf("</main>"));
+    expect(panel).toContain("Home bar");
+    expect(panel).toContain('class="ti-bar-name"');
+    expect(panel).toContain("Map (Apple)");
+    expect(panel).toMatch(/1st in C, 1[34]–0/);
+    // Ian Lewis holds C's fast singles 301 trophy dart.
+    expect(panel).toContain("Fast Singles 301: Ian Lewis");
+  });
+
   it("puts the sections in tabs under tonight's match, the players open first", () => {
     const html = at("/c/area-501");
     const tabs = [...html.matchAll(/role="tab" aria-selected="(true|false)"[^>]*>([^<]+)</g)].map((m) => [m[2], m[1]]);
     // No Standings tab: the division page has the same table, a tap away in the site bar.
-    expect(tabs).toEqual([["Players", "true"], ["Form", "false"], ["Opponent", "false"], ["Fixtures", "false"]]);
+    expect(tabs).toEqual([["Players", "true"], ["Form", "false"], ["Opponent", "false"], ["Fixtures", "false"], ["Team", "false"]]);
     expect(html).toMatch(/id="panel-players" role="tabpanel"[^>]*class="tab-panel"/);
     expect(html).toMatch(/id="panel-opponent" role="tabpanel"[^>]*hidden=""/);
     // Inside a tab, sections open flat: no fold buttons.
