@@ -23,8 +23,40 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Raleigh Dart League</title>
+    <style>
+      /* Opening screen: the RDL logo, centred, when RDL is opened from the home screen (owner, 2026-11-19). */
+      #splash { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; background: #000; transition: opacity 0.4s ease; }
+      html.splash #splash { display: flex; }
+      #splash img { width: min(55vw, 240px); height: auto; aspect-ratio: 1; }
+      html[data-theme="light"] #splash { background: #fff; }
+      html[data-theme="light"] #splash img { filter: invert(1); }
+      #splash.gone { opacity: 0; }
+      @media (prefers-reduced-motion: reduce) { #splash { transition: none; } }
+    </style>
+    <script>
+      // Show it only when launched from the home screen (or with ?splash to preview), once per visit.
+      (function () {
+        var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+        var preview = /[?&]splash\b/.test(location.search);
+        var seen = false;
+        try { seen = sessionStorage.getItem("rdl.splashed") === "1"; sessionStorage.setItem("rdl.splashed", "1"); } catch (e) {}
+        if (!preview && (!standalone || seen)) return;
+        document.documentElement.classList.add("splash");
+        var start = Date.now();
+        function hide() {
+          var el = document.getElementById("splash");
+          if (!el || el.classList.contains("gone")) return;
+          el.classList.add("gone");
+          setTimeout(function () { document.documentElement.classList.remove("splash"); el.remove(); }, 450);
+        }
+        // Long enough to see (0.7s), gone once the page has loaded, and never stuck past 2.5s.
+        window.addEventListener("load", function () { setTimeout(hide, Math.max(0, 700 - (Date.now() - start))); });
+        setTimeout(hide, 2500);
+      })();
+    </script>
   </head>
   <body>
+    <div id="splash" aria-hidden="true"><img src="/rdl-logo.png" alt="" width="202" height="202" /></div>
     <div id="root"></div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
