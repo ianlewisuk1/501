@@ -315,7 +315,6 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
         <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}>›</button>
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
-      {round.played && round.headline && <Headlines text={round.headline} week={round.week} division={division} />}
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
       <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
         {round.played

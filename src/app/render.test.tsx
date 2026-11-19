@@ -408,10 +408,10 @@ describe("from the newsletter itself", () => {
     expect(standings).toMatch(/<li><a class="team-mention" title="Area 501" style="color:var\(--c\d\)" href="\/c\/area-501">Area<\/a> keeps their streak alive/);
   });
 
-  it("gives every played week on Matches its own headlines", () => {
-    const rounds = divisionRounds(data, "C").filter((r) => r.played);
-    expect(rounds.length).toBeGreaterThan(0);
-    for (const r of rounds) expect(r.headline, `week ${r.week}`).toBeTruthy();
+  it("keeps Kilt's headlines off the Matches tab, but keeps his picks", () => {
+    const matches = section(at("/c"), "matches");
+    expect(matches).not.toContain("Kilt&#x27;s headlines");
+    expect(matches).toContain("Kilt&#x27;s pick");
   });
 
   it("links to the full newsletter from division and team pages", () => {
