@@ -9,6 +9,8 @@ import { divisionBest, playerLine, teamLine, verdict } from "./form";
 import { divisionIn, divisionRounds, divisionWeeks } from "./league";
 import { parseRoute } from "./route";
 import { BRACKET_NAMES } from "./DivisionPage";
+import { topPlayers } from "./TeamInfo";
+import type { TeamWeek } from "../parser/types";
 import tournament from "../../data/Fa26/league-week-15.json";
 import { loadSeason, type SeasonData } from "./store";
 
@@ -289,6 +291,14 @@ describe("team page", () => {
     expect(groups).toEqual(["Season", "Last 3 wks"]);
     expect(scout.match(/<button>|<button /g)?.length).toBe(7); // player + 6 stat columns
     expect(scout).toContain('aria-sort="descending"');
+  });
+
+  it("ranks a team's top players with tied records sharing a place, and keeps a tie for 3rd", () => {
+    const p = (name: string, w: number, l: number) => ({ name, singles301: { w, l } }) as unknown as TeamWeek["players"][number];
+    const top = topPlayers([p("A", 9, 1), p("B", 7, 1), p("C", 7, 1), p("D", 6, 2), p("E", 6, 2), p("F", 5, 3)], "singles301");
+    expect(top.map((t) => `${t.rank} ${t.name}`)).toEqual(["1 A", "2 B", "2 C"]);
+    const tie3 = topPlayers([p("A", 9, 1), p("B", 8, 2), p("C", 7, 3), p("D", 7, 3), p("E", 6, 4)], "singles301");
+    expect(tie3.map((t) => `${t.rank} ${t.name}`)).toEqual(["1 A", "2 B", "3 C", "3 D"]);
   });
 
   it("has a Team tab: home bar with map links, the season so far, and the team's records", () => {

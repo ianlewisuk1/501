@@ -101,32 +101,48 @@ const GAMES: [Game, string][] = [["singles301", "Singles 301"], ["singlesCricket
 const TOP = 3;
 
 /**
- * The team's best players in each game: win % among those with at least half the busiest
- * player's games in it (so a 2–0 sub doesn't top the list), more wins breaking a tie.
+ * Ranks a sorted list the sports way: rows that tie share a place, and the next place skips
+ * (1st, 2nd, 2nd, 4th). Keeps everyone placed within the top `n`, so a tie for 3rd shows both.
  */
-export function topPlayers(players: TeamWeek["players"], game: Game, n = TOP): { name: string; w: number; l: number }[] {
+function ranked<T>(sorted: T[], same: (a: T, b: T) => boolean, n: number): (T & { rank: number })[] {
+  const out: (T & { rank: number })[] = [];
+  sorted.forEach((row, i) => {
+    const rank = i > 0 && same(sorted[i - 1], row) ? out[i - 1].rank : i + 1;
+    out.push({ ...row, rank });
+  });
+  return out.filter((r) => r.rank <= n);
+}
+
+/**
+ * The team's best players in each game: win % among those with at least half the busiest
+ * player's games in it (so a 2–0 sub doesn't top the list), more wins breaking a tie. Players
+ * with the same record share a place.
+ */
+export function topPlayers(players: TeamWeek["players"], game: Game, n = TOP): { name: string; w: number; l: number; rank: number }[] {
   const played = players.map((p) => ({ name: p.name, w: p[game].w, l: p[game].l })).filter((p) => p.w + p.l > 0);
   const most = Math.max(0, ...played.map((p) => p.w + p.l));
-  return played.filter((p) => p.w + p.l >= most / 2)
-    .sort((a, b) => b.w / (b.w + b.l) - a.w / (a.w + a.l) || b.w - a.w)
-    .slice(0, n);
+  const sorted = played.filter((p) => p.w + p.l >= most / 2)
+    .sort((a, b) => b.w / (b.w + b.l) - a.w / (a.w + a.l) || b.w - a.w);
+  return ranked(sorted, (a, b) => a.w === b.w && a.l === b.l, n);
 }
 
 /**
  * The team's best all-star points per game this season, among players with at least half the
- * busiest player's games (so one big night as a sub doesn't top it); more points break a tie.
+ * busiest player's games (so one big night as a sub doesn't top it). The same average (to the two
+ * places shown) shares a place.
  */
-export function topAllStars(players: TeamWeek["players"], n = TOP): { name: string; average: number }[] {
+export function topAllStars(players: TeamWeek["players"], n = TOP): { name: string; average: number; rank: number }[] {
   const most = Math.max(0, ...players.map((p) => p.gamesPlayed));
-  return players.filter((p) => p.aspAverage !== null && p.allStarPoints > 0 && p.gamesPlayed >= most / 2)
+  const sorted = players.filter((p) => p.aspAverage !== null && p.allStarPoints > 0 && p.gamesPlayed >= most / 2)
     .map((p) => ({ name: p.name, average: p.aspAverage!, points: p.allStarPoints }))
-    .sort((a, b) => b.average - a.average || b.points - a.points).slice(0, n);
+    .sort((a, b) => b.average - a.average || b.points - a.points);
+  return ranked(sorted, (a, b) => a.average.toFixed(2) === b.average.toFixed(2), n);
 }
 
 function TopPlayers({ week }: { week: TeamWeek }) {
   const boards = [
-    ...GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game).map((p) => ({ name: p.name, value: `${p.w}–${p.l}` })) })),
-    { label: "All-Star Points Per Game", top: topAllStars(week.players).map((p) => ({ name: p.name, value: p.average.toFixed(2) })) },
+    ...GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game).map((p) => ({ name: p.name, rank: p.rank, value: `${p.w}–${p.l}` })) })),
+    { label: "All-Star Points Per Game", top: topAllStars(week.players).map((p) => ({ name: p.name, rank: p.rank, value: p.average.toFixed(2) })) },
   ].filter((b) => b.top.length);
   if (!boards.length) return null;
   return (
@@ -136,9 +152,9 @@ function TopPlayers({ week }: { week: TeamWeek }) {
         {boards.map((b) => (
           <div key={b.label}>
             <p className="ti-sub">{b.label}</p>
-            <ol className="ti-top">
-              {b.top.map((p) => <li key={p.name}><div><span className="ti-top-name">{p.name}</span><span className="muted">{p.value}</span></div></li>)}
-            </ol>
+            <ul className="ti-top">
+              {b.top.map((p) => <li key={p.name}><span className="ti-top-rank">{ordinal(p.rank)}</span><span className="ti-top-name">{p.name}</span><span className="muted">{p.value}</span></li>)}
+            </ul>
           </div>
         ))}
       </div>
