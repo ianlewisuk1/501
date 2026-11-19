@@ -45,6 +45,10 @@ describe("tournament bracket", () => {
     for (const [d, o] of Object.entries(f.divisions)) {
       const names = div(d).standings.map((s) => s.team);
       for (const t of [...(o.seeds ?? []), ...(o.quarterfinals ?? []), ...(o.semifinals ?? []), o.final ?? null]) if (t) expect(names).toContain(t);
+      // Each winner played in that game, so a slip in bracket order shows up here.
+      const v = bracketView(withBracketFile(div(d).bracket!, f, d), div(d).standings);
+      (o.quarterfinals ?? []).forEach((w, i) => { if (w) expect(v.rounds[0].games[i].entries.map((e) => e.team), `${d} quarterfinal ${i + 1}`).toContain(w); });
+      (o.semifinals ?? []).forEach((w, i) => { if (w) expect(v.rounds[1].games[i].entries.map((e) => e.team), `${d} semifinal ${i + 1}`).toContain(w); });
     }
     const view = (d: string) => bracketView(withBracketFile(div(d).bracket!, f, d), div(d).standings);
     const c = view("C").rounds[0].games.map((g) => g.entries.map((e) => `${e.seed} ${e.team}${e.projected ? "?" : ""}`));

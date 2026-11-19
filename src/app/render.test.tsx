@@ -19,10 +19,19 @@ const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
 // Most tests read the newest regular-season issue; the tournament issue (week 15) has its own block below.
 let full: SeasonData;
 let data: SeasonData;
+/** The season as it stood before any tournament result was entered in bracket.json (seeds kept). */
+const noResults = (d: SeasonData): SeasonData => ({
+  ...d,
+  bracket: d.bracket && {
+    ...d.bracket,
+    divisions: Object.fromEntries(Object.entries(d.bracket.divisions).map(([k, { seeds, venues }]) => [k, { seeds, venues }])),
+  },
+});
 beforeAll(async () => {
   full = (await loadSeason())!;
   const weeks = full.schedule?.weeks.length ?? Infinity;
-  data = { ...full, issues: full.issues.filter((i) => i.week <= weeks) };
+  // The regular season's view: no tournament results yet.
+  data = noResults({ ...full, issues: full.issues.filter((i) => i.week <= weeks) });
 });
 // Pages follow the calendar, so pin "today" to the newest issue's match day (morning, local time):
 // otherwise the tests change once that night has passed, sooner on a UTC build server.
@@ -450,6 +459,7 @@ describe("from the newsletter itself", () => {
 
 describe("tournament issue", () => {
   const atFull = (path: string, search = "") => renderToStaticMarkup(<Screen data={full} route={parseRoute(path, search)} />);
+  const atBefore = (path: string) => renderToStaticMarkup(<Screen data={noResults(full)} route={parseRoute(path)} />);
   const tourney = () => full.issues.find((i) => i.week > (full.schedule?.weeks.length ?? Infinity));
   beforeEach(() => {
     const t = tourney();
@@ -487,21 +497,21 @@ describe("tournament issue", () => {
 
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {
     if (!tourney()) return;
-    const team = atFull("/c/area-501");
+    const team = atBefore("/c/area-501");
     expect(team).toMatch(/vs <span><a href="\/c\/still-hump-n">Still Hump&#x27;N<\/a><\/span>/);
     expect(team).toContain("8th in C, 1–13");
     expect(team).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
     expect(team).toContain("At Upper Deck 1&amp;2");
     expect(team).toContain("Map (Apple)");
     expect(team).not.toContain("Pairings and venues come from the league");
-    const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
+    const home = renderToStaticMarkup(<Screen data={noResults(full)} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
     expect(home).toMatch(/Next: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <span><a[^>]*href="\/c\/still-hump-n"[^>]*>Still Hump&#x27;N<\/a>/);
   });
 
   it("says a played round's result is still to come, with only the next round's date", () => {
     if (!tourney()) return;
     vi.setSystemTime(new Date("2026-11-19T09:00:00"));
-    const team = atFull("/c/area-501");
+    const team = atBefore("/c/area-501");
     expect(team).toContain('Awaiting result of</h2><p class="big">Quarterfinal vs <a href="/c/still-hump-n">Still Hump&#x27;N</a></p>');
     expect(team).not.toContain("Last match");
     expect(team).toContain("Semifinals are Wed, Dec 2");
@@ -510,7 +520,7 @@ describe("tournament issue", () => {
     expect(card).not.toContain("Brutha Ducks");
     expect(card).not.toContain("Break Time Billiards");
     expect(card).not.toMatch(/if they/i);
-    const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
+    const home = renderToStaticMarkup(<Screen data={noResults(full)} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
     expect(home).toMatch(/Awaiting result of<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*>Still Hump&#x27;N<\/a><\/span>/);
   });
 
@@ -525,6 +535,21 @@ describe("tournament issue", () => {
     const lost = renderToStaticMarkup(<Screen data={withWinners(["Still Hump'N", null, null, null])} route={parseRoute("/c/area-501")} />);
     expect(lost).toContain("Out in the quarterfinals");
     expect(lost).toContain('Beaten by <a href="/c/still-hump-n">Still Hump&#x27;N</a>');
+  });
+
+  it("shows the quarterfinal results the league sent on 2026-11-19", () => {
+    if (!tourney()) return;
+    vi.setSystemTime(new Date("2026-11-19T09:00:00"));
+    // Area 501 beat Still Hump'N and meets Brutha Ducks (who beat Menace) in the semifinal.
+    const card = section(atFull("/c/area-501"), "tonight");
+    expect(card).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
+    expect(card).toContain('vs <span><a href="/c/brutha-ducks">Brutha Ducks</a></span>');
+    expect(card).toContain("At Break Time Billiards");
+    expect(atFull("/c/still-hump-n")).toContain("Out in the quarterfinals");
+    // B's semifinal and final bars were swapped after the newsletter printed them.
+    const b = section(atFull("/b"), "bracket");
+    expect(b).toContain("American Legion-FV");
+    expect(b.indexOf("American Legion-FV")).toBeLessThan(b.indexOf("Backstage Pub"));
   });
 });
 

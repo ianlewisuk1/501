@@ -251,6 +251,8 @@ export interface BracketFile {
     quarterfinals?: (string | null)[];
     semifinals?: (string | null)[];
     final?: string | null;
+    /** Bars changed after the newsletter printed them (B's semifinal and final swapped, 2026-11-19). */
+    venues?: { semifinals?: (string | null)[]; final?: string | null };
   }>;
 }
 
@@ -262,8 +264,8 @@ export function withBracketFile(b: Bracket, file: BracketFile | undefined, divis
     ...b,
     slots: b.slots.map((s) => ({ seed: s.seed, team: s.seed !== null && o.seeds ? o.seeds[s.seed - 1] ?? null : s.team })),
     quarterfinals: b.quarterfinals.map((m, i) => ({ ...m, winner: pick(o.quarterfinals?.[i], m.winner) })),
-    semifinals: b.semifinals.map((m, i) => ({ ...m, winner: pick(o.semifinals?.[i], m.winner) })),
-    final: { ...b.final, winner: pick(o.final, b.final.winner) },
+    semifinals: b.semifinals.map((m, i) => ({ ...m, venue: pick(o.venues?.semifinals?.[i], m.venue), winner: pick(o.semifinals?.[i], m.winner) })),
+    final: { ...b.final, venue: pick(o.venues?.final, b.final.venue), winner: pick(o.final, b.final.winner) },
   };
 }
 
