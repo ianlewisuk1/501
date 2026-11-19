@@ -305,14 +305,14 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
     <section aria-labelledby="matches">
       <h2 id="matches" className="sr-only">Matches</h2>
       <div className="week-step">
-        <button type="button" aria-label="Previous week" disabled={at === 0} onClick={() => go(rounds[at - 1].week)}>‹</button>
+        <button type="button" aria-label="Previous week" disabled={at === 0} onClick={() => go(rounds[at - 1].week)}><Arrow dir="left" /></button>
         <label>
           <span className="sr-only">Week</span>
           <select value={round.week} onChange={(e) => go(Number(e.target.value))}>
             {rounds.map((r) => <option key={r.week} value={r.week}>{label(r)}</option>)}
           </select>
         </label>
-        <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}>›</button>
+        <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}><Arrow dir="right" /></button>
       </div>
       <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
       {/* --k lets the cards share out the screen's height on short phones (styles.css). */}

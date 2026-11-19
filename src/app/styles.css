@@ -719,8 +719,7 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 }
 .division-page .card-row { min-height: var(--crow); }
 @media (max-height: 760px) {
-  /* Short phones: one line a team on the cards (records are on the Standings tab), a slimmer strip. */
-  .division-page .card-rec { display: none; }
+  /* Short phones: a slimmer strip and tighter rows. */
   .division-page .card-name { padding: 0; }
   .division-page .card-head { padding: 2px 10px; }
   .division-page .matches-note { display: none; }
@@ -805,7 +804,8 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 /* The Matches tab's week picker: big back and forward buttons either side of a plain dropdown. */
 .week-step { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 8px; align-items: center; margin: 14px 0 4px; }
 .week-step button {
-  height: 52px; cursor: pointer; font: 700 2rem/1 var(--sketch); color: var(--yellow);
+  display: grid; place-items: center; padding: 0;
+  height: 52px; cursor: pointer; color: var(--yellow);
   background: rgb(var(--ink-rgb) / 0.06); border: 1.5px dashed var(--chalk-line); border-radius: 8px;
 }
 .week-step button:hover:not(:disabled) { background: rgb(var(--ink-rgb) / 0.1); }
@@ -833,10 +833,12 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 .card-row:hover { background: rgb(var(--ink-rgb) / 0.05); }
 .card-row:hover .side-name { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--chalk-line); }
 .card-row .rank-tag { font-family: inherit; font-size: 1.05rem; text-align: right; opacity: 0.65; }
-.card-name { display: grid; padding: 5px 0; min-width: 0; }
+/* Name and record on one line: the record sits after the name, and a long name shrinks to make room. */
+.card-name { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; min-width: 0; }
+.card-name .card-line { min-width: 0; flex: 0 1 auto; }
 /* One line always: FitName scales a long name down to fit; the ellipsis is only a last resort. */
 .card-row .side-name { font-size: 1.2rem; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-rec { font-size: 0.9rem; color: var(--chalk-2); line-height: 1.3; }
+.card-rec { flex: none; font-size: 0.9rem; color: var(--chalk-2); line-height: 1.3; white-space: nowrap; }
 .card-score { font-size: 1.5rem; font-weight: 400; text-align: right; }
 .card-mark { font-size: 1.1rem; color: var(--yellow); }
 .card-row.lost .side-name, .card-row.lost .card-score { color: var(--chalk-2); }
