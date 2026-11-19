@@ -1,7 +1,7 @@
 /**
  * A team page's Team tab: things about the team rather than this week's game. Its home bar (a
  * photo, the address and landmark, map links, its home nights still to come), how its season went
- * (place, record, the tournament), and its top three players in each game and in all-star points. Laid out photo first so
+ * (place, record, the tournament), and its top three players in each game and in all-star points per game. Laid out photo first so
  * it doesn't read like the match card above the tabs.
  */
 import type { Standing, TeamWeek } from "../parser/types";
@@ -112,16 +112,21 @@ export function topPlayers(players: TeamWeek["players"], game: Game, n = TOP): {
     .slice(0, n);
 }
 
-/** The team's most all-star points this season, a total. */
-export function topAllStars(players: TeamWeek["players"], n = TOP): { name: string; points: number }[] {
-  return players.filter((p) => p.allStarPoints > 0).map((p) => ({ name: p.name, points: p.allStarPoints }))
-    .sort((a, b) => b.points - a.points).slice(0, n);
+/**
+ * The team's best all-star points per game this season, among players with at least half the
+ * busiest player's games (so one big night as a sub doesn't top it); more points break a tie.
+ */
+export function topAllStars(players: TeamWeek["players"], n = TOP): { name: string; average: number }[] {
+  const most = Math.max(0, ...players.map((p) => p.gamesPlayed));
+  return players.filter((p) => p.aspAverage !== null && p.allStarPoints > 0 && p.gamesPlayed >= most / 2)
+    .map((p) => ({ name: p.name, average: p.aspAverage!, points: p.allStarPoints }))
+    .sort((a, b) => b.average - a.average || b.points - a.points).slice(0, n);
 }
 
 function TopPlayers({ week }: { week: TeamWeek }) {
   const boards = [
     ...GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game).map((p) => ({ name: p.name, value: `${p.w}–${p.l}` })) })),
-    { label: "All-Star Points", top: topAllStars(week.players).map((p) => ({ name: p.name, value: String(p.points) })) },
+    { label: "All-Star Points Per Game", top: topAllStars(week.players).map((p) => ({ name: p.name, value: p.average.toFixed(2) })) },
   ].filter((b) => b.top.length);
   if (!boards.length) return null;
   return (

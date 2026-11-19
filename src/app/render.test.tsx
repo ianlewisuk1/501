@@ -301,7 +301,7 @@ describe("team page", () => {
     // Top players in each game, not the records lists.
     expect(panel).toContain("Top Players");
     expect(panel).toContain("Singles Cricket");
-    expect(panel).toContain("All-Star Points");
+    expect(panel).toContain("All-Star Points Per Game");
     expect(panel).toContain("Singles 301");
     expect(panel).not.toContain("Hot darts");
   });
