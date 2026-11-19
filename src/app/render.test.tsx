@@ -159,8 +159,7 @@ describe("routes", () => {
     expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
     expect(ladder).toContain("13–0, 27 points clear");
     // Says the rows can be tapped.
-    expect(html).toContain("After week 13, Nov 4");
-    expect(html).toMatch(/<p class="tab-note">Tap a team to see its page\.<\/p>/);
+    expect(html).toMatch(/<p class="tab-note">After week 13, Nov 4\. Tap a team to see its page\.<\/p>/);
     // The last issue's title race sits under the ladder, before the headlines.
     if (data.issues.at(-1)!.divisions.find((x) => x.division === "C")!.titleRace) {
       expect(html).toContain('<p class="headlines-label">Title race <span>going into week 14</span></p><p><a class="team-mention" title="Area 501"');
@@ -185,7 +184,9 @@ describe("routes", () => {
   it("renders any team in the league", () => {
     const html = at("/h/calm-under-pressure");
     expect(html).toContain("Calm Under Pressure");
-    expect(html).toContain("H Division, week");
+    expect(html).toContain('<p class="meta">H Division</p>');
+    // The league's match night sits in the site bar.
+    expect(html).toMatch(/class="week-pill"><span class="week-long">Week 1[34] of 14/);
     expect(html).toContain('id="fixtures"');
   });
 
@@ -439,7 +440,8 @@ describe("tournament issue", () => {
     expect(tabs[0]).toBe("Bracket");
     // Final standings and the last regular night's scores come with it.
     expect(div).toContain("14–0, 34 points clear");
-    expect(div).toContain("Final standings, after week 14, Nov 11<");
+    expect(div).toContain("Final standings, after week 14, Nov 11. Tap a team");
+    expect(div).toMatch(/class="week-pill"><span class="week-long">(Quarterfinals|Semifinals|Final)/);
     // The leader is "Season champs" now, with no "Clinched" pill or key.
     expect(div).toContain(">Season champs<");
     expect(div).not.toContain("Clinched");
@@ -451,7 +453,7 @@ describe("tournament issue", () => {
     }
     expect(atFull("/f")).toMatch(/ladder-top.*Down to F, Again/);
     expect(atFull("/c/area-501")).not.toContain("Breaking");
-    expect(atFull("/c/area-501")).toContain("C Division, final standings");
+    expect(atFull("/c/area-501")).toContain('<p class="meta">C Division</p>');
   });
 
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {

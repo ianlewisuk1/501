@@ -133,6 +133,13 @@ footer { margin-top: 24px; padding-top: 18px; text-align: center; background: va
 .crumbs li:first-child { flex: none; }
 .crumbs a { display: inline-block; padding: 12px 0; text-decoration: none; }
 .crumbs a[aria-current] { color: var(--chalk); }
+/* The league's current match night, at the right of the site bar on every page but the lander. */
+.week-pill {
+  flex: none; margin-left: auto; padding: 3px 10px; border: 1.5px solid rgb(var(--hi-rgb) / 0.7); border-radius: 999px;
+  color: var(--yellow); font: 600 0.95rem/1.2 var(--sketch); white-space: nowrap;
+}
+.week-short { display: none; }
+@media (max-width: 420px) { .week-long { display: none; } .week-short { display: inline; } }
 .crumbs li:last-child { overflow: hidden; }
 .crumbs li:last-child a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 

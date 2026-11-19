@@ -28,6 +28,32 @@ export const resultsLabel = (results: { week: number; date: string }, seasonWeek
   `${isFinal(results.week, seasonWeeks) ? "Final standings, after" : "After"} week ${results.week}, ${shortDate(results.date, false)}`;
 
 /**
+ * The league's current match night, the same for every division, for the pill in the site bar:
+ * the next regular night still to come ("Week 13 of 14"), else the next tournament round from the
+ * bracket ("Quarterfinals, Nov 18"), else the next tournament night in `keyDates`; "tonight" on the
+ * night itself. `short` is for small phones. Null once the season is over.
+ */
+export function currentWeek(data: SeasonData, issue: LeagueWeek, today: string): { long: string; short: string } | null {
+  const schedule = data.schedule?.season === issue.season ? data.schedule : undefined;
+  const when = (date: string) => (date === today ? "tonight" : shortDate(date, false));
+  const night = schedule?.weeks.find((w) => w.date >= today);
+  if (night) {
+    const n = schedule!.weeks.length;
+    return { long: `Week ${night.week} of ${n}${night.date === today ? ", tonight" : ""}`, short: `Week ${night.week}` };
+  }
+  const dates = issue.divisions.find((d) => d.bracket)?.bracket?.dates;
+  const rounds: [string, string, string | null | undefined][] = [
+    ["Quarterfinals", "QF", dates?.quarterfinals], ["Semifinals", "SF", dates?.semifinals], ["Final", "Final", dates?.final]];
+  const round = rounds.find(([, , d]) => d && d >= today);
+  if (round) {
+    const [name, abbr, date] = round as [string, string, string];
+    return date === today ? { long: `${name} tonight`, short: `${abbr} tonight` } : { long: `${name}, ${when(date)}`, short: `${abbr} ${when(date)}` };
+  }
+  const t = schedule?.keyDates.find((k) => k.date >= today && /tournament/i.test(k.label));
+  return t ? { long: `Tournament, ${when(t.date)}`, short: when(t.date) } : null;
+}
+
+/**
  * Page 1's RDL Headlines for a division, one story each: the newsletter runs them together with
  * semicolons. Each starts with a capital.
  */

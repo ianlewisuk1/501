@@ -130,14 +130,14 @@ export const GROUPS = groupSpans(PLAYER_COLUMNS);
 const titleSize = (title: string) => (title.length > 20 ? "longer" : title.length > 12 ? "long" : undefined);
 
 export function PageHead({ title, meta, team = false, chalk = false, children }: {
-  title: string; meta: string; team?: boolean; chalk?: boolean; children?: ReactNode;
+  title: string; meta?: string; team?: boolean; chalk?: boolean; children?: ReactNode;
 }) {
   return (
     <header className={team ? "page-head team-head" : "page-head"}>
       <div>
         {/* chalk: written on letter by letter as the page opens, like the lander's title (keyed so a new page writes again). */}
         {chalk ? <ChalkTitle key={title} text={title} className={titleSize(title)} /> : <h1 className={titleSize(title)}>{title}</h1>}
-        <p className="meta">{meta}</p>
+        {meta && <p className="meta">{meta}</p>}
       </div>
       {children}
     </header>

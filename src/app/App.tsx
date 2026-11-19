@@ -3,12 +3,13 @@ import { AdminPhotos } from "./AdminPhotos";
 import { DivisionPage } from "./DivisionPage";
 import { HomePage } from "./HomePage";
 import { TeamPage } from "./TeamPage";
-import { divisionIn, teamBySlug, teamHistory } from "./league";
+import { currentWeek, divisionIn, teamBySlug, teamHistory } from "./league";
 import { divisionPath, Link, navigate, teamPath, useRoute, type Route } from "./route";
 import { useSeason, type SeasonData } from "./store";
 import { sawTeam, useMyTeams, type TeamRef } from "./myTeam";
 
 import { chalkFor } from "./ui";
+import { todayIso } from "./model";
 import { syncStatusBar } from "./theme";
 import { countView } from "./views";
 
@@ -58,7 +59,7 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
 
   return (
     <>
-      {route.page !== "home" && <SiteBar division={division?.division} team={team} />}
+      {route.page !== "home" && <SiteBar division={division?.division} team={team} week={currentWeek(data, issue, todayIso())} />}
       {page}
     </>
   );
@@ -68,7 +69,7 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
  * The black strip across the top of every page but the lander (which is all black already):
  * the league's logo and name, going home, then the trail down to this page.
  */
-function SiteBar({ division, team }: { division?: string; team?: string }) {
+function SiteBar({ division, team, week }: { division?: string; team?: string; week: { long: string; short: string } | null }) {
   return (
     <div className="site-bar">
       <nav className="site-bar-inner" aria-label="Breadcrumb">
@@ -82,6 +83,8 @@ function SiteBar({ division, team }: { division?: string; team?: string }) {
             {team && <li><Link to={teamPath(division, team)} aria-current="page">{team}</Link></li>}
           </ol>
         )}
+        {/* The league's match night, the same for every division ("Week 13 of 14", "Quarterfinals, Nov 18"). */}
+        {week && <span className="week-pill"><span className="week-long">{week.long}</span><span className="week-short">{week.short}</span></span>}
       </nav>
     </div>
   );
