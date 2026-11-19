@@ -512,7 +512,7 @@ describe("tournament issue", () => {
     expect(card).not.toContain("Break Time Billiards");
     expect(card).not.toMatch(/if they/i);
     const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    expect(home).toMatch(/Last: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*>Still Hump&#x27;N<\/a>, result to come/);
+    expect(home).toMatch(/Awaiting result of<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*>Still Hump&#x27;N<\/a><\/span>/);
   });
 
   it("moves on to the next round, or says who knocked them out, once a winner is entered", () => {

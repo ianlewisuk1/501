@@ -358,7 +358,7 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   );
   // Two lines: when, then what. In the bracket, certain facts only (a result still to come says so).
   const next: [string, ReactNode] | null = game?.kind === "pending"
-    ? [`Last: ${shortDate(game.date, false)}`, <>{game.round}{game.opponent && <> vs {opp(game.opponent)}</>}, result to come</>]
+    ? ["Awaiting result of", <>{game.round}{game.opponent && <> vs {opp(game.opponent)}</>}</>]
     : game?.kind === "out" ? [`Out in the ${game.round === "Final" ? "final" : `${game.round.toLowerCase()}s`}`, <>Beaten by {opp(game.beatenBy)}</>]
     : game?.kind === "champion" ? [`${mine.division} Division champions`, null]
     : game ? [`Next: ${shortDate(game.date, false)}`, <>{game.round} vs {game.opponents.length
