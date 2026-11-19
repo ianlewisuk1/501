@@ -212,7 +212,8 @@ export interface LeagueDivision {
 /** One first-round line: a seed (null for the bye) and the team once it's locked in. */
 export interface BracketSlot { seed: number | null; team: string | null }
 /** A bracket match: its bar, and the team that went through once the newsletter writes it in. */
-export interface BracketMatch { venue: string | null; winner: string | null }
+/** `score` is never parsed: it comes from the hand-entered bracket.json, as printed ("13-3", "12+-12", "forfeit"). */
+export interface BracketMatch { venue: string | null; winner: string | null; score?: string | null }
 /**
  * Eight first-round slots, top to bottom: slots 0-1 meet in quarterfinal 0, and so on; the winners
  * of quarterfinals 0-1 meet in semifinal 0, of 2-3 in semifinal 1.

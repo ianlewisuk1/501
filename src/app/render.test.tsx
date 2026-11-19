@@ -550,6 +550,13 @@ describe("tournament issue", () => {
     const b = section(atFull("/b"), "bracket");
     expect(b).toContain("American Legion-FV");
     expect(b.indexOf("American Legion-FV")).toBeLessThan(b.indexOf("Backstage Pub"));
+    // Scores: each side's games won, a 12-12 decided on the 1001 and a forfeit said in words.
+    const c = section(atFull("/c"), "bracket");
+    expect(c).toMatch(/Area 501<\/span><span class="b-score">13<\/span>/);
+    expect(c).toMatch(/Still Hump&#x27;N<\/span><span class="b-score">3<\/span>/);
+    expect(b).toContain('<span class="b-note">Won on the 1001</span>');
+    expect(section(atFull("/a"), "bracket")).toContain('<span class="b-note">Forfeit</span>');
+    expect(section(atFull("/a"), "bracket")).not.toContain("b-score");
   });
 });
 

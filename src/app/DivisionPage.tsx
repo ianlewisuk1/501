@@ -546,11 +546,18 @@ interface BracketCtx { division: LeagueDivision; short: Map<string, string> }
 
 function BracketCell({ game, division, short }: { game: BracketGame } & BracketCtx) {
   const bye = game.entries.some((e) => e.placeholder === "Bye");
+  // Said in words along the strip, as on the match cards, rather than as "12+".
+  const note = !game.score ? null : "forfeit" in game.score ? "Forfeit" : game.score.tiebreak ? "Won on the 1001" : null;
   return (
     <div className="b-cell">
       <div className={`b-match${bye ? " bye" : ""}`}>
         {game.entries.map((e, i) => <BracketLine key={i} entry={e} game={game} division={division} short={short} />)}
-        {game.venue && <p className="b-venue">{game.venue.replace(/\*$/, "")}</p>}
+        {(game.venue || note) && (
+          <p className="b-venue">
+            {game.venue && <span className="b-bar">{game.venue.replace(/\*$/, "")}</span>}
+            {note && <span className="b-note">{note}</span>}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -560,7 +567,7 @@ function BracketLine({ entry, game, division, short }: { entry: BracketEntry; ga
   const mine = useMine(division.division);
   const won = !!entry.team && game.winner === entry.team;
   const lost = !!entry.team && !!game.winner && game.winner !== entry.team;
-  const cls = ["b-line", won && "won", lost && "lost", entry.projected && "projected", !entry.team && "open", entry.team === mine && "mine"].filter(Boolean).join(" ");
+  const cls = ["b-line", won && "won", lost && "lost", entry.projected && "projected", !entry.team && "open", !!mine && entry.team === mine && "mine"].filter(Boolean).join(" ");
   const seed = <span className="b-seed">{entry.seed ?? ""}</span>;
   if (!entry.team) return <p className={cls}>{seed}<span className="b-name">{entry.placeholder}</span></p>;
   return (
@@ -568,6 +575,7 @@ function BracketLine({ entry, game, division, short }: { entry: BracketEntry; ga
       {seed}
       <TeamName team={entry.team} short={short.get(entry.team)} className="b-name" style={entry.projected ? undefined : { color: chalkFor(entry.team) }} />
       {entry.team === mine && <MyStar />}
+      {game.score && !("forfeit" in game.score) && (won || lost) && <span className="b-score">{won ? game.score.winner : game.score.loser}</span>}
       {won && <span className="card-mark" aria-label="went through">◂</span>}
     </Link>
   );

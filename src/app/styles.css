@@ -1180,8 +1180,9 @@ section tbody td:first-child { padding-left: 8px; }
 .bracket-scroll { margin-inline: -4px; padding: 0 4px 8px; }
 .bracket {
   --gap: 1rem;
-  display: grid; grid-template-columns: repeat(3, minmax(8rem, 1fr)) minmax(5.5rem, 0.7fr);
-  column-gap: var(--gap); min-width: 33rem; font-variant-numeric: tabular-nums;
+  /* The quarterfinals are wider: once played, each line carries a score as well as the name. */
+  display: grid; grid-template-columns: minmax(10rem, 1.3fr) repeat(2, minmax(8rem, 1fr)) minmax(5.5rem, 0.7fr);
+  column-gap: var(--gap); min-width: 35rem; font-variant-numeric: tabular-nums;
 }
 .b-head { margin: 0 0 6px; display: flex; flex-direction: column; font-family: var(--sketch); font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
 .b-head .muted { font-family: var(--hand); font-weight: 400; font-size: 0.9rem; }
@@ -1212,7 +1213,12 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .b-line.open .b-name { white-space: normal; line-height: 1.2; font-size: 0.85rem; }
 .b-line.lost .b-name { color: var(--chalk-2) !important; text-decoration: line-through; text-decoration-color: rgb(var(--loss-rgb) / 0.7); }
 .b-line.mine { background: rgb(var(--hi-rgb) / 0.08); }
-.b-venue { margin: 0; padding: 3px 8px 4px; font-size: 0.8rem; color: var(--chalk-2); border-top: 1px dashed var(--chalk-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-venue { display: flex; flex-wrap: wrap; column-gap: 8px; margin: 0; padding: 3px 8px 4px; font-size: 0.8rem; color: var(--chalk-2); border-top: 1px dashed var(--chalk-faint); white-space: nowrap; }
+.b-bar { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.b-note { flex: none; margin-left: auto; color: var(--chalk); }
+/* Games won, right after the name; the loser's in faded chalk like its name. */
+.b-score { font-family: var(--sketch); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; text-align: right; }
+.b-line.lost .b-score { color: var(--chalk-2); }
 .b-champ { justify-content: center; }
 .b-trophy {
   border: 1.5px dashed var(--chalk-line); border-radius: 6px; padding: 10px 8px; text-align: center;

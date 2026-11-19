@@ -2,7 +2,7 @@
 import { teamWeekOf } from "../parser/league";
 import { norm } from "../parser/names";
 import { TEAM } from "../parser/team";
-import type { Bracket, DivisionWeek, LeagueDivision, LeagueWeek, Match, Pick, Round, Standing, TeamWeek } from "../parser/types";
+import type { Bracket, BracketMatch, DivisionWeek, LeagueDivision, LeagueWeek, Match, Pick, Round, Standing, TeamWeek } from "../parser/types";
 import { addDays, shortDate, teamSchedule, teamSlug, type SeasonSchedule } from "./model";
 import type { SeasonData } from "./store";
 
@@ -251,6 +251,8 @@ export interface BracketFile {
     quarterfinals?: (string | null)[];
     semifinals?: (string | null)[];
     final?: string | null;
+    /** As the league's bracket sheet prints them, winner first: "13-3", "12+-12" (won the 1001), "forfeit"; null for a bye. */
+    scores?: { quarterfinals?: (string | null)[]; semifinals?: (string | null)[]; final?: string | null };
     /** Bars changed after the newsletter printed them (B's semifinal and final swapped, 2026-11-19). */
     venues?: { semifinals?: (string | null)[]; final?: string | null };
   }>;
@@ -263,9 +265,11 @@ export function withBracketFile(b: Bracket, file: BracketFile | undefined, divis
   return {
     ...b,
     slots: b.slots.map((s) => ({ seed: s.seed, team: s.seed !== null && o.seeds ? o.seeds[s.seed - 1] ?? null : s.team })),
-    quarterfinals: b.quarterfinals.map((m, i) => ({ ...m, winner: pick(o.quarterfinals?.[i], m.winner) })),
-    semifinals: b.semifinals.map((m, i) => ({ ...m, venue: pick(o.venues?.semifinals?.[i], m.venue), winner: pick(o.semifinals?.[i], m.winner) })),
-    final: { ...b.final, venue: pick(o.venues?.final, b.final.venue), winner: pick(o.final, b.final.winner) },
+    quarterfinals: b.quarterfinals.map((m, i) => ({ ...m, winner: pick(o.quarterfinals?.[i], m.winner), score: o.scores?.quarterfinals?.[i] ?? m.score })),
+    semifinals: b.semifinals.map((m, i) => ({
+      ...m, venue: pick(o.venues?.semifinals?.[i], m.venue), winner: pick(o.semifinals?.[i], m.winner), score: o.scores?.semifinals?.[i] ?? m.score,
+    })),
+    final: { ...b.final, venue: pick(o.venues?.final, b.final.venue), winner: pick(o.final, b.final.winner), score: o.scores?.final ?? b.final.score },
   };
 }
 
@@ -278,7 +282,18 @@ export interface BracketEntry {
   /** "Winner of 1 v 8" for a later round's line not decided yet; "Bye" for the bye. */
   placeholder: string | null;
 }
-export interface BracketGame { entries: [BracketEntry, BracketEntry]; venue: string | null; winner: string | null; date: string | null }
+export interface BracketGame { entries: [BracketEntry, BracketEntry]; venue: string | null; winner: string | null; date: string | null; score: BracketScore | null }
+
+/** A played bracket game's score: games won by each side, or a forfeit. */
+export type BracketScore = { winner: number; loser: number; tiebreak: boolean } | { forfeit: true };
+
+/** Reads a score as the bracket sheet prints it, winner first: "13-3", "12+-12" (won on the 1001), "forfeit". */
+export function parseBracketScore(text: string | null | undefined): BracketScore | null {
+  if (!text) return null;
+  if (/^forfeit$/i.test(text.trim())) return { forfeit: true };
+  const m = text.trim().match(/^(\d+)(\+?)\s*[-–]\s*(\d+)$/);
+  return m ? { winner: Number(m[1]), loser: Number(m[3]), tiebreak: m[2] === "+" } : null;
+}
 export interface BracketView { rounds: { name: string; date: string | null; games: BracketGame[] }[]; champion: string | null }
 
 /**
@@ -316,8 +331,8 @@ export function bracketView(b: Bracket, standings: Standing[]): BracketView {
     });
     return { entries, pools: out };
   };
-  const pairUp = (entries: BracketEntry[], matches: { venue: string | null; winner: string | null }[], date: string | null): BracketGame[] =>
-    matches.map((m, i) => ({ entries: [entries[2 * i], entries[2 * i + 1]], venue: m.venue, winner: m.winner, date }));
+  const pairUp = (entries: BracketEntry[], matches: BracketMatch[], date: string | null): BracketGame[] =>
+    matches.map((m, i) => ({ entries: [entries[2 * i], entries[2 * i + 1]], venue: m.venue, winner: m.winner, date, score: m.winner ? parseBracketScore(m.score) : null }));
   const qf = pairUp(first, b.quarterfinals, b.dates.quarterfinals);
   const r2 = next(qf, first.map((e) => (e.seed === null ? [] : [e.seed])));
   const sf = pairUp(r2.entries, b.semifinals, b.dates.semifinals);
