@@ -43,14 +43,42 @@
         if (!preview && (!standalone || seen)) return;
         document.documentElement.classList.add("splash");
         var start = Date.now();
+        var done = false;
+        function finish(el) { document.documentElement.classList.remove("splash"); el.remove(); }
         function hide() {
           var el = document.getElementById("splash");
-          if (!el || el.classList.contains("gone")) return;
+          if (done || !el) return;
+          done = true;
+          // On the lander, the big logo shrinks and glides up into the small one's place while the
+          // backdrop fades, so it reads as one logo settling in (owner, 2026-11-19). Elsewhere, or
+          // with reduced motion, it simply fades.
+          var target = document.querySelector(".board-logo");
+          var img = el.querySelector("img");
+          var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var t = target && target.getBoundingClientRect();
+          if (!still && t && t.width > 0 && t.bottom > 0 && t.top < innerHeight) {
+            var r = img.getBoundingClientRect();
+            target.style.visibility = "hidden";
+            img.style.transformOrigin = "0 0";
+            img.style.transition = "transform 0.75s cubic-bezier(0.4, 0, 0.2, 1)";
+            el.style.transition = "background-color 0.75s ease";
+            requestAnimationFrame(function () {
+              img.style.transform = "translate(" + (t.left - r.left) + "px," + (t.top - r.top) + "px) scale(" + t.width / r.width + ")";
+              el.style.backgroundColor = "transparent";
+            });
+            setTimeout(function () { target.style.visibility = ""; finish(el); }, 800);
+            return;
+          }
           el.classList.add("gone");
-          setTimeout(function () { document.documentElement.classList.remove("splash"); el.remove(); }, 450);
+          setTimeout(function () { finish(el); }, 450);
+        }
+        // Wait for the lander's logo to be drawn (up to a second), so there's somewhere to land.
+        function whenDrawn(cb) {
+          var n = 0;
+          (function poll() { if (document.querySelector(".board-logo") || location.pathname !== "/" || n++ > 20) cb(); else setTimeout(poll, 50); })();
         }
         // Long enough to see (0.7s), gone once the page has loaded, and never stuck past 2.5s.
-        window.addEventListener("load", function () { setTimeout(hide, Math.max(0, 700 - (Date.now() - start))); });
+        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 700 - (Date.now() - start))); }); });
         setTimeout(hide, 2500);
       })();
     </script>
