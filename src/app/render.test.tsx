@@ -471,16 +471,34 @@ describe("tournament issue", () => {
     expect(home).toMatch(/Next: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <span><a[^>]*href="\/c\/still-hump-n"[^>]*>Still Hump&#x27;N<\/a>/);
   });
 
-  it("looks ahead to the semifinal while the quarterfinal result is awaited", () => {
+  it("says a played round's result is still to come, with only the next round's date", () => {
     if (!tourney()) return;
     vi.setSystemTime(new Date("2026-11-19T09:00:00"));
     const team = atFull("/c/area-501");
-    expect(team).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
-    expect(team).toMatch(/vs <span><a href="\/c\/brutha-ducks">Brutha Ducks<\/a><\/span><span> or <a href="\/c\/menace-2-sobriety">Menace 2 Sobriety<\/a><\/span>/);
-    expect(team).toContain("If they beat Still Hump&#x27;N in the quarterfinal");
-    expect(team).toContain("At Break Time Billiards");
+    expect(team).toContain("Last match <span class=\"muted\">Wed, Nov 18</span>");
+    expect(team).toContain('vs <a href="/c/still-hump-n">Still Hump&#x27;N</a>');
+    expect(team).toContain("Quarterfinal, result to come");
+    expect(team).toContain("Semifinals are Wed, Dec 2");
+    // Nothing that depends on the result: no next opponent, no bar.
+    const card = section(team, "tonight");
+    expect(card).not.toContain("Brutha Ducks");
+    expect(card).not.toContain("Break Time Billiards");
+    expect(card).not.toMatch(/if they/i);
     const home = renderToStaticMarkup(<Screen data={full} route={{ page: "home" }} myTeam={{ division: "C", team: "Area 501" }} />);
-    expect(home).toContain("Next: Dec 2</span><span class=\"your-team-what\">Semifinal (if they win) vs ");
+    expect(home).toMatch(/Last: Nov 18<\/span><span class="your-team-what">Quarterfinal vs <a[^>]*>Still Hump&#x27;N<\/a>, result to come/);
+  });
+
+  it("moves on to the next round, or says who knocked them out, once a winner is entered", () => {
+    if (!tourney()) return;
+    vi.setSystemTime(new Date("2026-11-19T09:00:00"));
+    const withWinners = (qf: (string | null)[]) => ({ ...full, bracket: { ...full.bracket!, divisions: { ...full.bracket!.divisions, C: { ...full.bracket!.divisions.C, quarterfinals: qf } } } });
+    const won = renderToStaticMarkup(<Screen data={withWinners(["Area 501", "Brutha Ducks", null, null])} route={parseRoute("/c/area-501")} />);
+    expect(won).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
+    expect(won).toContain('vs <span><a href="/c/brutha-ducks">Brutha Ducks</a></span>');
+    expect(won).toContain("At Break Time Billiards");
+    const lost = renderToStaticMarkup(<Screen data={withWinners(["Still Hump'N", null, null, null])} route={parseRoute("/c/area-501")} />);
+    expect(lost).toContain("Out in the quarterfinals");
+    expect(lost).toContain('Beaten by <a href="/c/still-hump-n">Still Hump&#x27;N</a>');
   });
 });
 

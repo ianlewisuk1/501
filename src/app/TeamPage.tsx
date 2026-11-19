@@ -4,7 +4,7 @@ import { fullTeamName } from "../parser/names";
 import type { DivisionWeek, TeamWeek } from "../parser/types";
 import { PerformanceChart } from "./Chart";
 import { Fold, SectionHead } from "./Fold";
-import { divisionWeeks, scheduleFor, tournamentMatch, type TournamentMatch } from "./league";
+import { divisionWeeks, scheduleFor, tournamentMatch, type TournamentState } from "./league";
 import {
   breakingNews, buildFixtures, findStanding, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
   type FixtureRow, type ScoutRow,
@@ -136,26 +136,53 @@ function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: Fi
 }
 
 /**
- * After the regular season's last night: the team's next game in the bracket (opponent, or everyone
- * it could still be; seeds, bar and map links; "if they beat …" while the last result is awaited),
- * else the next division tournament night, if the schedule has one.
+ * After the regular season's last night, where the team stands in the bracket, certain facts only:
+ * its next game (opponent, or everyone it could still be; seeds, bar and map links); a game played
+ * whose result is still to come, with the next round's date; knocked out; or champions. Else the
+ * next division tournament night, if the schedule has one.
  */
 function Tournament({ next, game, week, today, venues }: {
-  next: { date: string; label: string } | null; game: TournamentMatch | null; week: TeamWeek; today: string; venues: Venue[] | undefined;
+  next: { date: string; label: string } | null; game: TournamentState | null; week: TeamWeek; today: string; venues: Venue[] | undefined;
 }) {
+  const division = week.team.division;
+  const link = (t: string) => <Link to={teamPath(division, t)}>{t}</Link>;
+  if (game?.kind === "pending") {
+    return (
+      <section className="card hero" aria-labelledby="tonight">
+        <h2 id="tonight">Last match <span className="muted">{shortDate(game.date)}</span></h2>
+        {game.opponent && <p className="big">vs {link(game.opponent)}</p>}
+        <p className="hero-opp muted">{game.round}, result to come</p>
+        {game.next && <p className="hero-opp">{game.next.round === "Final" ? "The final is" : `${game.next.round} are`} {shortDate(game.next.date)}</p>}
+      </section>
+    );
+  }
+  if (game?.kind === "out") {
+    return (
+      <section className="card hero" aria-labelledby="tonight">
+        <h2 id="tonight">Tournament</h2>
+        <p className="big">Out in the {game.round === "Final" ? "final" : `${game.round.toLowerCase()}s`}</p>
+        <p className="hero-opp muted">Beaten by {link(game.beatenBy)}</p>
+      </section>
+    );
+  }
+  if (game?.kind === "champion") {
+    return (
+      <section className="card hero" aria-labelledby="tonight">
+        <h2 id="tonight">Tournament</h2>
+        <p className="big">{division} Division champions</p>
+      </section>
+    );
+  }
   if (game) {
     const opp = game.opponent ? findStanding(game.opponent, week.standings) : undefined;
     return (
       <section className="card hero" aria-labelledby="tonight">
         <h2 id="tonight">{game.date === today ? "Tonight" : "Next match"} <span className="muted">{shortDate(game.date)}</span></h2>
         <p className="big">vs {game.opponents.length
-          ? game.opponents.map((t, i) => (
-            <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}<Link to={teamPath(week.team.division, t)}>{t}</Link></span>))
+          ? game.opponents.map((t, i) => <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}{link(t)}</span>)
           : game.opponentText ?? "to be decided"}</p>
-        {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
+        {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {division}, {opp.wins}–{opp.losses}</p>}
         <p className="hero-opp muted">{game.round}{game.seed && game.opponentSeed ? `, seed ${game.seed} v ${game.opponentSeed}` : ""}, 7:00 pm</p>
-        {/* Last round's result isn't in yet: this is where they go next if they won it. */}
-        {game.ifBeat && <p className="hero-opp muted">If they beat {game.ifBeat.team} in the {game.ifBeat.round}</p>}
         {game.venue && (
           <div className="hero-venue">
             <div>

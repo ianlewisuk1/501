@@ -356,15 +356,18 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
   const opp = (team: string) => (
     <Link className="team-mention your-team-opp" to={teamPath(mine.division, team)} style={{ color: chalkFor(team) }}>{team}</Link>
   );
-  // Two lines: when, then what.
-  const next: [string, ReactNode] | null = game
-    ? [shortDate(game.date, false), <>{game.round}{game.ifBeat ? " (if they win)" : ""} vs {game.opponents.length
+  // Two lines: when, then what. In the bracket, certain facts only (a result still to come says so).
+  const next: [string, ReactNode] | null = game?.kind === "pending"
+    ? [`Last: ${shortDate(game.date, false)}`, <>{game.round}{game.opponent && <> vs {opp(game.opponent)}</>}, result to come</>]
+    : game?.kind === "out" ? [`Out in the ${game.round === "Final" ? "final" : `${game.round.toLowerCase()}s`}`, <>Beaten by {opp(game.beatenBy)}</>]
+    : game?.kind === "champion" ? [`${mine.division} Division champions`, null]
+    : game ? [`Next: ${shortDate(game.date, false)}`, <>{game.round} vs {game.opponents.length
         ? game.opponents.map((t, i) => <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}{opp(t)}</span>)
         : game.opponentText ?? "to be decided"}</>]
-    : tournament ? [shortDate(tournament.date, false), tournament.label.replace(/^RDL /, "")]
+    : tournament ? [`Next: ${shortDate(tournament.date, false)}`, tournament.label.replace(/^RDL /, "")]
     : !fixture || !date ? null
-    : "bye" in fixture ? [shortDate(date, false), "Bye week"]
-    : [shortDate(date, false), <>{fixture.home ? "Home to" : "Away at"} {opp(fixture.opponent)}</>];
+    : "bye" in fixture ? [`Next: ${shortDate(date, false)}`, "Bye week"]
+    : [`Next: ${shortDate(date, false)}`, <>{fixture.home ? "Home to" : "Away at"} {opp(fixture.opponent)}</>];
   // The whole box opens the team page (the name's link is stretched over it); the opponent's link sits on top.
   return (
     <div className="your-team">
@@ -375,8 +378,8 @@ function YourTeam({ data, mine }: { data: SeasonData; mine: TeamRef }) {
         </span>
         {next && (
           <span className="your-team-now">
-            <span className="your-team-when">Next: {next[0]}</span>
-            <span className="your-team-what">{next[1]}</span>
+            <span className="your-team-when">{next[0]}</span>
+            {next[1] && <span className="your-team-what">{next[1]}</span>}
           </span>
         )}
         <span className="your-team-why">You picked this team. Change it on any team's page.</span>

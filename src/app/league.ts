@@ -330,31 +330,38 @@ export function bracketView(b: Bracket, standings: Standing[]): BracketView {
   };
 }
 
+/** A team's next bracket game, still to be played. */
 export interface TournamentMatch {
+  kind: "next";
   /** "Quarterfinal", "Semifinal" or "Final". */
   round: string;
   date: string;
   seed: number | null;
-  /** The other team once it's known, else null and `opponentText` says who it could be ("Seed 3 or 6"). */
+  /** The other team once it's known, else null and `opponents` lists who it could still be. */
   opponent: string | null;
   opponentSeed: number | null;
   opponentText: string | null;
-  /** The bar, without the newsletter's "*" (a third board may be free). */
-  venue: string | null;
   /** Everyone who could still be the opponent, by name ("Brutha Ducks", "Menace 2 Sobriety"). */
   opponents: string[];
-  /** Set when an earlier round has been played but its result isn't in: this match is "if they beat …". */
-  ifBeat: { team: string; round: string } | null;
+  /** The bar, without the newsletter's "*" (a third board may be free). */
+  venue: string | null;
 }
+/** A game already played whose result isn't entered yet, and when the next round is. */
+export interface TournamentPending { kind: "pending"; round: string; date: string; opponent: string | null; next: { round: string; date: string } | null }
+/** Knocked out, and by whom. */
+export interface TournamentOut { kind: "out"; round: string; beatenBy: string }
+/** Won the final. */
+export interface TournamentChampion { kind: "champion" }
+export type TournamentState = TournamentMatch | TournamentPending | TournamentOut | TournamentChampion;
 
 /**
- * A team's next tournament match, from the newest issue's bracket and the hand-entered winners:
- * the first round on or after today. A round already played whose result isn't entered yet is
- * taken as a win for the team, and the match says so (`ifBeat`), so the card can still name the
- * next date, bar and possible opponents. Null when there's no bracket or the team was knocked out.
- * A bye carries straight on to the next round.
+ * Where a team stands in its division's bracket, from the newest issue and the hand-entered winners,
+ * saying only what's certain (owner, 2026-11-19): its next game (on or after today); or, once a
+ * game's night has passed and its result isn't entered yet, that game with the result to come and
+ * the next round's date; or knocked out; or champions. A bye carries straight on. Null when there's
+ * no bracket or the team isn't in it.
  */
-export function tournamentMatch(data: SeasonData, division: string, team: string, today: string): TournamentMatch | null {
+export function tournamentMatch(data: SeasonData, division: string, team: string, today: string): TournamentState | null {
   const issue = data.issues.at(-1);
   const d = issue?.divisions.find((x) => x.division === division);
   if (!d?.bracket) return null;
@@ -368,29 +375,33 @@ export function tournamentMatch(data: SeasonData, division: string, team: string
     if (r === 0) return g.entries.filter(placed).map((e) => e.team!);
     return [...alive(r - 1, 2 * idx), ...alive(r - 1, 2 * idx + 1)];
   };
+  const name = (r: number) => view.rounds[r].name.replace(/s$/, "");
   let idx = view.rounds[0].games.findIndex((g) => g.entries.some(mine));
   if (idx < 0) return null;
-  let ifBeat: TournamentMatch["ifBeat"] = null;
   for (let r = 0; r < view.rounds.length; r++, idx = Math.floor(idx / 2)) {
     const round = view.rounds[r];
     const g = round.games[idx];
     // Which line of this game is ours: in later rounds, the one fed by the game we came out of.
     const meFirst = r === 0 ? mine(g.entries[0]) : alive(r - 1, 2 * idx).some((t) => sameName(t, team));
     const [me, them] = meFirst ? g.entries : [g.entries[1], g.entries[0]];
+    const opponents = r === 0 ? (placed(them) ? [them.team!] : []) : alive(r - 1, meFirst ? 2 * idx + 1 : 2 * idx);
     if (g.winner) {
-      if (!sameName(g.winner, team)) return null; // knocked out
+      if (!sameName(g.winner, team)) return { kind: "out", round: name(r), beatenBy: g.winner };
+      if (r === view.rounds.length - 1) return { kind: "champion" };
       continue; // won it, or a bye
     }
-    const opponents = r === 0 ? (placed(them) ? [them.team!] : []) : alive(r - 1, meFirst ? 2 * idx + 1 : 2 * idx);
     if (!round.date || round.date < today) {
-      // Played, result not in yet: carry on as if the team won, and say so.
-      if (opponents.length !== 1) return null;
-      ifBeat = { team: opponents[0], round: round.name.replace(/s$/, "").toLowerCase() };
-      continue;
+      // Played, result not entered yet: say so, with the next round's date (a fact either way).
+      const after = view.rounds[r + 1];
+      return {
+        kind: "pending", round: name(r), date: round.date ?? today, opponent: opponents.length === 1 ? opponents[0] : null,
+        next: after?.date ? { round: after.name, date: after.date } : null,
+      };
     }
     const known = opponents.length === 1;
     return {
-      round: round.name.replace(/s$/, ""),
+      kind: "next",
+      round: name(r),
       date: round.date,
       seed: me.seed ?? first(view, team),
       opponent: known ? opponents[0] : null,
@@ -398,7 +409,6 @@ export function tournamentMatch(data: SeasonData, division: string, team: string
       opponentText: known ? null : them.placeholder,
       opponents,
       venue: g.venue?.replace(/\*$/, "").trim() || null,
-      ifBeat,
     };
   }
   return null;
