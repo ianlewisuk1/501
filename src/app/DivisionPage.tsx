@@ -261,17 +261,12 @@ const useMine = (division: string) => {
   return picked?.division === division ? picked.team : null;
 };
 
-/** A small yellow star after the picked team's name, read out as "your team". */
-function MyStar() {
-  return (
-    <span className="my-star" title="Your team">
-      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-        <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z" fill="currentColor" />
-      </svg>
-      <span className="sr-only">, your team</span>
-    </span>
-  );
-}
+/**
+ * The picked team's row gets a yellow stripe down its left edge (CSS `.mine`); this only says so
+ * to screen readers. It used to be a star after the name, but that took width from the name and
+ * clipped "Area 501" in the bracket on an iPhone 13 (owner, 2026-11-19).
+ */
+const MyStar = () => <span className="sr-only">, your team</span>;
 
 /** The week in the link (?week=12), so a shared link opens on the same week. */
 const weekFromUrl = (): number | null => {

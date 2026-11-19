@@ -694,8 +694,11 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .ladder-top .ladder-name { font: 700 1.6rem/1.1 var(--sketch); }
 .ladder-top .ladder-rec { font-size: 1.9rem; }
 /* The picked team ("This is my team"): a yellow star by its name, and a faint yellow wash on its row. */
-.my-star { display: inline-flex; flex: none; margin-left: 6px; color: var(--yellow); align-self: center; }
-.ladder-mine:not(.ladder-top) a { background: rgb(var(--hi-rgb) / 0.09); }
+/* The picked team: a yellow stripe down the row's left edge, taking no width from the name. */
+.ladder-mine:not(.ladder-top) a, .card-row.mine, .b-line.mine { box-shadow: inset 4px 0 0 var(--yellow); }
+/* The leader is already ringed in yellow, so a stripe would fight the ring: just the tint. */
+/* :nth-child(n) matches every row; it's there to outrank the alternate-row stripe above. */
+.ladder li.ladder-mine:nth-child(n) a { background: rgb(var(--hi-rgb) / 0.09); }
 .card-line { display: flex; align-items: center; min-width: 0; }
 .card-line .side-name { min-width: 0; }
 .card-row.mine { background: rgb(var(--hi-rgb) / 0.08); }
