@@ -124,6 +124,10 @@ footer { margin-top: 24px; padding-top: 18px; text-align: center; background: va
 /* Black like the lander, so walking in from it the top of the page carries straight on. */
 .site-bar { position: sticky; top: 0; z-index: 20; background: var(--bar-bg); padding: env(safe-area-inset-top) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); }
 .site-bar-inner { display: flex; align-items: center; gap: 4px; max-width: 40rem; min-height: 52px; margin: 0 auto; font-size: 1.1rem; color: var(--chalk-2); }
+.site-trail { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+/* Light or dark, the icon alone at the bar's right end; the trail shortens with "…" to make room. */
+.site-bar .theme-toggle.compact { position: static; flex: none; justify-content: center; width: 44px; min-height: 44px; margin-right: -10px; padding: 0; border: 0; border-radius: 50%; color: inherit; }
+.site-bar .theme-toggle.compact:hover { background: rgb(255 255 255 / 0.08); }
 .site-home { display: flex; align-items: center; gap: 8px; flex: none; padding: 6px 4px 6px 0; text-decoration: none; color: var(--chalk); }
 .site-home img { display: block; width: 34px; height: 34px; }
 .site-name { font: 700 1.25rem/1 var(--sketch); }

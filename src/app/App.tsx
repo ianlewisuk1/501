@@ -10,6 +10,7 @@ import { sawTeam, useMyTeams, type TeamRef } from "./myTeam";
 
 import { chalkFor } from "./ui";
 import { syncStatusBar } from "./theme";
+import { ThemeToggle } from "./ThemeToggle";
 import { countView } from "./views";
 
 export { ClinchBadge, PLAYER_COLUMNS } from "./ui";
@@ -71,18 +72,21 @@ export function Screen({ data, route, myTeam = null, lastTeam = null }: {
 function SiteBar({ division, team }: { division?: string; team?: string }) {
   return (
     <div className="site-bar">
-      <nav className="site-bar-inner" aria-label="Breadcrumb">
-        <Link to="/" className="site-home">
-          <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={34} height={34} />
-          <span className="site-name">{division ? "RDL" : "Raleigh Dart League"}</span>
-        </Link>
-        {division && (
-          <ol className="crumbs">
-            <li><Link to={divisionPath(division)} aria-current={team ? undefined : "page"}>{division} Division</Link></li>
-            {team && <li><Link to={teamPath(division, team)} aria-current="page">{team}</Link></li>}
-          </ol>
-        )}
-      </nav>
+      <div className="site-bar-inner">
+        <nav className="site-trail" aria-label="Breadcrumb">
+          <Link to="/" className="site-home">
+            <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={34} height={34} />
+            <span className="site-name">{division ? "RDL" : "Raleigh Dart League"}</span>
+          </Link>
+          {division && (
+            <ol className="crumbs">
+              <li><Link to={divisionPath(division)} aria-current={team ? undefined : "page"}>{division} Division</Link></li>
+              {team && <li><Link to={teamPath(division, team)} aria-current="page">{team}</Link></li>}
+            </ol>
+          )}
+        </nav>
+        <ThemeToggle compact />
+      </div>
     </div>
   );
 }

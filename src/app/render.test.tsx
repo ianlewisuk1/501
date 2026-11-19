@@ -350,6 +350,16 @@ describe("team page", () => {
     expect(siteLabel("https://www.sharkysnc.com/")).toBe("Website");
   });
 
+  it("has the light/dark switch at the right end of the site bar, icon only", () => {
+    for (const path of ["/c", "/c/area-501"]) {
+      const html = at(path);
+      const bar = html.slice(html.indexOf('class="site-bar"'), html.indexOf("</nav>", html.indexOf('class="site-bar"')) + 200);
+      expect(bar).toMatch(/<\/nav><button type="button" class="theme-toggle compact"[^>]*aria-label="Switch to light mode"/);
+    }
+    // The lander keeps its worded one.
+    expect(at("/")).toMatch(/class="theme-toggle"[^>]*>.*<span>Light<\/span><\/button>/);
+  });
+
   it("puts the sections in tabs under tonight's match, the players open first", () => {
     const html = at("/c/area-501");
     const tabs = [...html.matchAll(/role="tab" aria-selected="(true|false)"[^>]*>([^<]+)</g)].map((m) => [m[2], m[1]]);

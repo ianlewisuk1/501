@@ -14,7 +14,7 @@ import { divisionPath, Link, navigate, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { sameTeam, type TeamRef } from "./myTeam";
 import { chalkFor, useBlackStatusBar } from "./ui";
-import { setTheme, useThemeSetting } from "./theme";
+import { ThemeToggle } from "./ThemeToggle";
 import { promptInstall, useInstalled, useInstallPrompt, usePlatform } from "./install";
 import { useViewCount } from "./views";
 import { TeamText } from "./TeamText";
@@ -277,30 +277,6 @@ function NewsRail({ issue }: { issue: LeagueWeek }) {
         </div>
       ))}
     </aside>
-  );
-}
-
-/**
- * Light or dark, top right of the lander: the whiteboard or the chalkboard. It says what tapping
- * does ("Light" on the chalkboard, "Dark" on the whiteboard), with a sun or a moon, and the choice
- * is remembered on this device.
- */
-function ThemeToggle() {
-  const theme = useThemeSetting();
-  const next = theme === "dark" ? "light" : "dark";
-  return (
-    <button type="button" className="theme-toggle" onClick={() => setTheme(next)} aria-label={`Switch to ${next} mode`}>
-      {next === "light" ? (
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <circle cx="12" cy="12" r="4.5" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
-          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
-        </svg>
-      )}
-      <span>{next === "light" ? "Light" : "Dark"}</span>
-    </button>
   );
 }
 
