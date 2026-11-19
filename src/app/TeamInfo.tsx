@@ -1,7 +1,7 @@
 /**
  * A team page's Team tab: things about the team rather than this week's game. Its home bar (a
  * photo, the address and landmark, map links, its home nights still to come), how its season went
- * (place, record, the tournament), and its top three players in each game. Laid out photo first so
+ * (place, record, the tournament), and its top three players in each game and in all-star points. Laid out photo first so
  * it doesn't read like the match card above the tabs.
  */
 import type { Standing, TeamWeek } from "../parser/types";
@@ -50,7 +50,7 @@ function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
   const urls = mapsUrls(bar.name, [bar]);
   return (
     <section className="ti-section" aria-labelledby="ti-bar">
-      <h3 id="ti-bar" className="ti-head">Home bar</h3>
+      <h3 id="ti-bar" className="ti-head">Home Bar</h3>
       {PHOTOS_ON ? <BarPhoto barName={bar.name} /> : (
         <div className="ti-photo" role="img" aria-label="Photo to come">
           <svg viewBox="0 0 120 60" width="96" height="48" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,7 +85,7 @@ function Season({ me, week, seasonWeeks, tournament }: { me: Standing; week: Tea
     : <>{tournament.round} {tournament.opponent ? <>vs {link(tournament.opponent)}</> : ""} on {shortDate(tournament.date, false)}{tournament.seed ? `, seed ${tournament.seed}` : ""}</>;
   return (
     <section className="ti-section" aria-labelledby="ti-season">
-      <h3 id="ti-season" className="ti-head">This season</h3>
+      <h3 id="ti-season" className="ti-head">This Season</h3>
       <p className="ti-big">
         {ordinal(me.rank)} in {division}, {me.wins}–{me.losses}
         {final && me.rank === 1 && <ClinchBadge mark="G" final />}
@@ -97,7 +97,7 @@ function Season({ me, week, seasonWeeks, tournament }: { me: Standing; week: Tea
 }
 
 type Game = "singles301" | "singlesCricket" | "doubles501" | "doublesCricket";
-const GAMES: [Game, string][] = [["singles301", "Singles 301"], ["singlesCricket", "Singles cricket"], ["doubles501", "Doubles 501"], ["doublesCricket", "Doubles cricket"]];
+const GAMES: [Game, string][] = [["singles301", "Singles 301"], ["singlesCricket", "Singles Cricket"], ["doubles501", "Doubles 501"], ["doublesCricket", "Doubles Cricket"]];
 const TOP = 3;
 
 /**
@@ -112,18 +112,27 @@ export function topPlayers(players: TeamWeek["players"], game: Game, n = TOP): {
     .slice(0, n);
 }
 
+/** The team's most all-star points this season, a total. */
+export function topAllStars(players: TeamWeek["players"], n = TOP): { name: string; points: number }[] {
+  return players.filter((p) => p.allStarPoints > 0).map((p) => ({ name: p.name, points: p.allStarPoints }))
+    .sort((a, b) => b.points - a.points).slice(0, n);
+}
+
 function TopPlayers({ week }: { week: TeamWeek }) {
-  const boards = GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game) })).filter((b) => b.top.length);
+  const boards = [
+    ...GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game).map((p) => ({ name: p.name, value: `${p.w}–${p.l}` })) })),
+    { label: "All-Star Points", top: topAllStars(week.players).map((p) => ({ name: p.name, value: String(p.points) })) },
+  ].filter((b) => b.top.length);
   if (!boards.length) return null;
   return (
     <section className="ti-section" aria-labelledby="ti-top">
-      <h3 id="ti-top" className="ti-head">Top players <span className="muted">through week {week.week - 1}</span></h3>
+      <h3 id="ti-top" className="ti-head">Top Players <span className="muted">through week {week.week - 1}</span></h3>
       <div className="ti-boards">
         {boards.map((b) => (
           <div key={b.label}>
             <p className="ti-sub">{b.label}</p>
             <ol className="ti-top">
-              {b.top.map((p) => <li key={p.name}><div><span className="ti-top-name">{p.name}</span><span className="muted">{p.w}–{p.l}</span></div></li>)}
+              {b.top.map((p) => <li key={p.name}><div><span className="ti-top-name">{p.name}</span><span className="muted">{p.value}</span></div></li>)}
             </ol>
           </div>
         ))}

@@ -294,12 +294,14 @@ describe("team page", () => {
   it("has a Team tab: home bar with map links, the season so far, and the team's records", () => {
     const html = at("/c/area-501");
     const panel = html.slice(html.indexOf('id="panel-team"'), html.indexOf("</main>"));
-    expect(panel).toContain("Home bar");
+    expect(panel).toContain("Home Bar");
     expect(panel).toContain('class="ti-bar-name"');
     expect(panel).toContain("Map (Apple)");
     expect(panel).toMatch(/1st in C, 1[34]–0/);
     // Top players in each game, not the records lists.
-    expect(panel).toContain("Top players");
+    expect(panel).toContain("Top Players");
+    expect(panel).toContain("Singles Cricket");
+    expect(panel).toContain("All-Star Points");
     expect(panel).toContain("Singles 301");
     expect(panel).not.toContain("Hot darts");
   });
