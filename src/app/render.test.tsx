@@ -12,6 +12,7 @@ import { SHORT_NAMES } from "./ui";
 import { topPlayers } from "./TeamInfo";
 import type { TeamWeek } from "../parser/types";
 import tournament from "../../data/Fa26/league-week-15.json";
+import barWebsites from "../../data/bar-websites.json";
 import { loadSeason, type SeasonData } from "./store";
 
 const wk07 = parse("fixtures/Fa26wk07.xlsx", TEAM);
@@ -325,6 +326,11 @@ describe("team page", () => {
     expect(panel).toContain("All-Star Points Per Game");
     expect(panel).toContain("Singles 301");
     expect(panel).not.toContain("Hot darts");
+    // Its home bar, The Flying Saucer, has its own website.
+    expect(panel).toContain('href="https://www.beerknurd.com/raleigh-flying-saucer/" target="_blank" rel="noopener">Website</a>');
+    // Every bar named in the websites file is a bar in the league's directory.
+    const names = new Set((full.venues ?? []).map((v) => v.name));
+    for (const name of Object.keys(barWebsites.sites)) expect(names).toContain(name);
   });
 
   it("puts the sections in tabs under tonight's match, the players open first", () => {

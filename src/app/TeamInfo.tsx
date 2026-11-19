@@ -13,6 +13,10 @@ import { isFinal, type TournamentState } from "./league";
 import { mapsUrls, shortDate, type FixtureRow } from "./model";
 import { Link, teamPath } from "./route";
 import { ClinchBadge, ordinal } from "./ui";
+import barWebsites from "../../data/bar-websites.json";
+
+/** Each bar's own website, by its name in the league's directory (hand-kept; a bar with none is left out). */
+const BAR_WEBSITES: Record<string, string> = barWebsites.sites;
 
 const same = (a: string, b: string) => norm(a) === norm(b);
 
@@ -66,6 +70,7 @@ function HomeBar({ bar, nights }: { bar: Venue; nights: FixtureRow[] }) {
       <div className="maps">
         <a className="map-link" href={urls.apple} target="_blank" rel="noopener">Map (Apple)</a>
         <a className="map-link" href={urls.google} target="_blank" rel="noopener">Map (Google)</a>
+        {BAR_WEBSITES[bar.name] && <a className="map-link" href={BAR_WEBSITES[bar.name]} target="_blank" rel="noopener">Website</a>}
       </div>
       {nights.length > 0 && <p className="ti-nights">Home nights: {nights.map((r) => shortDate(r.date, false)).join(", ")}</p>}
     </section>
