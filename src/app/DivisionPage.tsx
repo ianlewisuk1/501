@@ -6,7 +6,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, headlineStories, isFinal, resultsLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -32,6 +32,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   // Atop the Standings tab: which week's results the table is from ("Final standings, after week 14, Nov 11").
   const results = division.results;
   const final = isFinal(results?.week, seasonWeeks);
+  const week = currentWeek(data, issue, todayIso());
   // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
   const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
   const seasonOver = !!lastNight && todayIso() > lastNight;
@@ -43,7 +44,10 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
     <main className="division-page">
       <div className="div-head">
         {n > 1 && <Link className="div-step" to={divisionPath(prev)} aria-label={`Previous: ${prev} Division`}><Arrow dir="left" /></Link>}
-        <PageHead chalk title={`${d} Division`} />
+        <PageHead chalk title={`${d} Division`}>
+          {/* The league's match night, the same for every division ("Week 13 of 14", "Quarterfinals tonight"). */}
+          {week && <p className="week-pill">{week}</p>}
+        </PageHead>
         {n > 1 && <Link className="div-step" to={divisionPath(next)} aria-label={`Next: ${next} Division`}><Arrow dir="right" /></Link>}
       </div>
       <Tabs label="Division sections" tabs={[
@@ -100,9 +104,11 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
               {/* The leader's clinch mark gets a line of its own, leaving the name the whole width. */}
               {i === 0 && s.clinched === "G" && <span className="ladder-clear"><ClinchBadge mark={s.clinched} final={final} /></span>}
             </span>
-            {/* The record ranks the table, so it's the big number; points come second. */}
-            <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
-            <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}<span className="ladder-pts-unit"> pts</span></span>
+            {/* The record ranks the table, so it's the big number; points sit small under it. */}
+            <span className="ladder-score">
+              <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
+              <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}<span className="ladder-pts-unit"> pts</span></span>
+            </span>
           </Link>
         </li>
       ))}

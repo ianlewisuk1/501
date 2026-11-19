@@ -186,8 +186,9 @@ describe("routes", () => {
     const html = at("/h/calm-under-pressure");
     expect(html).toContain("Calm Under Pressure");
     expect(html).toContain('<p class="meta">H Division</p>');
-    // The league's match night sits in the site bar.
-    expect(html).toMatch(/class="week-pill"><span class="week-long">Week 1[34] of 14/);
+    // The league's match night sits under a division's title, not on team pages.
+    expect(html).not.toContain("week-pill");
+    expect(at("/h")).toMatch(/<p class="week-pill">Week 1[34] of 14/);
     expect(html).toContain('id="fixtures"');
   });
 
@@ -442,7 +443,7 @@ describe("tournament issue", () => {
     // Final standings and the last regular night's scores come with it.
     expect(div).toContain('aria-label="14 wins, 0 losses">14–0<');
     expect(div).toContain("Final standings, after week 14, Nov 11. Tap a team");
-    expect(div).toMatch(/class="week-pill"><span class="week-long">(Quarterfinals|Semifinals|Final)/);
+    expect(div).toMatch(/<p class="week-pill">(Quarterfinals|Semifinals|Final)/);
     // The leader is "Season champs" now, with no "Clinched" pill or key.
     expect(div).toContain(">Season champs<");
     expect(div).not.toContain("Clinched");
