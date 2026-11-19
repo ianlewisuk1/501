@@ -713,13 +713,14 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .division-page .week-step { margin-top: 2px; }
 /* A week's cards share the height left under the week picker, down to a 30px row. --k is the card count. */
 .division-page .cards {
-  --crow: clamp(30px, calc((100vh - 330px - var(--k, 4) * 42px) / (var(--k, 4) * 2)), 48px);
-  --crow: clamp(30px, calc((100svh - 330px - var(--k, 4) * 42px) / (var(--k, 4) * 2)), 48px);
+  /* 330px: site bar, title and week pill, tabs, week picker. 70px a card: its strip, its one-line pick and the gap. */
+  --crow: clamp(30px, calc((100vh - 330px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px);
+  --crow: clamp(30px, calc((100svh - 330px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px);
   gap: 8px;
 }
 .division-page .card-row { min-height: var(--crow); }
-@media (max-height: 760px) {
-  /* Short phones: a slimmer strip and tighter rows. */
+@media (max-height: 900px) {
+  /* Phones: a slimmer strip and tighter rows, so a week of cards with Kilt's picks fits the screen. */
   .division-page .card-name { padding: 0; }
   .division-page .card-head { padding: 2px 10px; }
   .division-page .matches-note { display: none; }
@@ -841,16 +842,20 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 /* One line always: FitName scales a long name down to fit; the ellipsis is only a last resort. */
 .card-row .side-name { font-size: 1.2rem; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-rec { flex: none; font-size: 0.9rem; color: var(--chalk-2); line-height: 1.3; white-space: nowrap; }
-.card-score { font-size: 1.5rem; font-weight: 400; text-align: right; }
+.card-score { font-size: 1.5rem; font-weight: 400; line-height: 1; text-align: right; }
 .card-mark { font-size: 1.1rem; color: var(--yellow); }
 .card-row.lost .side-name, .card-row.lost .card-score { color: var(--chalk-2); }
 /* The newsletter editor's pick, along the bottom of a card; a featured write-up opens in place. */
 .card-pick { margin: 2px 0 0; padding: 6px 10px 4px; border-top: 1px dashed var(--chalk-faint); font-size: 0.85rem; line-height: 1.35; color: var(--chalk-2); }
-.card-pick-label { font-weight: 700; color: var(--yellow); margin-right: 4px; }
+/* One line: label, the pick (cut with "…" if long), then "Read more" for a featured write-up. */
+p.card-pick, details.card-pick summary { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.card-pick-label { flex: none; font-weight: 700; color: var(--yellow); }
+.card-pick-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 details.card-pick summary { cursor: pointer; list-style: none; }
 details.card-pick summary::-webkit-details-marker { display: none; }
-details.card-pick summary::after { content: " Read more"; color: var(--chalk); text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 3px; }
-details.card-pick[open] summary::after { content: " Less"; }
+.card-pick-more { flex: none; margin-left: auto; }
+.card-pick-more::after { content: "Read more"; color: var(--chalk); text-decoration: underline; text-decoration-color: var(--chalk-line); text-underline-offset: 3px; }
+details.card-pick[open] .card-pick-more::after { content: "Less"; }
 details.card-pick p { margin: 6px 0 2px; color: var(--chalk); }
 .card-foot { margin: 0; padding: 2px 10px 4px 36px; font-size: 0.8rem; color: var(--chalk-2); }
 .rank-tag { flex: none; color: var(--chalk-2); opacity: 0.7; font: 400 1.05rem/1 var(--hand); }

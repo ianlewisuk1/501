@@ -459,17 +459,18 @@ function ResultCard({ match, division, pick }: { match: Match; division: LeagueD
 /**
  * Kilt's pick (the newsletter editor), along the bottom of a match card, in his own words. A
  * featured match shows its closing call and opens to the whole write-up; a listed one is its
- * score line. No winner is read into the prose.
+ * score line. One line each, so a week of cards fits the screen; a long call ends in "…".
+ * No winner is read into the prose.
  */
 function PickNote({ pick, division }: { pick: Pick; division: string }) {
   if (!pick.featured) {
-    return <p className="card-pick"><span className="card-pick-label">Kilt's pick</span> {pick.text}</p>;
+    return <p className="card-pick"><span className="card-pick-label">Kilt's pick</span><span className="card-pick-text">{pick.text}</span></p>;
   }
   const others = pick.together - 1;
   const summary = pick.call ?? `Written up with ${others} other ${division} ${others === 1 ? "match" : "matches"}`;
   return (
     <details className="card-pick">
-      <summary><span className="card-pick-label">Kilt's pick</span> {summary}</summary>
+      <summary><span className="card-pick-label">Kilt's pick</span><span className="card-pick-text">{summary}</span><span className="card-pick-more" aria-hidden="true" /></summary>
       <p>{pick.text}</p>
     </details>
   );
