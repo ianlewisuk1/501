@@ -1230,6 +1230,14 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .ti-cup { margin-top: 6px !important; }
 .ti-sub { margin: 10px 0 4px !important; font-weight: 700; }
 .ti-sub .muted { font-weight: 400; margin-left: 4px; }
-.ti-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.ti-list li { line-height: 1.3; }
-.ti-more { margin-top: 8px; padding: 8px 14px; font: inherit; color: var(--chalk); background: rgb(var(--ink-rgb) / 0.06); border: 1.5px dashed var(--chalk-line); border-radius: 8px; cursor: pointer; }
+.ti-head .muted { font: 400 1rem var(--hand); margin-left: 6px; }
+/* Top players: four small boards, one under another on a phone, two across on wider screens. */
+.ti-boards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px 24px; }
+@media (min-width: 520px) { .ti-boards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ti-boards > div { min-width: 0; }
+.ti-top { max-width: 20rem; }
+.ti-top { margin: 0; padding: 0 0 0 1.3em; display: grid; gap: 2px; }
+.ti-top li { line-height: 1.3; }
+.ti-top li > div { display: flex; justify-content: space-between; gap: 6px; min-width: 0; }
+.ti-top-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ti-top li .muted { flex: none; font-variant-numeric: tabular-nums; }

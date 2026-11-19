@@ -1,16 +1,15 @@
 /**
  * A team page's Team tab: things about the team rather than this week's game. Its home bar (a
  * photo, the address and landmark, map links, its home nights still to come), how its season went
- * (place, record, the tournament), and its records this season (trophy darts, perfect throws, hot
- * darts, newest first). Laid out photo first so it doesn't read like the match card above the tabs.
+ * (place, record, the tournament), and its top three players in each game. Laid out photo first so
+ * it doesn't read like the match card above the tabs.
  */
-import type { LeagueWeek, Standing, TeamWeek } from "../parser/types";
+import type { Standing, TeamWeek } from "../parser/types";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { norm } from "../parser/names";
 import { PHOTOS_ON } from "../photos/core";
 import { BarPhoto } from "./BarPhoto";
-import { useState } from "react";
-import { featLabel, isFinal, type TournamentState } from "./league";
+import { isFinal, type TournamentState } from "./league";
 import { mapsUrls, shortDate, type FixtureRow } from "./model";
 import { Link, teamPath } from "./route";
 import { ClinchBadge, ordinal } from "./ui";
@@ -30,12 +29,11 @@ export function homeBar(rows: FixtureRow[], venues: Venue[] | undefined): Venue 
   return [...counts.values()].sort((a, b) => b.n - a.n)[0]?.venue ?? null;
 }
 
-export function TeamInfo({ week, rows, venues, issues, seasonWeeks, tournament, today }: {
-  week: TeamWeek; rows: FixtureRow[]; venues: Venue[] | undefined; issues: LeagueWeek[];
+export function TeamInfo({ week, rows, venues, seasonWeeks, tournament, today }: {
+  week: TeamWeek; rows: FixtureRow[]; venues: Venue[] | undefined;
   seasonWeeks: number | null; tournament: TournamentState | null; today: string;
 }) {
   const team = week.team.name;
-  const division = week.team.division;
   const bar = homeBar(rows, venues);
   const homeNights = rows.filter((r) => !r.bye && r.home && r.date >= today);
   const me = week.standings.find((s) => same(s.team, team));
@@ -43,7 +41,7 @@ export function TeamInfo({ week, rows, venues, issues, seasonWeeks, tournament, 
     <div className="team-info">
       {bar && <HomeBar bar={bar} nights={homeNights} />}
       {me && <Season me={me} week={week} seasonWeeks={seasonWeeks} tournament={tournament} />}
-      <TeamRecords team={team} division={division} issues={issues} />
+      <TopPlayers week={week} />
     </div>
   );
 }
@@ -98,52 +96,38 @@ function Season({ me, week, seasonWeeks, tournament }: { me: Standing; week: Tea
   );
 }
 
-/** The team's trophy darts (best this season), perfect throws (this season) and hot darts (every week). */
-function TeamRecords({ team, division, issues }: { team: string; division: string; issues: LeagueWeek[] }) {
-  const latest = issues.at(-1);
-  const div = latest?.divisions.find((d) => d.division === division);
-  const trophies = (div?.records ?? []).flatMap((r) => r.holders.filter((h) => same(h.team, team)).map((h) => ({ ...h, category: r.category, value: r.value })));
-  const throws = (latest?.perfectThrows ?? []).filter((p) => same(p.team, team));
-  const kinds = [...new Set(throws.map((p) => p.kind))];
-  // Hot darts are printed one week at a time, so gather every issue's (the issue for week N covers week N-1).
-  const hot = issues.flatMap((i) => (i.divisions.find((d) => d.division === division)?.hotDarts ?? [])
-    .filter((h) => same(h.team, team)).map((h) => ({ ...h, week: i.week - 1 }))).reverse();
-  const [allHot, setAllHot] = useState(false);
-  const HOT = 8;
-  if (!trophies.length && !throws.length && !hot.length) return null;
+type Game = "singles301" | "singlesCricket" | "doubles501" | "doublesCricket";
+const GAMES: [Game, string][] = [["singles301", "Singles 301"], ["singlesCricket", "Singles cricket"], ["doubles501", "Doubles 501"], ["doublesCricket", "Doubles cricket"]];
+const TOP = 3;
+
+/**
+ * The team's best players in each game: win % among those with at least half the busiest
+ * player's games in it (so a 2–0 sub doesn't top the list), more wins breaking a tie.
+ */
+export function topPlayers(players: TeamWeek["players"], game: Game, n = TOP): { name: string; w: number; l: number }[] {
+  const played = players.map((p) => ({ name: p.name, w: p[game].w, l: p[game].l })).filter((p) => p.w + p.l > 0);
+  const most = Math.max(0, ...played.map((p) => p.w + p.l));
+  return played.filter((p) => p.w + p.l >= most / 2)
+    .sort((a, b) => b.w / (b.w + b.l) - a.w / (a.w + a.l) || b.w - a.w)
+    .slice(0, n);
+}
+
+function TopPlayers({ week }: { week: TeamWeek }) {
+  const boards = GAMES.map(([game, label]) => ({ label, top: topPlayers(week.players, game) })).filter((b) => b.top.length);
+  if (!boards.length) return null;
   return (
-    <section className="ti-section" aria-labelledby="ti-records">
-      <h3 id="ti-records" className="ti-head">Records</h3>
-      {trophies.length > 0 && (
-        <>
-          <p className="ti-sub">Trophy darts <span className="muted">best in {division} this season</span></p>
-          <ul className="ti-list">
-            {trophies.map((t, i) => (
-              <li key={i}><b>{t.value}</b> {t.category}: {t.players.join(" & ")}{t.date && <span className="muted">, {shortDate(t.date, false)}</span>}</li>
-            ))}
-          </ul>
-        </>
-      )}
-      {throws.length > 0 && (
-        <>
-          <p className="ti-sub">Perfect throws <span className="muted">this season</span></p>
-          <ul className="ti-list">
-            {kinds.map((k) => {
-              const who = throws.filter((p) => p.kind === k);
-              return <li key={k}><b>{k}</b>: {who.map((p) => `${p.player}${p.dates.length > 1 ? ` ×${p.dates.length}` : ""}`).join(", ")}</li>;
-            })}
-          </ul>
-        </>
-      )}
-      {hot.length > 0 && (
-        <>
-          <p className="ti-sub">Hot darts <span className="muted">this season</span></p>
-          <ul className="ti-list">
-            {(allHot ? hot : hot.slice(0, HOT)).map((h, i) => <li key={i}><b>{featLabel(h.feat)}</b>: {h.players.join(" & ")}<span className="muted">, week {h.week}</span></li>)}
-          </ul>
-          {hot.length > HOT && <button type="button" className="ti-more" onClick={() => setAllHot(!allHot)}>{allHot ? "Show fewer" : `Show all ${hot.length}`}</button>}
-        </>
-      )}
+    <section className="ti-section" aria-labelledby="ti-top">
+      <h3 id="ti-top" className="ti-head">Top players <span className="muted">through week {week.week - 1}</span></h3>
+      <div className="ti-boards">
+        {boards.map((b) => (
+          <div key={b.label}>
+            <p className="ti-sub">{b.label}</p>
+            <ol className="ti-top">
+              {b.top.map((p) => <li key={p.name}><div><span className="ti-top-name">{p.name}</span><span className="muted">{p.w}–{p.l}</span></div></li>)}
+            </ol>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

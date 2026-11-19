@@ -298,8 +298,10 @@ describe("team page", () => {
     expect(panel).toContain('class="ti-bar-name"');
     expect(panel).toContain("Map (Apple)");
     expect(panel).toMatch(/1st in C, 1[34]–0/);
-    // Ian Lewis holds C's fast singles 301 trophy dart.
-    expect(panel).toContain("Fast Singles 301: Ian Lewis");
+    // Top players in each game, not the records lists.
+    expect(panel).toContain("Top players");
+    expect(panel).toContain("Singles 301");
+    expect(panel).not.toContain("Hot darts");
   });
 
   it("puts the sections in tabs under tonight's match, the players open first", () => {

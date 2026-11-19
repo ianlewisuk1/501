@@ -57,7 +57,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
           { id: "form", label: "Form", show: week.players.length > 0, body: <PerformanceChart current={week} divisions={divisions} /> },
           { id: "opponent", label: "Opponent", show: !!scout?.rows.length, body: <Scouting week={week} fixture={current} divisions={divisions} /> },
           { id: "fixtures", label: "Fixtures", show: fixtures.length > 0, body: <Fixtures rows={fixtures} maps={maps} names={week.standings.map((s) => s.team)} division={division} expanded /> },
-          { id: "team", label: "Team", show: true, body: <TeamInfo week={week} rows={fixtures} venues={data.venues} issues={data.issues}
+          { id: "team", label: "Team", show: true, body: <TeamInfo week={week} rows={fixtures} venues={data.venues}
               seasonWeeks={teamSchedule?.weeks.length ?? null} tournament={cup} today={today} /> },
         ]} />
         <footer className="muted small">
