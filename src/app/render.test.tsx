@@ -187,7 +187,7 @@ describe("routes", () => {
   it("renders any team in the league", () => {
     const html = at("/h/calm-under-pressure");
     expect(html).toContain("Calm Under Pressure");
-    expect(html).toContain('<p class="meta">H Division</p>');
+    expect(html).toMatch(/<p class="meta">\d+(st|nd|rd|th) in H Division<\/p>/);
     // The league's match night sits under a division's title, not on team pages.
     expect(html).not.toContain("week-pill");
     expect(at("/h")).toMatch(/<p class="week-pill">Week 1[34] of 14/);
@@ -480,7 +480,7 @@ describe("tournament issue", () => {
     }
     expect(atFull("/f")).toMatch(/ladder-top.*Down to F, Again/);
     expect(atFull("/c/area-501")).not.toContain("Breaking");
-    expect(atFull("/c/area-501")).toContain('<p class="meta">C Division</p>');
+    expect(atFull("/c/area-501")).toContain('<p class="meta">1st in C Division</p>');
   });
 
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {

@@ -40,6 +40,8 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
   const at = order.indexOf(week.team.name);
   const prev = order[(at - 1 + order.length) % order.length];
   const next = order[(at + 1) % order.length];
+  // Under the name: its place in the division ("2nd in C Division"), from the latest standings.
+  const place = week.standings[at];
 
   return (
     <>
@@ -47,7 +49,7 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
       <main className={news ? "team-page under-banner" : "team-page"}>
         <div className="div-head">
           {order.length > 1 && <Link className="div-step" to={teamPath(division, prev)} aria-label={`Previous team: ${prev}`}><Arrow dir="left" /></Link>}
-          <PageHead team chalk title={week.team.name} meta={`${division} Division`}>
+          <PageHead team chalk title={week.team.name} meta={place ? `${ordinal(place.rank)} in ${division} Division` : `${division} Division`}>
             <MyTeamButton team={week.team.name} division={division} />
           </PageHead>
           {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
