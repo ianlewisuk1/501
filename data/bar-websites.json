@@ -1,7 +1,8 @@
 {
-  "note": "Each league bar's own web presence, keyed by its name in the league's directory (data/{season}/venues.json). sites: the bar's own website, else its Facebook or Instagram page (the link is labelled by where it goes). menus: its food menu (own site or Toast ordering page). From each bar's Google Maps listing, checked 2026-11-19 to load and name that location. Left out when there's none or it doesn't load (Backstage Pub, Main Street Taps, Main Street Tavern have no site found; Buffalo Brothers' and Cleveland Draft House's menu links were dead).",
+  "note": "Each league bar's own web presence, keyed by its name in the league's directory (data/{season}/venues.json). sites: the bar's own website, else its Facebook or Instagram page (the link is labelled by where it goes). menus: its food menu (own site or Toast ordering page). From each bar's Google Maps listing, checked 2026-11-19 to load and name that location. Left out when there's none or it doesn't load (Main Street Taps and Main Street Tavern have no site found; Backstage Pub's Facebook page came from the owner; Buffalo Brothers' and Cleveland Draft House's menu links were dead).",
   "sites": {
     "American Legion Fuquay-Varina": "https://alpost116nc.org/",
+    "Backstage Pub": "https://www.facebook.com/JPiner2013",
     "Benny's Billiards": "https://www.bennysbilliards.com/",
     "Brass Tap & Billiards": "http://brasstapbilliards.com/",
     "Break Time Billiards": "https://www.breaktimecary.com/",
