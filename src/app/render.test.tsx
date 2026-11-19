@@ -502,9 +502,8 @@ describe("tournament issue", () => {
     if (!tourney()) return;
     vi.setSystemTime(new Date("2026-11-19T09:00:00"));
     const team = atFull("/c/area-501");
-    expect(team).toContain("Last match <span class=\"muted\">Wed, Nov 18</span>");
-    expect(team).toContain('vs <a href="/c/still-hump-n">Still Hump&#x27;N</a>');
-    expect(team).toContain("Quarterfinal, result to come");
+    expect(team).toContain('Awaiting result of</h2><p class="big">Quarterfinal vs <a href="/c/still-hump-n">Still Hump&#x27;N</a></p>');
+    expect(team).not.toContain("Last match");
     expect(team).toContain("Semifinals are Wed, Dec 2");
     // Nothing that depends on the result: no next opponent, no bar.
     const card = section(team, "tonight");

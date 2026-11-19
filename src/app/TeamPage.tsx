@@ -158,9 +158,8 @@ function Tournament({ next, game, week, today, venues }: {
   if (game?.kind === "pending") {
     return (
       <section className="card hero" aria-labelledby="tonight">
-        <h2 id="tonight">Last match <span className="muted">{shortDate(game.date)}</span></h2>
-        {game.opponent && <p className="big">vs {link(game.opponent)}</p>}
-        <p className="hero-opp muted">{game.round}, result to come</p>
+        <h2 id="tonight">Awaiting result of</h2>
+        <p className="big">{game.round}{game.opponent && <> vs {link(game.opponent)}</>}</p>
         {game.next && <p className="hero-opp">{game.next.round === "Final" ? "The final is" : `${game.next.round} are`} {shortDate(game.next.date)}</p>}
       </section>
     );

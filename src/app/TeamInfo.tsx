@@ -81,7 +81,7 @@ function Season({ me, week, seasonWeeks, tournament }: { me: Standing; week: Tea
   const cup = !tournament ? null
     : tournament.kind === "champion" ? <>Won the {division} Division tournament</>
     : tournament.kind === "out" ? <>Out in the {tournament.round === "Final" ? "final" : `${tournament.round.toLowerCase()}s`}, beaten by {link(tournament.beatenBy)}</>
-    : tournament.kind === "pending" ? <>{tournament.round}{tournament.opponent && <> vs {link(tournament.opponent)}</>}, result to come</>
+    : tournament.kind === "pending" ? <>Awaiting result of {tournament.round.toLowerCase()}{tournament.opponent && <> vs {link(tournament.opponent)}</>}</>
     : <>{tournament.round} {tournament.opponent ? <>vs {link(tournament.opponent)}</> : ""} on {shortDate(tournament.date, false)}{tournament.seed ? `, seed ${tournament.seed}` : ""}</>;
   return (
     <section className="ti-section" aria-labelledby="ti-season">
