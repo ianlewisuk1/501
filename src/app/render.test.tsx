@@ -154,6 +154,7 @@ describe("routes", () => {
       const bracket = section(html, "bracket");
       expect(bracket).toContain("Quarterfinals");
       expect(bracket).toContain("Upper Deck 1&amp;2");
+      expect(bracket).toContain("<li>Matches start at 7:00 pm.</li><li>Each match is best of three.</li>");
       expect(bracket).toContain("Seed 1 or 8");
       // Full names first; the page swaps in page 2's short name only when one won't fit its box.
       expect(bracket).toMatch(/class="b-name"[^>]*>Menace 2 Sobriety</);

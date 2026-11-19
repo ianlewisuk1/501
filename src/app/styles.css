@@ -1100,6 +1100,9 @@ section tbody td:first-child { padding-left: 8px; }
   .team-page .scout .sticky { white-space: normal; min-width: 7.5rem; max-width: 9rem; }
 }
 .tab-note { margin: 0 0 8px; color: var(--chalk-2); font-size: 1.05rem; }
+/* The bracket's notes, one fact a line, each after a hyphen. */
+.b-facts { list-style: none; padding: 0; }
+.b-facts li::before { content: "- "; }
 
 /*
  * Light mode, "dartboard colours" (picked 2026-11-05 from four options): a crisp white board in
