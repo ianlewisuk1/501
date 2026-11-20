@@ -1280,3 +1280,50 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .form-legend svg { flex: none; overflow: visible; }
 .form-legend .fline path { fill: none; stroke: var(--lc); stroke-linecap: round; }
 .form-legend-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- Division Players tab (PlayerBoard.tsx): chips, a narrow list, a player's line opening under them ---- */
+.pb-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+.pb-chip {
+  min-height: 40px; padding: 5px 11px; cursor: pointer; font: 600 0.95rem var(--sketch);
+  color: var(--chalk); background: none; border: 1.5px solid var(--chalk-line); border-radius: 999px;
+}
+.pb-chip[aria-pressed="true"] { color: var(--on-hi); background: var(--yellow); border-color: var(--yellow); }
+.pb-regulars { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 0 0 6px; cursor: pointer; font-size: 1rem; }
+.pb-regulars input { width: 22px; height: 22px; accent-color: var(--yellow); flex: none; }
+.pb-regulars .muted { font-size: 0.85rem; }
+/* Rank | player and team | W–L | win % with a bar behind it. */
+.pb-head, .pb-row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.6rem 4.6rem; column-gap: 8px; align-items: center; }
+.pb-head { padding: 0 8px 4px; font-size: 0.85rem; color: var(--chalk-2); border-bottom: 1px solid var(--chalk-line); }
+.pb-head span:nth-child(3), .pb-head span:nth-child(4) { text-align: right; }
+.pb-list { list-style: none; margin: 0; padding: 0; }
+.pb-item { border-bottom: 1px dashed var(--chalk-faint); }
+.pb-item:nth-child(odd) { background: rgb(var(--ink-rgb) / 0.035); }
+.pb-item.mine { box-shadow: inset 4px 0 0 var(--yellow); background: rgb(var(--hi-rgb) / 0.08); }
+.pb-row { width: 100%; min-height: 54px; padding: 6px 8px; font: inherit; color: var(--chalk); text-align: left; background: none; border: 0; cursor: pointer; }
+.pb-row:hover { background: rgb(var(--ink-rgb) / 0.05); }
+.pb-rank { font: 700 1.15rem var(--sketch); color: var(--chalk-2); text-align: center; }
+.pb-who { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.pb-name { font: 600 1.1rem var(--sketch); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pb-team { font-size: 0.85rem; color: var(--chalk-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pb-rec { text-align: right; font-variant-numeric: tabular-nums; color: var(--chalk-2); }
+.pb-val { position: relative; display: flex; justify-content: flex-end; align-items: center; height: 28px; border-radius: 4px; overflow: hidden; background: rgb(var(--ink-rgb) / 0.06); }
+.pb-bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgb(var(--hi-rgb) / 0.28); }
+.pb-num { position: relative; padding: 0 6px; font: 700 1.05rem var(--sketch); font-variant-numeric: tabular-nums; }
+.pb-item.open .pb-row { background: rgb(var(--hi-rgb) / 0.1); }
+/* The opened line: every category in a small grid, then games, matches and the team. */
+.pl { padding: 4px 10px 12px 2.8rem; }
+.pl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; }
+/* Label on its own line, the record and win % under it, so nothing gets cut off on a phone. */
+.pl-cell { display: flex; flex-direction: column; padding: 4px 0; border-bottom: 1px dotted var(--chalk-faint); }
+.pl-label { font-size: 0.85rem; color: var(--chalk-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-nums { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.pl-val { font: 600 1.1rem var(--sketch); font-variant-numeric: tabular-nums; }
+.pl-pct { font-size: 0.95rem; color: var(--chalk-2); font-variant-numeric: tabular-nums; }
+.pl-foot { margin: 8px 0 0; font-size: 0.95rem; color: var(--chalk-2); }
+@media (max-width: 380px) {
+  .pl { padding-left: 10px; }
+  /* Narrow phones: slimmer number columns, so names keep their room. */
+  .pb-head, .pb-row { grid-template-columns: 1.4rem minmax(0, 1fr) 3.1rem 3.9rem; column-gap: 6px; }
+  .pb-head, .pb-row { padding-left: 6px; padding-right: 6px; }
+  .pb-num { padding: 0 4px; font-size: 1rem; }
+}

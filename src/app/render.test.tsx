@@ -378,20 +378,21 @@ describe("team page", () => {
 
 });
 
-it("ranks the division's top 25 in a chosen category, with a button for everyone", () => {
+it("lists the division's players one category at a time: chips, four columns, regulars only, top 25", () => {
   const board = section(at("/c"), "division");
-  expect(board).toContain("<option value=\"aspAvg\">All-star points per game</option>");
-  const body = board.slice(board.indexOf("<tbody>"), board.indexOf("</tbody>"));
-  expect(body.match(/<tr[ >]/g)).toHaveLength(25);
-  expect(board).toMatch(/Show all \d+ players/);
-});
-
-it("filters the leaderboard by games played: all, more than 5, more than 20", () => {
-  const board = section(at("/c"), "division");
-  expect(board).toContain('aria-pressed="false">All players</button>');
-  expect(board).toContain('aria-pressed="false">More than 5 games</button>');
-  expect(board).toContain('aria-pressed="true">More than 20 games</button>'); // late season: enough regulars
-  expect(board).not.toContain("6+ matches");
+  // A chip per category, Overall picked; no dropdown or wide table any more.
+  const chips = [...board.matchAll(/class="pb-chip" aria-pressed="(true|false)">([^<]+)</g)].map((m) => [m[2], m[1]]);
+  expect(chips.map((c) => c[0])).toEqual(["Overall", "Singles", "Doubles", "301", "501", "Singles cricket", "Doubles cricket", "All-star"]);
+  expect(chips[0][1]).toBe("true");
+  expect(board).not.toContain("<select");
+  expect(board).not.toContain("players wide");
+  // Regulars only, on by default.
+  expect(board).toMatch(/<input type="checkbox" checked=""\/><span>Regulars only/);
+  // Top 25, best first, each row a button that opens the player's line.
+  const items = board.match(/class="pb-item/g) ?? [];
+  expect(items.length).toBeLessThanOrEqual(25);
+  expect(board).toContain('<span class="pb-rank">1</span><span class="pb-who"><span class="pb-name">Ian Lewis</span><span class="pb-team">Area 501</span>');
+  expect(board).toContain('aria-expanded="false"');
 });
 
 it("writes each team's place in the standings small in front of its name, with no monogram crest", () => {

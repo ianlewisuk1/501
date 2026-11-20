@@ -10,10 +10,11 @@ import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStor
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
+import { PlayerBoard } from "./PlayerBoard";
 import { Tabs } from "./Tabs";
 import { TeamText } from "./TeamText";
 import { useMyTeams } from "./myTeam";
-import { Arrow, TeamName, ClinchBadge, chalkFor, FitName, GROUPS, NewsletterLink, ordinal, PageHead, PLAYER_COLUMNS, useBlackStatusBar, useSort } from "./ui";
+import { Arrow, TeamName, ClinchBadge, chalkFor, FitName, NewsletterLink, ordinal, PageHead, useBlackStatusBar } from "./ui";
 
 export function DivisionPage({ data, issue, division }: { data: SeasonData; issue: LeagueWeek; division: LeagueDivision }) {
   const d = division.division;
@@ -401,95 +402,17 @@ function PickNote({ pick, division }: { pick: Pick; division: string }) {
   );
 }
 
-/** Leaderboard categories for the "Rank by" dropdown: plain words for the table's sort keys. */
-const RANK_BY: [string, string][] = [
-  ["totalPct", "Overall win %"],
-  ["singlesPct", "Singles win %"],
-  ["doublesPct", "Doubles win %"],
-  ["s301", "Singles 301"],
-  ["sCricket", "Singles cricket"],
-  ["d501", "Doubles 501"],
-  ["dCricket", "Doubles cricket"],
-  ["aspAvg", "All-star points per game"],
-  ["asp", "All-star points, total"],
-  ["games", "Games played"],
-];
-const TOP = 25;
-
-/** Who to list, by games played: everyone who's played, or regulars only, so a 2–0 sub can't top a win % table. */
-const GAME_FILTERS: [number, string][] = [[0, "All players"], [5, "More than 5 games"], [20, "More than 20 games"]];
-
-/** Every player in the division: a top 25 for any category, like the newsletter's leaderboards. */
+/** Every player in the division, one category at a time (PlayerBoard.tsx). */
 export function Leaderboard({ week, division, players }: { week: number; division: string; players: DivisionPlayer[] }) {
-  const all = players;
-  // Starts at "more than 20 games" once enough players have that many; early in the season, more than 5.
-  const [minGames, setMinGames] = useState<number>(() => (all.filter((p) => p.gamesPlayed > 20).length >= 10 ? 20 : 5));
-  const shown = all.filter((p) => p.gamesPlayed > minGames);
-  const { rows, sortKey, toggle, sortBy, arrow, ariaSort } = useSort<DivisionPlayer>(shown, PLAYER_COLUMNS, "totalPct");
-  const [everyone, setEveryone] = useState(false);
-  const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
-  if (!all.length) return null;
-  const listed = everyone ? rows : rows.slice(0, TOP);
-  const teams = new Set(all.map((p) => p.code)).size;
-
+  const mine = useMine(division);
+  if (!players.length) return null;
+  const teams = new Set(players.map((p) => p.code)).size;
   return (
     <section aria-labelledby="division">
       <SectionHead id="division" title="Leaderboard" detail={`Through week ${week - 1}`} />
       <Fold show="Show leaderboard" hide="Hide leaderboard"
-        summary={<>Top {TOP} of {all.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
-        <label className="rank-by">
-          <span>Rank by</span>
-          <select value={RANK_BY.some(([k]) => k === sortKey) ? sortKey : ""} onChange={(e) => sortBy(e.target.value)}>
-            {!RANK_BY.some(([k]) => k === sortKey) && <option value="">(table heading)</option>}
-            {RANK_BY.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
-          </select>
-        </label>
-        <fieldset className="games-filter">
-          <legend>Show</legend>
-          <div className="seg">
-            {GAME_FILTERS.map(([n, label]) => (
-              <button key={n} type="button" aria-pressed={minGames === n} onClick={() => setMinGames(n)}>{label}</button>
-            ))}
-          </div>
-        </fieldset>
-        <div className="scroll-x" tabIndex={0} role="region" aria-label="Division player stats, scrolls sideways">
-          <table className="players wide">
-            <thead>
-              <tr className="groups">
-                <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
-                  <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
-                </th>
-                {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
-              </tr>
-              <tr>
-                {PLAYER_COLUMNS.map((c, i) => (
-                  <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
-                    <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {listed.map((p, i) => (
-                <tr key={`${p.code}-${p.number}`}>
-                  <th scope="row" className="sticky">
-                    <span className="muted small">{i + 1}.</span> {p.name}
-                    <Link className="team small muted" to={teamPath(division, p.team)}>{p.team}</Link>
-                  </th>
-                  {PLAYER_COLUMNS.map((c, i) => (
-                    <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {rows.length > TOP && (
-          <button className="showall" aria-expanded={everyone} onClick={() => setEveryone(!everyone)}>
-            {everyone ? `Show top ${TOP} only` : `Show all ${rows.length} players`}
-          </button>
-        )}
-        <p className="muted small">Swipe sideways for every category, or tap a heading to sort by it.</p>
+        summary={<>All {players.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
+        <PlayerBoard division={division} players={players} mine={mine} />
       </Fold>
     </section>
   );
