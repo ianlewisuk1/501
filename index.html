@@ -31,7 +31,12 @@
       html[data-theme="light"] #splash { background: #fff; }
       html[data-theme="light"] #splash img { filter: invert(1); }
       #splash.gone { opacity: 0; }
-      @media (prefers-reduced-motion: reduce) { #splash { transition: none; } }
+      /* It arrives rather than appearing: fades in, drifting down and growing, with a small turn as it
+         settles, like a dart landing (owner, 2026-11-19). backwards: no hold on the end frame, so the
+         glide's own transform takes over afterwards. */
+      #splash img { animation: splash-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+      @keyframes splash-in { from { opacity: 0; transform: translateY(-36px) scale(0.82) rotate(-12deg); } }
+      @media (prefers-reduced-motion: reduce) { #splash { transition: none; } #splash img { animation: none; } }
     </style>
     <script>
       // Show it only when launched from the home screen (or with ?splash to preview), once per visit.
@@ -77,14 +82,14 @@
           var n = 0;
           (function poll() { if (document.querySelector(".board-logo") || location.pathname !== "/" || n++ > 20) cb(); else setTimeout(poll, 50); })();
         }
-        // Held long enough to take in (1.4s; owner, 2026-11-19: slower), and never stuck past 4s.
-        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 1400 - (Date.now() - start))); }); });
-        setTimeout(hide, 4000);
+        // In (0.9s), then held to take in (to 1.9s; owner, 2026-11-19: slower), and never stuck past 4.5s.
+        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 1900 - (Date.now() - start))); }); });
+        setTimeout(hide, 4500);
       })();
     </script>
   </head>
   <body>
-    <div id="splash" aria-hidden="true"><img src="/rdl-logo.png" alt="" width="202" height="202" /></div>
+    <div id="splash" aria-hidden="true"><img src="/rdl-logo-512.png" alt="" width="512" height="512" /></div>
     <div id="root"></div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>

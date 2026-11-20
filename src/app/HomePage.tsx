@@ -50,7 +50,7 @@ export function HomePage({ data, issue, myTeam, lastTeam }: { data?: SeasonData;
       <ThemeToggle />
       {/* A box of its own only on wide screens, where it runs across the top above the board and the side column. */}
       <div className="lander-head">
-      <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={104} height={104} />
+      <img className="board-logo" src={`${import.meta.env.BASE_URL}rdl-logo-512.png`} alt="" width={104} height={104} />
       <ChalkTitle text="Raleigh Dart League" />
       <p className="board-when">
         {whenLine(issue, seasonWeeks)}
