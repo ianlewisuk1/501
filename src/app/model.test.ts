@@ -5,7 +5,7 @@ import { parse, parseDivisionTeams, parseDivisionWorkbook } from "../parser/inde
 import { loadWorkbook } from "../parser/workbook";
 import type { DivisionWeek } from "../parser/types";
 import { TEAM } from "../parser/team";
-import { featLabel, rankHotDarts } from "./league";
+import { featLabel, rankHotDarts, titleFeat } from "./league";
 import venuesJson from "../../data/Fa26/venues.json";
 import type { Venue } from "../parser/venueMatch";
 import { breakingNews, buildFixtures, nextTournament, clinchNews, withClinchedFirst, editorPick, scoutReport, findStanding, isIOS, mapsUrl, mapsUrls, shortDate, form, divisionPlayers, teamSchedule, teamSlug, teamTotals, weeklyGames, WHOLE_TEAM, type SeasonSchedule } from "./model";
@@ -275,5 +275,12 @@ describe("hot darts, rarest first", () => {
     expect(featLabel("T80")).toBe("Ton-80");
     expect(featLabel("12-dart SCkt")).toBe("12-dart singles cricket");
     expect(featLabel("4 ASPs")).toBe("4 ASPs");
+  });
+});
+
+describe("titleFeat", () => {
+  it("writes hot dart feats in title case, leaving 8m and ASPs as printed", () => {
+    expect(["15-dart 301", "20-dart SCkt", "101-Out", "4.5 ASPs", "8m (trip,trip,Dbull)", "37-dart 1001(!!)", "9m", "T80"].map(titleFeat))
+      .toEqual(["15-Dart 301", "20-Dart SCkt", "101-Out", "4.5 ASPs", "8m (Trip,Trip,Dbull)", "37-Dart 1001(!!)", "9m", "T80"]);
   });
 });

@@ -436,3 +436,6 @@ const first = (view: BracketView, team: string): number | null =>
   view.rounds[0].games.flatMap((g) => g.entries).find((e) => e.team && sameName(e.team, team))?.seed ?? null;
 
 const sameName = (a: string, b: string) => norm(a) === norm(b);
+
+/** Hot dart feats in title case: "15-dart 301" reads "15-Dart 301" ("8m" and "ASPs" stay as printed). */
+export const titleFeat = (feat: string) => feat.replace(/(^|[\s\-(,])([a-z])/g, (_, before: string, c: string) => before + c.toUpperCase());

@@ -6,7 +6,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, titleFeat, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
@@ -159,7 +159,7 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
           <ul className="rec-board rec-hot">
             {feats.map(({ feat, who }) => (
               <li key={feat}>
-                <span className="rec-val">{feat}</span>
+                <span className="rec-val">{titleFeat(feat)}</span>
                 <span className="rec-body">
                   {who.map((h, j) => (
                     <span key={j} className="rec-holder">
