@@ -10,6 +10,20 @@ const LETTER_MS = 125; // time to chalk one letter
 const SPACE_MS = 70; // lifting the chalk between words
 const SETTLE_MS = 450; // laying the stick down
 
+/**
+ * Resolves once the opening screen (index.html) has finished: its logo has landed and `splash`
+ * has come off <html>. Straight away when there was no opening screen. The chalk waits for this,
+ * so the title isn't written behind the logo (owner, 2026-11-19).
+ */
+const splashGone = () => new Promise<void>((resolve) => {
+  const html = document.documentElement;
+  if (!html.classList.contains("splash")) return resolve();
+  const watch = new MutationObserver(() => {
+    if (!html.classList.contains("splash")) { watch.disconnect(); resolve(); }
+  });
+  watch.observe(html, { attributes: true, attributeFilter: ["class"] });
+});
+
 export function ChalkTitle({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
   const timings = [...text].reduce<{ start: number; ms: number }[]>((acc, ch) => {
@@ -26,7 +40,7 @@ export function ChalkTitle({ text, className }: { text: string; className?: stri
     let anim: Animation | undefined;
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    document.fonts.ready.then(() => {
+    Promise.all([document.fonts.ready, splashGone()]).then(() => {
       if (cancelled) return;
       const box = h1.getBoundingClientRect();
       const letters = [...h1.querySelectorAll<HTMLSpanElement>(".ch")].map((el) => {
