@@ -188,10 +188,14 @@ describe("routes", () => {
     expect(rec).toContain("Fast singles 301");
     expect(rec).toMatch(/<span class="rec-val">9 darts<\/span>.*?Ian Lewis<\/span> <span class="rec-team-date"><span class="rec-team"[^>]*>Area 501<\/span><span class="rec-date">, Aug 12/);
     expect(rec).toContain("Perfect throws");
-    // Hot darts lead, ringed, with last week's number; one line per feat with everyone who threw it.
-    expect(rec.indexOf("rec-hot-board")).toBeLessThan(rec.indexOf("Trophy darts"));
-    expect(rec).toMatch(/Hot darts<span class="rec-hot-week">week \d+<\/span>/);
-    const feats = [...rec.matchAll(/class="rec-feat">([^<]+)</g)].map((m) => m[1]);
+    // Trophy darts, then hot darts (plain, with last week's number), then perfect throws.
+    expect(rec.indexOf("Trophy darts")).toBeLessThan(rec.indexOf("Hot darts"));
+    expect(rec.indexOf("Hot darts")).toBeLessThan(rec.indexOf("Perfect throws"));
+    expect(rec).toMatch(/Hot darts<span class="rec-head-note">week \d+<\/span>/);
+    expect(rec).not.toContain("chalk-star");
+    // One line per feat, with everyone who threw it.
+    const hot = rec.slice(rec.indexOf("Hot darts"), rec.indexOf("Perfect throws"));
+    const feats = [...hot.matchAll(/class="rec-val">([^<]+)</g)].map((m) => m[1]);
     expect(new Set(feats).size).toBe(feats.length);
     // Each kind of perfect throw is counted in tally marks.
     expect(rec).toMatch(/class="rec-kind"><span>9-Marks<\/span><span class="tally" role="img" aria-label="\d+ this season">/);

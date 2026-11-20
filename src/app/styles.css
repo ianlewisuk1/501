@@ -778,23 +778,7 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 .rec-date { color: var(--chalk-2); font-size: 0.95rem; }
 .rec-hot, .rec-board, .rec-throwers { list-style: none; margin: 0; padding: 0; }
 
-/* Hot darts: last week's news, chalked round by hand like Tonight on a team page. */
-.rec-hot-board {
-  padding: 14px 16px 10px; border: 2px solid rgb(var(--hi-rgb) / 0.85);
-  border-radius: 255px 14px 225px 14px / 14px 225px 14px 255px;
-  box-shadow: 2px 3px 0 -1px rgb(var(--hi-rgb) / 0.3); background: rgb(var(--hi-rgb) / 0.05);
-}
-.rec-hot-title { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 8px; font: 700 2rem/1.1 var(--sketch); color: var(--yellow); }
-.rec-hot-week { font: 400 1.15rem var(--hand); color: var(--chalk-2); }
-.chalk-star { flex: none; transform: rotate(-8deg); margin-right: -2px; }
-.chalk-star path { fill: none; stroke: var(--yellow); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
-.rec-hot li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 2px 12px; align-items: baseline; padding: 8px 0; border-top: 1px dashed var(--chalk-faint); }
-.rec-feat { font: 700 1.35rem/1.15 var(--sketch); color: var(--yellow); }
-.rec-names { display: grid; gap: 4px; }
-.rec-person { display: grid; line-height: 1.2; }
-.rec-person .rec-name { font-size: 1.15rem; }
-
-/* Trophy darts: the record board, the number big and chalked first. */
+/* Trophy darts and hot darts: the number (or feat) big on the left, who threw it beside. */
 .rec-board li { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--chalk-faint); }
 .rec-board li:last-child { border-bottom: 0; }
 .rec-val { font: 700 1.5rem/1.1 var(--sketch); color: var(--yellow); white-space: nowrap; }
@@ -814,10 +798,9 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 .rec-team-date { white-space: nowrap; }
 /* On the whiteboard team chalks are all black, so a team name fades to grey to stand apart from the player. */
 :root[data-theme="light"] .rec-team { color: var(--chalk-2) !important; }
-/* Phones: a name and its team share a line; a hot dart's feat sits above its names. */
+/* Phones: a name and its team share a line. */
 @media (max-width: 480px) {
-  .rec-hot li { grid-template-columns: 1fr; }
-  .rec-person, .rec-throwers li { display: block; }
+  .rec-throwers li { display: block; }
   .rec-throwers { grid-template-columns: 1fr; gap: 4px; }
 }
 @media (max-width: 380px) {

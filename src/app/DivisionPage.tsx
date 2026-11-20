@@ -125,8 +125,9 @@ const sentence = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
 const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
 
 /**
- * The division's best throws, as three boards: last week's hot darts first and chalked round like
- * news, then the season's trophy darts (the standing records), then the perfect throws as tallies.
+ * The division's best throws, as three boards (owner, 2026-11-19): the season's trophy darts (the
+ * standing records) first, then last week's hot darts in the same plain style, then the perfect
+ * throws as tallies.
  */
 function Records({ division, throws, week }: { division: LeagueDivision; throws: PerfectThrow[]; week: number }) {
   const kinds = [...new Set(throws.map((t) => t.kind))];
@@ -134,28 +135,6 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
   const feats = [...new Set(division.hotDarts.map((h) => h.feat))].map((feat) => ({ feat, who: division.hotDarts.filter((h) => h.feat === feat) }));
   return (
     <>
-      {feats.length > 0 && (
-        <section className="rec-section" aria-labelledby="rec-hot-h">
-          <div className="rec-hot-board">
-            <h2 id="rec-hot-h" className="rec-hot-title"><ChalkStar />Hot darts<span className="rec-hot-week">week {week}</span></h2>
-            <ul className="rec-hot">
-              {feats.map(({ feat, who }) => (
-                <li key={feat}>
-                  <span className="rec-feat">{feat}</span>
-                  <span className="rec-names">
-                    {who.map((h, j) => (
-                      <span key={j} className="rec-person">
-                        <span className="rec-name">{joinNames(h.players)}</span>{" "}
-                        <span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
       {division.records.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-trophy-h">
           <h2 id="rec-trophy-h" className="rec-head">Trophy darts<span className="rec-head-note">best this season</span></h2>
@@ -172,6 +151,26 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
                       {h.date && <span className="rec-date">, {shortDate(h.date, false)}</span>}</span>
                     </span>
                   )) : <span className="rec-holder muted">None reported yet</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {feats.length > 0 && (
+        <section className="rec-section" aria-labelledby="rec-hot-h">
+          <h2 id="rec-hot-h" className="rec-head">Hot darts<span className="rec-head-note">week {week}</span></h2>
+          <ul className="rec-board rec-hot">
+            {feats.map(({ feat, who }) => (
+              <li key={feat}>
+                <span className="rec-val">{feat}</span>
+                <span className="rec-body">
+                  {who.map((h, j) => (
+                    <span key={j} className="rec-holder">
+                      <span className="rec-name">{joinNames(h.players)}</span>{" "}
+                      <span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
+                    </span>
+                  ))}
                 </span>
               </li>
             ))}
@@ -220,13 +219,6 @@ function Tally({ n }: { n: number }) {
     </span>
   );
 }
-
-/** A star scribbled in chalk, the kind a teacher puts by good work. */
-const ChalkStar = () => (
-  <svg className="chalk-star" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-    <path d="M20 3 L24.5 15.5 L37.5 15.8 L27 23.6 L31 36.5 L20 28.6 L9.2 36.2 L13.2 23.5 L2.6 15.6 L15.6 15.2 Z" />
-  </svg>
-);
 
 /**
  * The editor's write-up of a week in this division, from page 1's RDL Headlines: one story a line
