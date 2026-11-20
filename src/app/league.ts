@@ -439,3 +439,39 @@ const sameName = (a: string, b: string) => norm(a) === norm(b);
 
 /** Hot dart feats in title case: "15-dart 301" reads "15-Dart 301" ("8m" and "ASPs" stay as printed). */
 export const titleFeat = (feat: string) => feat.replace(/(^|[\s\-(,])([a-z])/g, (_, before: string, c: string) => before + c.toUpperCase());
+
+/** One played week of a team's season, as the standings' form strip shows it. */
+export type FormNight =
+  | { week: number; date: string; bye: true }
+  | { week: number; date: string; bye?: false; opponent: string; opponentShort: string; home: boolean;
+      us: number | null; them: number | null; result: "W" | "L" | null; tiebreak: boolean; note?: string };
+
+/**
+ * A team's season so far, oldest first: every played week from `divisionRounds`, its opponent,
+ * home or away, the score and the result (a 12–12 goes to whoever won the 1001; a missing
+ * scoresheet has no result). Weeks it had a bye show as byes; weeks with no data are left out.
+ */
+export function teamForm(rounds: DivisionRound[], team: string): FormNight[] {
+  const out: FormNight[] = [];
+  for (const r of rounds) {
+    if (!r.played) continue;
+    const m = r.matches.find((x) => x.home.team === team || x.away.team === team);
+    if (!m) {
+      if (r.byes.includes(team)) out.push({ week: r.week, date: r.date, bye: true });
+      continue;
+    }
+    const home = m.home.team === team;
+    const [us, them] = home ? [m.home, m.away] : [m.away, m.home];
+    const scored = us.score != null && them.score != null;
+    const tiebreak = scored && us.score === them.score;
+    const won = !scored ? null
+      : us.score! > them.score! || (tiebreak && us.tiebreaker1001 === "W") ? true
+      : them.score! > us.score! || (tiebreak && them.tiebreaker1001 === "W") ? false : null;
+    out.push({
+      week: r.week, date: r.date, opponent: them.team, opponentShort: them.short, home,
+      us: us.score, them: them.score, result: won == null ? null : won ? "W" : "L", tiebreak,
+      ...(m.note ? { note: m.note } : {}),
+    });
+  }
+  return out;
+}

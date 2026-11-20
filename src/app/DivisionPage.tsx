@@ -3,11 +3,11 @@
  * tabs: the standings written up as a chalk ladder, every week's matches, the players, and the
  * division's records. A team picked with "This is my team" is starred wherever it appears.
  */
-import { useMemo, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, titleFeat, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
-import { shortDate, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
+import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, teamForm, titleFeat, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { shortDate, teamSlug, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { PlayerBoard } from "./PlayerBoard";
@@ -58,7 +58,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           body: (
             <section aria-labelledby="standings">
               <SectionHead id="standings" title="Standings" detail={results ? resultsLabel(results, seasonWeeks) : undefined} />
-              <Ladder standings={final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} />
+              <Ladder standings={final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} rounds={rounds} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
             </section>
@@ -87,19 +87,23 @@ function withChampion(standings: Standing[]): Standing[] {
   return standings.map((s, i) => (i === 0 ? { ...s, clinched: "G" as const } : s));
 }
 
-function Ladder({ standings, division, final }: { standings: Standing[]; division: string; final: boolean }) {
+function Ladder({ standings, division, final, rounds }: { standings: Standing[]; division: string; final: boolean; rounds: DivisionRound[] }) {
   const mine = useMine(division);
+  const [open, setOpen] = useState<string | null>(null);
   // "Clinched" needs a key; after the season the leader's pill says "Season champs", which doesn't.
   const clinched = !final && standings.some((s) => s.clinched === "G");
   return (
     <>
     {/* Laid out like the Players list (owner, 2026-11-20): same row height and lettering, a small
-        heading row, place | team | W–L | points. */}
-    <div className="ladder-head" aria-hidden="true"><span>#</span><span>Team</span><span>W–L</span><span>Pts</span></div>
+        heading row, place | team | W–L | points. Tapping a team opens its form (2026-11-20). */}
+    <div className="ladder-head" aria-hidden="true"><span>#</span><span>Team</span><span>W–L</span><span>Pts</span><span /></div>
     <ol className="ladder">
-      {standings.map((s, i) => (
-        <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine"].filter(Boolean).join(" ") || undefined}>
-          <Link to={teamPath(division, s.team)}>
+      {standings.map((s, i) => {
+        const isOpen = open === s.team;
+        const panel = `form-${teamSlug(s.team)}`;
+        return (
+        <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine", isOpen && "open"].filter(Boolean).join(" ") || undefined}>
+          <button type="button" className="ladder-row" aria-expanded={isOpen} aria-controls={panel} onClick={() => setOpen(isOpen ? null : s.team)}>
             <span className="ladder-rank">{s.rank}</span>
             <span className="ladder-team">
               <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} final={final} />}</span>
@@ -108,13 +112,62 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
             </span>
             <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
             <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>
-          </Link>
+            <Chevron open={isOpen} />
+          </button>
+          {isOpen && <TeamFormStrip id={panel} team={s.team} division={division} rounds={rounds} />}
         </li>
-      ))}
+        );
+      })}
     </ol>
     {/* What the clinch mark means, only when one shows: a tooltip never appears on a phone. */}
     {clinched && <p className="ladder-key"><b>✓ Clinched</b> means sure to finish 1st.</p>}
     </>
+  );
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg className={`ladder-chev${open ? " up" : ""}`} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/**
+ * A team's season under its standings row: one small card a week, oldest on the left, in a strip
+ * that scrolls sideways and opens at the newest week. Then a link to the team's page.
+ */
+function TeamFormStrip({ id, team, division, rounds }: { id: string; team: string; division: string; rounds: DivisionRound[] }) {
+  const form = useMemo(() => teamForm(rounds, team), [rounds, team]);
+  const strip = useRef<HTMLOListElement>(null);
+  useLayoutEffect(() => {
+    const el = strip.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [form]);
+  return (
+    <div className="ladder-form" id={id}>
+      {form.length ? (
+        <ol className="form-strip" ref={strip} aria-label={`${team}, week by week`}>
+          {form.map((f) => (
+            <li key={f.week} className="form-night">
+              <span className="fn-week">Week {f.week}</span>
+              {f.bye ? <span className="fn-bye">Bye</span> : (
+                <>
+                  <span className="fn-res">
+                    {f.result ? <span className={`badge ${f.result === "W" ? "win" : "loss"}`}>{f.result}</span> : <span className="badge tie">–</span>}
+                    {f.us != null && f.them != null && <span className="fn-score">{f.us}–{f.them}</span>}
+                  </span>
+                  <span className="fn-opp" title={f.opponent}><span className="fn-where">{f.home ? "vs" : "at"}</span><TeamName team={f.opponent} short={f.opponentShort} className="fn-team" /></span>
+                  {f.tiebreak && f.result && <span className="fn-note">On the 1001</span>}
+                  {f.note && <span className="fn-note">{f.note.includes("forfeit") ? "Forfeit" : "Score to come"}</span>}
+                </>
+              )}
+            </li>
+          ))}
+        </ol>
+      ) : <p className="muted small fn-none">No matches played yet.</p>}
+      <Link className="fn-link" to={teamPath(division, team)}>Team page</Link>
+    </div>
   );
 }
 

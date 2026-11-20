@@ -662,16 +662,16 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
  * The standings, laid out like the Players list (owner, 2026-11-20: it didn't sit with the other
  * tabs): a small heading row, then place | team | W–L | points at the Players list's sizes.
  */
-.ladder-head, .ladder a { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.4rem 3rem; column-gap: 8px; align-items: center; }
+.ladder-head, .ladder-row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.4rem 3rem 1.1rem; column-gap: 8px; align-items: center; }
 .ladder-head { padding: 0 8px 4px; font-size: 0.85rem; color: var(--chalk-2); border-bottom: 1px solid var(--chalk-line); }
 .ladder-head span:nth-child(1) { text-align: center; }
 .ladder-head span:nth-child(3), .ladder-head span:nth-child(4) { text-align: right; }
 .ladder { list-style: none; margin: 0; padding: 0; }
-.ladder a { min-height: 54px; padding: 6px 8px; text-decoration: none; color: var(--chalk); border-bottom: 1px dashed var(--chalk-faint); }
+.ladder-row { width: 100%; min-height: 54px; padding: 6px 8px; margin: 0; border: 0; border-bottom: 1px dashed var(--chalk-faint); border-radius: 0; background: none; font: inherit; text-align: left; color: var(--chalk); cursor: pointer; }
 .ladder-key { margin: 6px 8px 0; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.25; }
 .ladder-key b { color: var(--yellow); font: 700 0.9rem/1 var(--sketch); }
-.ladder li:nth-child(odd) a { background: rgb(var(--ink-rgb) / 0.035); }
-.ladder a:hover { background: rgb(var(--ink-rgb) / 0.07); }
+.ladder li:nth-child(odd) .ladder-row { background: rgb(var(--ink-rgb) / 0.035); }
+.ladder-row:hover { background: rgb(var(--ink-rgb) / 0.07); }
 .ladder-rank { font: 700 1.15rem var(--sketch); color: var(--chalk-2); text-align: center; }
 .ladder-team { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
 .ladder-line { display: flex; align-items: baseline; min-width: 0; }
@@ -683,19 +683,36 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
 .ladder-rec { font: 700 1.05rem var(--sketch); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
 .ladder-pts { font-size: 0.95rem; color: var(--chalk-2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 /* The leader: a light wash and its place in the accent colour, the way the other tabs highlight. */
-.ladder li.ladder-top:nth-child(n) a { background: rgb(var(--hi-rgb) / 0.1); }
+.ladder li.ladder-top:nth-child(n) .ladder-row { background: rgb(var(--hi-rgb) / 0.1); }
 .ladder-top .ladder-rank { color: var(--yellow); }
 /* The picked team ("This is my team"): a yellow star by its name, and a faint yellow wash on its row. */
 /* The picked team: a yellow stripe down the row's left edge, taking no width from the name. */
-.ladder-mine a, .card-row.mine, .b-line.mine { box-shadow: inset 4px 0 0 var(--yellow); }
+.ladder-mine .ladder-row, .ladder-mine .ladder-form, .card-row.mine, .b-line.mine { box-shadow: inset 4px 0 0 var(--yellow); }
 /* :nth-child(n) matches every row; it's there to outrank the alternate-row stripe above. */
-.ladder li.ladder-mine:nth-child(n) a { background: rgb(var(--hi-rgb) / 0.09); }
+.ladder li.ladder-mine:nth-child(n) .ladder-row { background: rgb(var(--hi-rgb) / 0.09); }
 .card-line { display: flex; align-items: center; min-width: 0; }
 .card-line .side-name { min-width: 0; }
 .card-row.mine { background: rgb(var(--hi-rgb) / 0.08); }
 /* The leader's clinch mark, on a line under its name. */
 .ladder-clear { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; margin-top: 2px; font-size: 0.85rem; line-height: 1.2; color: var(--chalk-2); }
 .ladder-clear .clinch { margin-left: 0; }
+.ladder-chev { color: var(--chalk-2); transition: transform 0.2s; }
+.ladder-chev.up { transform: rotate(180deg); }
+/* A team's form, opened under its row: a week a card, scrolling sideways, newest at the right. */
+.ladder-form { padding: 8px 0 10px; border-bottom: 1px dashed var(--chalk-faint); }
+.form-strip { list-style: none; margin: 0; padding: 0 8px 4px; display: flex; gap: 6px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.form-night { flex: none; width: 6.4rem; display: grid; gap: 3px; align-content: start; padding: 6px 8px; border: 1px solid var(--chalk-faint); border-radius: 6px; background: rgb(var(--ink-rgb) / 0.04); scroll-snap-align: end; }
+.fn-week { font-size: 0.8rem; color: var(--chalk-2); }
+.fn-res { display: flex; align-items: center; gap: 6px; }
+.fn-res .badge { font-size: 0.95rem; }
+.fn-score { font: 700 1.05rem var(--sketch); font-variant-numeric: tabular-nums; }
+.fn-opp { display: flex; gap: 4px; min-width: 0; font-size: 0.9rem; line-height: 1.2; color: var(--chalk); }
+.fn-where { flex: none; color: var(--chalk-2); }
+.fn-team { flex: 1; min-width: 0; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fn-bye { font: 700 1.05rem var(--sketch); color: var(--chalk-2); }
+.fn-note { font-size: 0.75rem; color: var(--chalk-2); }
+.fn-none { margin: 0 8px; }
+.fn-link { display: inline-block; margin: 8px 8px 0; font-size: 0.95rem; }
 
 /*
  * Fitting the first screen: the header and tabs tighten up so the ladder (and a week of match

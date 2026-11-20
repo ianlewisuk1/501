@@ -6,7 +6,7 @@ import { ClinchBadge, PLAYER_COLUMNS, Screen } from "./App";
 import schedule from "../../data/Fa26/schedule.json";
 import { todayIso, type SeasonSchedule } from "./model";
 import { divisionBest, playerLine, teamLine, verdict } from "./form";
-import { divisionIn, divisionRounds, divisionWeeks } from "./league";
+import { divisionIn, divisionRounds, divisionWeeks, teamForm } from "./league";
 import { parseRoute } from "./route";
 import { SHORT_NAMES } from "./ui";
 import { siteLabel, topPlayers } from "./TeamInfo";
@@ -171,7 +171,7 @@ describe("routes", () => {
     const html = at("/c");
     const ladder = html.slice(html.indexOf('class="ladder"'), html.indexOf("</ol>", html.indexOf('class="ladder"')));
     expect(ladder.match(/<li/g)).toHaveLength(8);
-    expect(ladder).toMatch(/<li class="ladder-top"><a href="\/c\/area-501">/);
+    expect(ladder).toMatch(/<li class="ladder-top"><button type="button" class="ladder-row" aria-expanded="false" aria-controls="form-area-501">/);
     expect(ladder).toContain('aria-label="13 wins, 0 losses">13–0<');
     expect(ladder).not.toContain("points clear");
     // Says the rows can be tapped.
@@ -403,6 +403,16 @@ it("writes each team's place in the standings small in front of its name, with n
   const matches = section(at("/c"), "matches");
   expect(matches).toContain('<span class="rank-tag" title="1st in the standings">1</span><span class="card-name"><span class="card-line"><span class="side-name">Area 501</span></span><span class="card-rec">13–0</span>');
   expect(matches).not.toContain('class="crest"');
+});
+
+describe("a team's form in the standings", () => {
+  it("lists every played week, oldest first, with opponent, home or away, score and result", () => {
+    const rounds = divisionRounds(data, "C");
+    const form = teamForm(rounds, "Area 501");
+    expect(form.map((f) => f.week)).toEqual(rounds.filter((r) => r.played).map((r) => r.week));
+    expect(form.find((f) => f.week === 6)).toMatchObject({ opponent: "Pints and Points", opponentShort: "Pints", home: false, us: 19, them: 5, result: "W" });
+    expect(form.find((f) => f.week === 5)).toMatchObject({ opponentShort: "Hump'N", home: false, us: 19, them: 5, result: "W" });
+  });
 });
 
 describe("matches, every week", () => {
