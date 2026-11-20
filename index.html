@@ -34,7 +34,7 @@
       /* It arrives rather than appearing: fades in, drifting down and growing, with a small turn as it
          settles, like a dart landing (owner, 2026-11-19). backwards: no hold on the end frame, so the
          glide's own transform takes over afterwards. */
-      #splash img { animation: splash-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+      #splash img { animation: splash-in 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
       @keyframes splash-in { from { opacity: 0; transform: translateY(-36px) scale(0.82) rotate(-12deg); } }
       @media (prefers-reduced-motion: reduce) { #splash { transition: none; } #splash img { animation: none; } }
     </style>
@@ -82,9 +82,9 @@
           var n = 0;
           (function poll() { if (document.querySelector(".board-logo") || location.pathname !== "/" || n++ > 20) cb(); else setTimeout(poll, 50); })();
         }
-        // In (0.9s), then held to take in (to 1.9s; owner, 2026-11-19: slower), and never stuck past 4.5s.
-        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 1900 - (Date.now() - start))); }); });
-        setTimeout(hide, 4500);
+        // In (1.8s), then held to take in (to 2.8s; owner, 2026-11-19: slower each time), and never stuck past 5.5s.
+        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 2800 - (Date.now() - start))); }); });
+        setTimeout(hide, 5500);
       })();
     </script>
   </head>
