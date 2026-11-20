@@ -66,7 +66,6 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
               seasonWeeks={teamSchedule?.weeks.length ?? null} tournament={cup} today={today} /> },
         ]} />
         <footer className="muted small">
-          Unofficial. From the RDL "Tons of Newsletter", week {week.week}. Stats through week {week.week - 1}.
           <NewsletterLink />
         </footer>
       </main>

@@ -28,14 +28,15 @@ function dataUpdated(): string {
  */
 function devViews(): Plugin {
   let views = 1000;
+  let week = 120;
   return {
     name: "dev-views",
     apply: "serve",
     configureServer(server) {
       server.middlewares.use("/api/views", (req, res) => {
-        if (req.method === "POST") views++;
+        if (req.method === "POST") { views++; week++; }
         res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ views }));
+        res.end(JSON.stringify({ views, week }));
       });
     },
   };

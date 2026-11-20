@@ -433,8 +433,9 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 
   /* Left out on wide screens: the title block, the dartboard, the scroll arrow and the phone steps. */
   main.lander .lander-head, main.lander .aim, main.lander .more-below, main.lander .add-home,
-  .lander-fold > .your-team, .lander-fold > .last-looked, main.lander > .find, main.lander > .key-dates, main.lander > .view-count { display: none; }
+  .lander-fold > .your-team, .lander-fold > .last-looked, main.lander > .find, main.lander > .key-dates, main.lander > .view-count, main.lander > .unofficial { display: none; }
   .desk-rail .view-count { margin-top: 18px; text-align: left; }
+  .desk-rail .unofficial { text-align: left; }
 
   /* Left rail, pinned while the page scrolls (scrolling inside itself if the window is short). */
   .desk-rail { grid-column: 2; grid-row: 3; position: sticky; top: 0; max-height: 100vh; overflow-y: auto; padding: 22px 2px 24px; scrollbar-width: thin; }
@@ -623,6 +624,8 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .inline-icon { display: inline-block; vertical-align: -4px; margin: 0 2px; color: var(--yellow); }
 
 .view-count { margin: 28px 0 0; text-align: center; font-size: 1rem; color: var(--chalk-2); }
+.view-count span { display: block; }
+.unofficial { margin: 10px 0 0; text-align: center; font-size: .9rem; color: var(--chalk-2); }
 .key-dates { margin-top: 28px; padding-top: 18px; background: var(--rule) center top / 100% 6px no-repeat; }
 .key-dates h2 { text-align: center; }
 .key-dates ul { list-style: none; margin: 0; padding: 0; }

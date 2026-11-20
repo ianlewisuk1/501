@@ -70,7 +70,6 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         ...(seasonOver ? [] : [bracketTab]),
       ]} />
       <footer className="muted small">
-        Unofficial. From the RDL "Tons of Newsletter", week {issue.week}. Stats through week {issue.week - 1}.
         <NewsletterLink />
       </footer>
     </main>

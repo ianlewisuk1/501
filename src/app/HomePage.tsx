@@ -615,11 +615,24 @@ function DotsIcon() {
   );
 }
 
-/** The site's running total of page views, small, once the counter has answered. */
+/**
+ * Page views this week (the last 7 days) and all time, small, once the counter has answered, then
+ * the note that the site is unofficial (it sits here only, at the very bottom of the front page).
+ */
 function ViewCount() {
   const views = useViewCount();
-  if (views == null) return null;
-  return <p className="view-count">{views.toLocaleString("en-US")} page views</p>;
+  const n = (v: number) => v.toLocaleString("en-US");
+  return (
+    <>
+      {views && (
+        <p className="view-count">
+          {views.week != null && <span>{n(views.week)} page views this week</span>}
+          <span>{n(views.total)} all time</span>
+        </p>
+      )}
+      <p className="unofficial">Unofficial. From the RDL "Tons of Newsletter".</p>
+    </>
+  );
 }
 
 /** Tournaments and the banquet, written along the bottom of the board. Past dates drop off. */
