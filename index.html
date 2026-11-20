@@ -60,13 +60,13 @@
             var r = img.getBoundingClientRect();
             target.style.visibility = "hidden";
             img.style.transformOrigin = "0 0";
-            img.style.transition = "transform 0.75s cubic-bezier(0.4, 0, 0.2, 1)";
-            el.style.transition = "background-color 0.75s ease";
+            img.style.transition = "transform 1.4s cubic-bezier(0.4, 0, 0.2, 1)";
+            el.style.transition = "background-color 1.4s ease";
             requestAnimationFrame(function () {
               img.style.transform = "translate(" + (t.left - r.left) + "px," + (t.top - r.top) + "px) scale(" + t.width / r.width + ")";
               el.style.backgroundColor = "transparent";
             });
-            setTimeout(function () { target.style.visibility = ""; finish(el); }, 800);
+            setTimeout(function () { target.style.visibility = ""; finish(el); }, 1450);
             return;
           }
           el.classList.add("gone");
@@ -77,9 +77,9 @@
           var n = 0;
           (function poll() { if (document.querySelector(".board-logo") || location.pathname !== "/" || n++ > 20) cb(); else setTimeout(poll, 50); })();
         }
-        // Long enough to see (0.7s), gone once the page has loaded, and never stuck past 2.5s.
-        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 700 - (Date.now() - start))); }); });
-        setTimeout(hide, 2500);
+        // Held long enough to take in (1.4s; owner, 2026-11-19: slower), and never stuck past 4s.
+        window.addEventListener("load", function () { whenDrawn(function () { setTimeout(hide, Math.max(0, 1400 - (Date.now() - start))); }); });
+        setTimeout(hide, 4000);
       })();
     </script>
   </head>
