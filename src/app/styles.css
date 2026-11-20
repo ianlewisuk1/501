@@ -29,7 +29,9 @@
   --logo-filter: none;
   --glow: drop-shadow(0 0 0.8px rgb(var(--ink-rgb) / 0.5));
   /* Team chalks, picked per team by name (chalkFor in ui.tsx). */
-  --c0: #f3d36b; --c1: #8fc7e8; --c2: #f2a3b6; --c3: #9fdcb8; --c4: #f4b26b; --c5: #c3a8ec; --c6: #b9d97a; --c7: #7fd6d0;
+  /* Team colours: plain chalk for every team (owner, 2026-11-20: the eight colours read as random).
+     The old set, to bring back: #f3d36b #8fc7e8 #f2a3b6 #9fdcb8 #f4b26b #c3a8ec #b9d97a #7fd6d0. */
+  --c0: var(--chalk); --c1: var(--chalk); --c2: var(--chalk); --c3: var(--chalk); --c4: var(--chalk); --c5: var(--chalk); --c6: var(--chalk); --c7: var(--chalk);
   /* The chalk stick under the title. */
   --stick-1: #f2efe6; --stick-2: #c9c4b6; --stick-3: #dcd7ca; --stick-shadow: #ece8dc;
 
@@ -800,8 +802,8 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 .rec-throwers .rec-name { font-size: 1.1rem; }
 .rec-times { color: var(--yellow); }
 .rec-team-date { white-space: nowrap; }
-/* On the whiteboard team chalks are all black, so a team name fades to grey to stand apart from the player. */
-:root[data-theme="light"] .rec-team { color: var(--chalk-2) !important; }
+/* Team chalks are all one colour, so a team name fades to grey to stand apart from the player. */
+.rec-team { color: var(--chalk-2) !important; }
 /* Phones: a name and its team share a line. */
 @media (max-width: 480px) {
   .rec-throwers li { display: block; }
