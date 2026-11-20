@@ -109,7 +109,7 @@ function DeskNav({ issue, seasonWeeks }: { issue: LeagueWeek; seasonWeeks: numbe
     <nav className="desk-nav desk-only" aria-label="Divisions">
       <div className="desk-nav-inner">
         <Link to="/" className="desk-home" aria-label="Raleigh Dart League, home">
-          <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={36} height={36} />
+          <img src={`${import.meta.env.BASE_URL}rdl-logo-512.png`} alt="" width={36} height={36} />
           <span>RDL</span>
         </Link>
         <ul className="desk-menu">

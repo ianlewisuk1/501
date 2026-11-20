@@ -75,7 +75,7 @@ function SiteBar({ division, team }: { division?: string; team?: string }) {
       <div className="site-bar-inner">
         <nav className="site-trail" aria-label="Breadcrumb">
           <Link to="/" className="site-home">
-            <img src={`${import.meta.env.BASE_URL}rdl-logo.png`} alt="" width={34} height={34} />
+            <img src={`${import.meta.env.BASE_URL}rdl-logo-512.png`} alt="" width={34} height={34} />
             <span className="site-name">{division ? "RDL" : "Raleigh Dart League"}</span>
           </Link>
           {division && (
