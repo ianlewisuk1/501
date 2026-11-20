@@ -760,7 +760,7 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 /* ---- Records tab: three boards, each its own shape ---- */
 .rec-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 10px; font: 700 1.6rem/1.2 var(--sketch); }
 .rec-head-note { font: 400 1.05rem var(--hand); color: var(--chalk-2); }
-.rec-name { color: var(--chalk); }
+.rec-name { color: var(--chalk); font-weight: 700; }
 .rec-team { font-size: 0.95rem; }
 .rec-date { color: var(--chalk-2); font-size: 0.95rem; }
 .rec-hot, .rec-board, .rec-throwers { list-style: none; margin: 0; padding: 0; }
