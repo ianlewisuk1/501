@@ -185,16 +185,16 @@ describe("routes", () => {
     // The arrows wrap round: before A comes H.
     expect(at("/a")).toContain('aria-label="Previous: H Division" href="/h"');
     const rec = html.slice(html.indexOf('id="panel-records"'));
-    expect(rec).toContain("Fast singles 301");
+    expect(rec).toContain("Fast Singles 301");
     expect(rec).toMatch(/<span class="rec-val">9 darts<\/span>.*?Ian Lewis<\/span> <span class="rec-team-date"><span class="rec-team"[^>]*>Area 501<\/span><span class="rec-date">, Aug 12/);
-    expect(rec).toContain("Perfect throws");
+    expect(rec).toContain("Perfect Throws");
     // Trophy darts, then hot darts (plain, with last week's number), then perfect throws.
-    expect(rec.indexOf("Trophy darts")).toBeLessThan(rec.indexOf("Hot darts"));
-    expect(rec.indexOf("Hot darts")).toBeLessThan(rec.indexOf("Perfect throws"));
-    expect(rec).toMatch(/Hot darts<span class="rec-head-note">week \d+<\/span>/);
+    expect(rec.indexOf("Trophy Darts")).toBeLessThan(rec.indexOf("Hot Darts"));
+    expect(rec.indexOf("Hot Darts")).toBeLessThan(rec.indexOf("Perfect Throws"));
+    expect(rec).toMatch(/Hot Darts<span class="rec-head-note">Week \d+<\/span>/);
     expect(rec).not.toContain("chalk-star");
     // One line per feat, with everyone who threw it.
-    const hot = rec.slice(rec.indexOf("Hot darts"), rec.indexOf("Perfect throws"));
+    const hot = rec.slice(rec.indexOf("Hot Darts"), rec.indexOf("Perfect Throws"));
     const feats = [...hot.matchAll(/class="rec-val">([^<]+)</g)].map((m) => m[1]);
     expect(new Set(feats).size).toBe(feats.length);
     // Each kind of perfect throw is counted in tally marks.
@@ -333,7 +333,7 @@ describe("team page", () => {
     expect(panel).toContain("Singles Cricket");
     expect(panel).toContain("All-Star Points Per Game");
     expect(panel).toContain("Singles 301");
-    expect(panel).not.toContain("Hot darts");
+    expect(panel).not.toContain("Hot Darts");
     // Its home bar's front from Street View, credited to Google, in place of "Photo to come".
     expect(panel).toContain('src="/bars/the-flying-saucer.jpg"');
     expect(panel).toContain("Image © Google, Street View, Jan 2026");

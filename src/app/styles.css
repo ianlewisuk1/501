@@ -793,6 +793,12 @@ footer a { color: inherit; text-decoration: underline; text-decoration-color: va
 @media (max-width: 380px) {
   .rec-board li { grid-template-columns: 5.2rem minmax(0, 1fr); }
 }
+/* Trophy darts: the category is the row's heading, in the accent colour, so the one you want is
+   easy to find down the left edge; its value sits at the right of the same line, holders below. */
+.rec-trophy li { grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+.rec-trophy .rec-cat { margin: 0; font: 700 1.35rem/1.15 var(--sketch); color: var(--yellow); }
+.rec-trophy .rec-val { font-size: 1.35rem; color: var(--chalk); text-align: right; }
+.rec-trophy .rec-body { grid-column: 1 / -1; }
 
 /* ---- Division page: matches and results ---- */
 .matches { list-style: none; margin: 0; padding: 0; }

@@ -118,8 +118,6 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
   );
 }
 
-/** "Fast Singles 301" reads as "Fast singles 301". */
-const sentence = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
 const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
 
 /**
@@ -135,13 +133,13 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
     <>
       {division.records.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-trophy-h">
-          <h2 id="rec-trophy-h" className="rec-head">Trophy darts<span className="rec-head-note">best this season</span></h2>
-          <ul className="rec-board">
+          <h2 id="rec-trophy-h" className="rec-head">Trophy Darts<span className="rec-head-note">Best this season</span></h2>
+          <ul className="rec-board rec-trophy">
             {division.records.map((r) => (
               <li key={r.category}>
+                <h3 className="rec-cat">{r.category}</h3>
                 <span className="rec-val">{r.holders.length ? r.value : "–"}</span>
                 <span className="rec-body">
-                  <span className="rec-cat">{sentence(r.category)}</span>
                   {r.holders.length ? r.holders.map((h, j) => (
                     <span key={j} className="rec-holder">
                       <span className="rec-name">{joinNames(h.players)}</span>{" "}
@@ -157,7 +155,7 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
       )}
       {feats.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-hot-h">
-          <h2 id="rec-hot-h" className="rec-head">Hot darts<span className="rec-head-note">week {week}</span></h2>
+          <h2 id="rec-hot-h" className="rec-head">Hot Darts<span className="rec-head-note">Week {week}</span></h2>
           <ul className="rec-board rec-hot">
             {feats.map(({ feat, who }) => (
               <li key={feat}>
@@ -177,7 +175,7 @@ function Records({ division, throws, week }: { division: LeagueDivision; throws:
       )}
       {kinds.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-perfect-h">
-          <h2 id="rec-perfect-h" className="rec-head">Perfect throws<span className="rec-head-note">this season</span></h2>
+          <h2 id="rec-perfect-h" className="rec-head">Perfect Throws<span className="rec-head-note">This season</span></h2>
           {kinds.map((k) => {
             const who = throws.filter((t) => t.kind === k);
             const count = who.reduce((n, t) => n + Math.max(1, t.dates.length), 0);
