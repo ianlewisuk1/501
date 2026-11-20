@@ -94,8 +94,10 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
   const clinched = !final && standings.some((s) => s.clinched === "G");
   return (
     <>
-    {/* --n lets the rows share out the screen's height (styles.css), so the table fits without scrolling. */}
-    <ol className="ladder" data-key={clinched ? "" : undefined} style={{ "--n": standings.length } as CSSProperties}>
+    {/* Laid out like the Players list (owner, 2026-11-20): same row height and lettering, a small
+        heading row, place | team | W–L | points. */}
+    <div className="ladder-head" aria-hidden="true"><span>#</span><span>Team</span><span>W–L</span><span>Pts</span></div>
+    <ol className="ladder">
       {standings.map((s, i) => (
         <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine"].filter(Boolean).join(" ") || undefined}>
           <Link to={teamPath(division, s.team)}>
@@ -105,11 +107,8 @@ function Ladder({ standings, division, final }: { standings: Standing[]; divisio
               {/* The leader's clinch mark gets a line of its own, leaving the name the whole width. */}
               {i === 0 && s.clinched === "G" && <span className="ladder-clear"><ClinchBadge mark={s.clinched} final={final} /></span>}
             </span>
-            {/* The record ranks the table, so it's the big number; points sit small under it. */}
-            <span className="ladder-score">
-              <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
-              <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}<span className="ladder-pts-unit"> pts</span></span>
-            </span>
+            <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
+            <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>
           </Link>
         </li>
       ))}

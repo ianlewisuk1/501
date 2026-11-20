@@ -656,58 +656,42 @@ html:has(.division-page), body:has(.division-page), html:has(.team-page), body:h
 .div-head .page-head { flex-direction: column; gap: 4px; }
 
 /*
- * The ladder fits the first screen: each row takes an even share of the height left under the
- * header, tabs and the "Tap a team" note (about 275px with the leader's ring), between 42px (still an easy tap) and 62px. The leader's row
- * counts as 1.6 rows. --n is the number of teams, set on the list.
+ * The standings, laid out like the Players list (owner, 2026-11-20: it didn't sit with the other
+ * tabs): a small heading row, then place | team | W–L | points at the Players list's sizes.
  */
-.ladder {
-  --row: clamp(42px, calc((100vh - 275px) / (var(--n, 8) + 0.6)), 62px);
-  --row: clamp(42px, calc((100svh - 275px) / (var(--n, 8) + 0.6)), 62px);
-  list-style: none; margin: 0; padding: 0;
-}
-.ladder a {
-  display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: center; gap: 10px;
-  min-height: var(--row); padding: 2px 12px; text-decoration: none; border-bottom: 1px dashed var(--chalk-line);
-}
-/* A clinch key under the ladder takes about 30px more. */
-.ladder[data-key] {
-  --row: clamp(42px, calc((100vh - 305px) / (var(--n, 8) + 0.6)), 62px);
-  --row: clamp(42px, calc((100svh - 305px) / (var(--n, 8) + 0.6)), 62px);
-}
-.ladder-key { margin: 6px 12px 0; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.25; }
+.ladder-head, .ladder a { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.4rem 3rem; column-gap: 8px; align-items: center; }
+.ladder-head { padding: 0 8px 4px; font-size: 0.85rem; color: var(--chalk-2); border-bottom: 1px solid var(--chalk-line); }
+.ladder-head span:nth-child(1) { text-align: center; }
+.ladder-head span:nth-child(3), .ladder-head span:nth-child(4) { text-align: right; }
+.ladder { list-style: none; margin: 0; padding: 0; }
+.ladder a { min-height: 54px; padding: 6px 8px; text-decoration: none; color: var(--chalk); border-bottom: 1px dashed var(--chalk-faint); }
+.ladder-key { margin: 6px 8px 0; color: var(--chalk-2); font-size: 0.95rem; line-height: 1.25; }
 .ladder-key b { color: var(--yellow); font: 700 0.9rem/1 var(--sketch); }
-.ladder li:last-child a { border-bottom: 0; }
-.ladder li:nth-child(odd):not(.ladder-top) a { background: rgb(var(--ink-rgb) / 0.035); }
+.ladder li:nth-child(odd) a { background: rgb(var(--ink-rgb) / 0.035); }
 .ladder a:hover { background: rgb(var(--ink-rgb) / 0.07); }
-.ladder-rank { font: 700 1.5rem/1 var(--sketch); color: var(--chalk-2); }
-.ladder-team { display: flex; flex-direction: column; min-width: 0; }
+.ladder-rank { font: 700 1.15rem var(--sketch); color: var(--chalk-2); text-align: center; }
+.ladder-team { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
 .ladder-line { display: flex; align-items: baseline; min-width: 0; }
-.ladder-name { flex: 0 1 auto; min-width: 0; font-size: 1.3rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ladder-line .clinch { flex: none; font-size: 0.85rem; }
+.ladder-name { flex: 0 1 auto; min-width: 0; font: 600 1.1rem/1.2 var(--sketch); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ladder-line .clinch { flex: none; font-size: 0.8rem; }
 /* overflow: hidden (for the ellipsis) cuts off descenders (g, y, p) at tight line heights: give the
    box room above and below, and take it back with a matching negative margin so rows don't grow. */
 .ladder-name, .card-row .side-name { padding-block: 0.15em; margin-block: -0.15em; }
-.ladder-rec { font: 700 1.5rem/1 var(--sketch); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-.ladder-score { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
-.ladder-pts { font-size: 0.9rem; line-height: 1; color: var(--chalk-2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.ladder-pts-unit { font-size: 0.8rem; }
-/* The leader, ringed in yellow chalk like it would be on the board. */
-.ladder-top a { min-height: calc(var(--row) * 1.6 - 6px); margin-bottom: 6px; border: 2.5px solid var(--yellow); border-radius: 40px 18px 34px 22px; padding: 4px 14px; }
-.ladder-top .ladder-rank { color: var(--yellow); font-size: 2rem; }
-.ladder-top a { grid-template-columns: 2rem minmax(0, 1fr) auto; }
-.ladder-top .ladder-name { font: 700 1.6rem/1.1 var(--sketch); }
-.ladder-top .ladder-rec { font-size: 1.9rem; }
+.ladder-rec { font: 700 1.05rem var(--sketch); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+.ladder-pts { font-size: 0.95rem; color: var(--chalk-2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* The leader: a light wash and its place in the accent colour, the way the other tabs highlight. */
+.ladder li.ladder-top:nth-child(n) a { background: rgb(var(--hi-rgb) / 0.1); }
+.ladder-top .ladder-rank { color: var(--yellow); }
 /* The picked team ("This is my team"): a yellow star by its name, and a faint yellow wash on its row. */
 /* The picked team: a yellow stripe down the row's left edge, taking no width from the name. */
-.ladder-mine:not(.ladder-top) a, .card-row.mine, .b-line.mine { box-shadow: inset 4px 0 0 var(--yellow); }
-/* The leader is already ringed in yellow, so a stripe would fight the ring: just the tint. */
+.ladder-mine a, .card-row.mine, .b-line.mine { box-shadow: inset 4px 0 0 var(--yellow); }
 /* :nth-child(n) matches every row; it's there to outrank the alternate-row stripe above. */
 .ladder li.ladder-mine:nth-child(n) a { background: rgb(var(--hi-rgb) / 0.09); }
 .card-line { display: flex; align-items: center; min-width: 0; }
 .card-line .side-name { min-width: 0; }
 .card-row.mine { background: rgb(var(--hi-rgb) / 0.08); }
 /* The leader's clinch mark, on a line under its name. */
-.ladder-clear { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; font-size: 1rem; line-height: 1.2; color: var(--chalk-2); }
+.ladder-clear { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; margin-top: 2px; font-size: 0.85rem; line-height: 1.2; color: var(--chalk-2); }
 .ladder-clear .clinch { margin-left: 0; }
 
 /*
