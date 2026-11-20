@@ -160,6 +160,12 @@ describe("scouting", () => {
     expect(r.rows[0]).toMatchObject({ name: "Spencer Rogers", total: { w: 14, l: 3 }, recent: { w: 6, l: 1 }, matches: 5 });
   });
 
+  it("marks the captain, the first player page 10 lists", () => {
+    const r = scoutReport("Menace 2 Sobriety", wk07, divisions)!;
+    const first = div(7).teams.find((t) => t.name === "Menace 2 Sobriety")!.players[0];
+    expect(r.rows.filter((p) => p.captain).map((p) => p.name)).toEqual(first.matchesPlayed > 0 ? [first.name] : []);
+  });
+
   it("finds the team from a short name", () => {
     expect(scoutReport("Menace", wk07, divisions)?.team).toBe("Menace 2 Sobriety");
   });

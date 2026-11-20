@@ -292,7 +292,7 @@ function Scouting({ week, fixture, divisions }: { week: TeamWeek; fixture: Fixtu
           <tbody>
             {rows.map((p) => (
               <tr key={p.number}>
-                <th scope="row" className="sticky">{p.name}</th>
+                <th scope="row" className="sticky">{p.name}{p.captain && <> <abbr className="captain" title="Captain">(C)</abbr></>}</th>
                 {columns.map((c, i) => (
                   <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
                 ))}
@@ -366,6 +366,8 @@ function Fixtures({ rows, maps, names, shorts, division, expanded = false }: {
 function Players({ week }: { week: TeamWeek }) {
   const { rows, sortKey, toggle, arrow, ariaSort } = useSort(week.players, PLAYER_COLUMNS, "totalPct");
   const team = teamTotals(week.players);
+  /** The newsletter always lists a team's captain first on page 10. */
+  const captain = week.players[0];
   const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
 
   return (
@@ -393,7 +395,7 @@ function Players({ week }: { week: TeamWeek }) {
             <tbody>
               {rows.map((p) => (
                 <tr key={p.number}>
-                  <th scope="row" className="sticky">{p.name}</th>
+                  <th scope="row" className="sticky">{p.name}{p === captain && <> <abbr className="captain" title="Captain">(C)</abbr></>}</th>
                   {PLAYER_COLUMNS.map((c, i) => (
                     <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
                   ))}

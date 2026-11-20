@@ -626,8 +626,7 @@ function ViewCount() {
     <>
       {views && (
         <p className="view-count">
-          {views.week != null && <span>{n(views.week)} page views this week</span>}
-          <span>{n(views.total)} all time</span>
+          {views.week != null ? `${n(views.week)} page views this week, ${n(views.total)} all time` : `${n(views.total)} page views`}
         </p>
       )}
       <p className="unofficial">Unofficial. From the RDL "Tons of Newsletter".</p>

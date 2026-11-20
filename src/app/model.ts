@@ -304,7 +304,7 @@ export function form(weeks: WeekGames[]): FormPoint[] {
   });
 }
 
-export interface ScoutRow { name: string; number: number; total: WL; recent: WL | null; singles: WL; doubles: WL; matches: number }
+export interface ScoutRow { name: string; number: number; captain: boolean; total: WL; recent: WL | null; singles: WL; doubles: WL; matches: number }
 
 export interface ScoutReport {
   team: string;
@@ -340,9 +340,10 @@ export function scoutReport(opponent: string, current: TeamWeek, divisions: Divi
     return { w: p.total.w - before.w, l: p.total.l - before.l };
   };
 
+  // The newsletter always lists a team's captain first on page 10.
   const rows = team.players
-    .filter((p) => p.matchesPlayed > 0)
-    .map((p) => ({ name: p.name, number: p.number, total: p.total, recent: recent(p), singles: p.singles, doubles: p.doubles, matches: p.matchesPlayed }))
+    .map((p, i) => ({ name: p.name, number: p.number, captain: i === 0, total: p.total, recent: recent(p), singles: p.singles, doubles: p.doubles, matches: p.matchesPlayed }))
+    .filter((p) => p.matches > 0)
     .sort((a, b) => (pct(b.total) ?? -1) - (pct(a.total) ?? -1) || b.matches - a.matches);
   return {
     team: team.name,
