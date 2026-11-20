@@ -710,13 +710,13 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
 .division-page .tabs, .team-page .tabs { margin-top: 8px; }
 .division-page .tab-panel > section:first-child { padding-top: 8px; }
 .division-page .tab-note { margin-bottom: 6px; font-size: 1rem; }
-.division-page .week-step { margin-top: 2px; }
+.division-page .week-step { margin: 2px 0 10px; }
 /* A week's cards share the height left under the week picker, down to a 30px row. --k is the card count. */
 .division-page .cards {
-  /* 330px: site bar, title and week pill, tabs, week picker. 70px a card: its strip, its one-line pick and the gap.
+  /* 336px: site bar, title and week pill, tabs, week picker and the gap under it. 70px a card: its strip, its one-line pick and the gap.
      Then 80% of that, since the cards are drawn 20% smaller (below). */
-  --crow: calc(0.8 * clamp(30px, calc((100vh - 330px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
-  --crow: calc(0.8 * clamp(30px, calc((100svh - 330px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
+  --crow: calc(0.8 * clamp(30px, calc((100vh - 336px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
+  --crow: calc(0.8 * clamp(30px, calc((100svh - 336px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
   gap: 8px;
 }
 .division-page .card-row { min-height: var(--crow); }
