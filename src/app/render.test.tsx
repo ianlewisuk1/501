@@ -109,14 +109,21 @@ describe("routes", () => {
     expect(home(null, { division: "C", team: "Gone Team" })).not.toContain("Last looked at");
   });
 
-  it("lets a team page be picked as my team, and steps through the division's teams with arrows", () => {
+  it("lets a team page be picked as my team, and leads back to the division's standings", () => {
     const html = at("/c/darty-little-secrets");
     expect(html).toContain('class="my-team-btn" aria-pressed="false"');
     expect(html).toContain("This is my team");
-    // Standings order, wrapping: the Secrets are 2nd, so Area 501 (1st) before and Menace 2 Sobriety (3rd) after.
-    expect(html).toContain('aria-label="Previous team: Area 501" href="/c/area-501"');
-    expect(html).toContain('aria-label="Next team: Menace 2 Sobriety" href="/c/menace-2-sobriety"');
+    // No arrows to the teams either side (they read as a back button); a worded way back instead.
+    expect(html).not.toContain("Previous team");
+    expect(html).toMatch(/class="back-link" href="\/c\?tab=standings">.*C Division standings<\/a>/);
+    expect(html).toMatch(/<p class="meta">2nd in <a class="meta-link" href="\/c\?tab=standings">C Division<\/a><\/p>/);
     expect(html).not.toContain("Show another team in the division"); // the team dropdown is gone
+    // The match card, laid out like the tournament's: date beside "Next match", then the week, the opponent, the bar.
+    const card = section(html, "tonight");
+    expect(card).toContain('Next match <span class="hero-when">Tonight</span>');
+    expect(card).toMatch(/<p class="hero-round">Week 14 of 14<\/p><p class="big">vs <a/);
+    expect(card).toMatch(/(Home|Away) at /);
+    expect(card).not.toContain("in C Division,"); // the opponent's place is on the Opponent tab
   });
 
   it("puts the same black site bar and page heading on division and team pages", () => {
@@ -171,7 +178,9 @@ describe("routes", () => {
     const html = at("/c");
     const ladder = html.slice(html.indexOf('class="ladder"'), html.indexOf("</ol>", html.indexOf('class="ladder"')));
     expect(ladder.match(/<li/g)).toHaveLength(8);
-    expect(ladder).toMatch(/<li class="ladder-top"><button type="button" class="ladder-row" aria-expanded="false" aria-controls="form-area-501">/);
+    expect(ladder).toMatch(/<li class="ladder-top"><div class="ladder-row">/);
+    expect(ladder).toContain('<a class="ladder-name-link" href="/c/area-501">');
+    expect(ladder).toContain('aria-expanded="false" aria-controls="form-area-501"');
     expect(ladder).toContain('aria-label="13 wins, 0 losses">13–0<');
     expect(ladder).not.toContain("points clear");
     // Says the rows can be tapped.
@@ -204,7 +213,7 @@ describe("routes", () => {
   it("renders any team in the league", () => {
     const html = at("/h/calm-under-pressure");
     expect(html).toContain("Calm Under Pressure");
-    expect(html).toMatch(/<p class="meta">\d+(st|nd|rd|th) in H Division<\/p>/);
+    expect(html).toMatch(/<p class="meta">\d+(st|nd|rd|th) in <a class="meta-link" href="\/h\?tab=standings">H Division<\/a><\/p>/);
     // The league's match night sits under a division's title, not on team pages.
     expect(html).not.toContain("week-pill");
     expect(at("/h")).toMatch(/<p class="week-pill">Week 1[34] of 14/);
@@ -291,9 +300,14 @@ describe("team page", () => {
 
   it("shows every category in the players table", () => {
     const html = at("/c/area-501");
-    for (const label of ["Singles", "Doubles", "301", "501", "Cricket", "All-star", "Matches", "Team total"]) {
-      expect(html).toContain(label);
+    // The division Players tab's list, for this team: a chip per category, a team total, the captain marked.
+    const players = section(html, "players");
+    for (const label of ["Overall", "Singles", "Doubles", "301", "501", "Singles cricket", "Doubles cricket", "All-star"]) {
+      expect(players).toContain(`>${label}</button>`);
     }
+    expect(players).toContain('class="pb-row pb-total"');
+    expect(players).toMatch(/<span class="pb-name">[^<]+ <abbr class="captain" title="Captain">\(C\)<\/abbr><\/span>/);
+    expect(players).not.toContain('class="pb-team"');
     const ian = wk07.players.find((p) => p.name === "Ian Lewis")!;
     expect(html).not.toContain("Bragging rights");
     expect(html).not.toContain("1001");
@@ -374,7 +388,7 @@ describe("team page", () => {
     // Inside a tab, sections open flat: no fold buttons.
     expect(html).not.toContain("Show player stats");
     expect(html).not.toContain("Show charts");
-    expect(html).toContain("Team total"); // the players table is there, unfolded
+    expect(html).toContain('class="pb-row pb-total"'); // the players list is there, unfolded
     // No title repeated inside a tab; details like the gap to 2nd stay as a line.
     expect(html).toContain('<h2 id="fixtures" class="sr-only">Fixtures</h2>');
     expect(html).toContain('href="/c"'); // the division (and its standings) from the site bar
@@ -465,8 +479,8 @@ describe("the team page's match card follows the calendar, not the newsletter", 
     const html = card("2026-11-12");
     // The bracket is printed from week 13, so the card names the quarterfinal and its bar.
     expect(html).toContain("Next match");
-    expect(html).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
-    expect(html).toContain("Wed, Nov 18");
+    expect(html).toContain("Tournament Quarterfinal");
+    expect(html).toContain('<span class="hero-when">Nov 18, 7:00 pm</span>');
   });
 
   it("falls back to the tournament night when the bracket hasn't placed the team", () => {
@@ -540,15 +554,14 @@ describe("tournament issue", () => {
     }
     expect(atFull("/f")).toMatch(/ladder-top.*Down to F, Again/);
     expect(atFull("/c/area-501")).not.toContain("Breaking");
-    expect(atFull("/c/area-501")).toContain('<p class="meta">1st in C Division</p>');
+    expect(atFull("/c/area-501")).toContain('<p class="meta">1st in <a class="meta-link" href="/c?tab=standings">C Division</a></p>');
   });
 
   it("names the bracket's opponent and bar on the team page and the lander's Your team card", () => {
     if (!tourney()) return;
     const team = atBefore("/c/area-501");
     expect(team).toMatch(/vs <span><a href="\/c\/still-hump-n">Still Hump&#x27;N<\/a><\/span>/);
-    expect(team).toContain("8th in C, 1–13");
-    expect(team).toContain("Quarterfinal, seed 1 v 8, 7:00 pm");
+    expect(team).toContain("Tournament Quarterfinal");
     expect(team).toContain("At Upper Deck 1&amp;2");
     expect(team).toContain("Map (Apple)");
     expect(team).not.toContain("Pairings and venues come from the league");
@@ -577,7 +590,7 @@ describe("tournament issue", () => {
     vi.setSystemTime(new Date("2026-11-19T09:00:00"));
     const withWinners = (qf: (string | null)[]) => ({ ...full, bracket: { ...full.bracket!, divisions: { ...full.bracket!.divisions, C: { ...full.bracket!.divisions.C, quarterfinals: qf } } } });
     const won = renderToStaticMarkup(<Screen data={withWinners(["Area 501", "Brutha Ducks", null, null])} route={parseRoute("/c/area-501")} />);
-    expect(won).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
+    expect(won).toContain('<p class="hero-round">Tournament Semifinal</p><p class="big">vs');
     expect(won).toContain('vs <span><a href="/c/brutha-ducks">Brutha Ducks</a></span>');
     expect(won).toContain("At Break Time Billiards");
     const lost = renderToStaticMarkup(<Screen data={withWinners(["Still Hump'N", null, null, null])} route={parseRoute("/c/area-501")} />);
@@ -590,7 +603,7 @@ describe("tournament issue", () => {
     vi.setSystemTime(new Date("2026-11-19T09:00:00"));
     // Area 501 beat Still Hump'N and meets Brutha Ducks (who beat Menace) in the semifinal.
     const card = section(atFull("/c/area-501"), "tonight");
-    expect(card).toContain("Next match <span class=\"muted\">Wed, Dec 2</span>");
+    expect(card).toContain('<p class="hero-round">Tournament Semifinal</p><p class="big">vs');
     expect(card).toContain('vs <span><a href="/c/brutha-ducks">Brutha Ducks</a></span>');
     expect(card).toContain("At Break Time Billiards");
     expect(atFull("/c/still-hump-n")).toContain("Out in the quarterfinals");

@@ -176,6 +176,17 @@ export function mapsUrls(venue: string, directory: Venue[] | undefined): { apple
   return { apple: `https://maps.apple.com/?q=${q}`, google: `https://www.google.com/maps/search/?api=1&query=${q}` };
 }
 
+/**
+ * Map links to paste into a chat, written to be read: spaces as + and commas left alone
+ * ("https://maps.apple.com/?q=932+NE+Maynard+Road,+Cary,+NC"), since a chat shows a link as typed
+ * (owner, 2026-11-20: the encoded ones were unreadable).
+ */
+export function readableMapsUrls(venue: string, directory: Venue[] | undefined): { apple: string; google: string } {
+  const q = resolveVenue(venue, directory ?? [])?.maps ?? `${venueBar(venue)}, Raleigh, NC`;
+  const plain = encodeURIComponent(q).replace(/%20/g, "+").replace(/%2C/gi, ",");
+  return { apple: `https://maps.apple.com/?q=${plain}`, google: `https://maps.google.com/?q=${plain}` };
+}
+
 /** One link per platform, for compact places like the fixtures list. */
 export function mapsUrl(venue: string, directory: Venue[] | undefined, ios: boolean): string {
   const urls = mapsUrls(venue, directory);

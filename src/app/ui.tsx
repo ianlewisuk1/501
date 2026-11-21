@@ -130,7 +130,7 @@ export const GROUPS = groupSpans(PLAYER_COLUMNS);
 const titleSize = (title: string) => (title.length > 20 ? "longer" : title.length > 12 ? "long" : undefined);
 
 export function PageHead({ title, meta, team = false, chalk = false, children }: {
-  title: string; meta?: string; team?: boolean; chalk?: boolean; children?: ReactNode;
+  title: string; meta?: ReactNode; team?: boolean; chalk?: boolean; children?: ReactNode;
 }) {
   return (
     <header className={team ? "page-head team-head" : "page-head"}>
@@ -239,4 +239,13 @@ export function TeamName({ team, short, className, style }: { team: string; shor
     return () => { live = false; watch.disconnect(); };
   }, [names]);
   return <span ref={ref} className={className} style={style}>{names.includes(shown) ? shown : team}</span>;
+}
+
+/** A small ⌄ at the end of a row that opens (it turns over when open). */
+export function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg className={`ladder-chev${open ? " up" : ""}`} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }

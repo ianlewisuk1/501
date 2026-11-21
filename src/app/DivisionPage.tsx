@@ -3,18 +3,19 @@
  * tabs: the standings written up as a chalk ladder, every week's matches, the players, and the
  * division's records. A team picked with "This is my team" is starred wherever it appears.
  */
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { LeagueDivision, LeagueWeek, Match, PerfectThrow, Pick, Standing } from "../parser/types";
 import { Fold, SectionHead } from "./Fold";
-import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, teamForm, titleFeat, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
+import { bracketView, divisionRounds, withBracketFile, currentWeek, headlineStories, isFinal, resultsLabel, seasonLabel, teamForm, titleFeat, type BracketEntry, type BracketGame, type DivisionRound } from "./league";
 import { shortDate, teamSlug, todayIso, withClinchedFirst, type DivisionPlayer } from "./model";
 import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { PlayerBoard } from "./PlayerBoard";
+import { ShareButtons, ShareHead } from "./Share";
 import { Tabs } from "./Tabs";
 import { TeamText } from "./TeamText";
 import { useMyTeams } from "./myTeam";
-import { Arrow, TeamName, ClinchBadge, chalkFor, FitName, NewsletterLink, ordinal, PageHead, useBlackStatusBar } from "./ui";
+import { Arrow, Chevron, TeamName, ClinchBadge, chalkFor, FitName, NewsletterLink, ordinal, PageHead, useBlackStatusBar } from "./ui";
 
 export function DivisionPage({ data, issue, division }: { data: SeasonData; issue: LeagueWeek; division: LeagueDivision }) {
   const d = division.division;
@@ -37,6 +38,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
   // Once the regular season's last night has passed, the tournament is the news: its tab goes first.
   const lastNight = data.schedule?.season === issue.season ? data.schedule.weeks.at(-1)?.date : undefined;
   const seasonOver = !!lastNight && todayIso() > lastNight;
+  const table = final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks);
   const bracketTab = {
     id: "bracket", label: "Bracket", show: !!division.bracket,
     body: division.bracket ? <BracketBoard division={division} data={data} /> : null,
@@ -57,8 +59,16 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
           id: "standings", label: "Standings", show: true,
           body: (
             <section aria-labelledby="standings">
-              <SectionHead id="standings" title="Standings" detail={results ? resultsLabel(results, seasonWeeks) : undefined} />
-              <Ladder standings={final ? withChampion(division.standings) : withClinchedFirst(division.standings, seasonWeeks)} division={d} final={final} rounds={rounds} />
+              <div className="share-row">
+                <SectionHead id="standings" title="Standings" detail={results ? resultsLabel(results, seasonWeeks) : undefined} />
+                <ShareButtons title={`${d} Division standings`} filename={`rdl-${d.toLowerCase()}-standings.png`}
+                  version={`${issue.season}-${issue.week}-${d}`}
+                  card={<>
+                    <ShareHead title={`${d} Division Standings`} detail={`${seasonLabel(issue.season)}${results ? `, ${resultsLabel(results, seasonWeeks).toLowerCase()}` : ""}`} />
+                    <Ladder standings={table} division={d} final={final} rounds={rounds} still />
+                  </>} />
+              </div>
+              <Ladder standings={table} division={d} final={final} rounds={rounds} />
               {division.titleRace && <TitleRace text={division.titleRace} week={issue.week} division={division} />}
               {division.headline && <Headlines text={division.headline} week={issue.week - 1} division={division} />}
             </section>
@@ -66,7 +76,7 @@ export function DivisionPage({ data, issue, division }: { data: SeasonData; issu
         },
         { id: "matches", label: "Matches", show: rounds.length > 0, body: <Matches rounds={rounds} now={issue.week} division={division} /> },
         { id: "leaderboard", label: "Players", show: players.length > 0, body: <Leaderboard week={issue.week} division={d} players={players} /> },
-        { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} week={issue.week - 1} /> },
+        { id: "records", label: "Records", show: hasRecords, body: <Records division={division} throws={throws} week={issue.week - 1} season={issue.season} /> },
         ...(seasonOver ? [] : [bracketTab]),
       ]} />
       <footer className="muted small">
@@ -87,8 +97,10 @@ function withChampion(standings: Standing[]): Standing[] {
   return standings.map((s, i) => (i === 0 ? { ...s, clinched: "G" as const } : s));
 }
 
-function Ladder({ standings, division, final, rounds }: { standings: Standing[]; division: string; final: boolean; rounds: DivisionRound[] }) {
-  const mine = useMine(division);
+/** `still`: the plain table for a shared picture, rows that don't open and no "my team" marks. */
+function Ladder({ standings, division, final, rounds, still = false }: { standings: Standing[]; division: string; final: boolean; rounds: DivisionRound[]; still?: boolean }) {
+  const picked = useMine(division);
+  const mine = still ? null : picked;
   const [open, setOpen] = useState<string | null>(null);
   // "Clinched" needs a key; after the season the leader's pill says "Season champs", which doesn't.
   const clinched = !final && standings.some((s) => s.clinched === "G");
@@ -96,24 +108,28 @@ function Ladder({ standings, division, final, rounds }: { standings: Standing[];
     <>
     {/* Laid out like the Players list (owner, 2026-11-20): same row height and lettering, a small
         heading row, place | team | W–L | points. Tapping a team opens its form (2026-11-20). */}
-    <div className="ladder-head" aria-hidden="true"><span>#</span><span>Team</span><span>W–L</span><span>Pts</span><span /></div>
-    <ol className="ladder">
+    <div className="ladder-head" aria-hidden="true"><span>#</span><span>Team</span><span>W–L</span><span>Pts</span>{!still && <span />}</div>
+    <ol className={still ? "ladder still" : "ladder"}>
       {standings.map((s, i) => {
         const isOpen = open === s.team;
         const panel = `form-${teamSlug(s.team)}`;
         return (
         <li key={s.team} className={[i === 0 && "ladder-top", s.team === mine && "ladder-mine", isOpen && "open"].filter(Boolean).join(" ") || undefined}>
-          <button type="button" className="ladder-row" aria-expanded={isOpen} aria-controls={panel} onClick={() => setOpen(isOpen ? null : s.team)}>
+          <Row still={still} isOpen={isOpen} panel={panel} toggle={() => setOpen(isOpen ? null : s.team)}>
             <span className="ladder-rank">{s.rank}</span>
             <span className="ladder-team">
-              <span className="ladder-line" style={{ color: chalkFor(s.team) }}><FitName name={s.team} className="ladder-name" />{s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} final={final} />}</span>
+              <span className="ladder-line" style={{ color: chalkFor(s.team) }}>
+                {/* The name goes to the team's page; the rest of the row opens its form (2026-11-20, owner). */}
+                {still ? <FitName name={s.team} className="ladder-name" />
+                  : <Link className="ladder-name-link" to={teamPath(division, s.team)}><FitName name={s.team} className="ladder-name" /></Link>}
+                {s.team === mine && <MyStar />}{i > 0 && <ClinchBadge mark={s.clinched} final={final} />}
+              </span>
               {/* The leader's clinch mark gets a line of its own, leaving the name the whole width. */}
               {i === 0 && s.clinched === "G" && <span className="ladder-clear"><ClinchBadge mark={s.clinched} final={final} /></span>}
             </span>
             <span className="ladder-rec" aria-label={`${s.wins} wins, ${s.losses} losses`}>{s.wins}–{s.losses}</span>
             <span className="ladder-pts" aria-label={`${s.points} points`}>{s.points}</span>
-            <Chevron open={isOpen} />
-          </button>
+          </Row>
           {isOpen && <TeamFormStrip id={panel} team={s.team} division={division} rounds={rounds} />}
         </li>
         );
@@ -125,11 +141,20 @@ function Ladder({ standings, division, final, rounds }: { standings: Standing[];
   );
 }
 
-function Chevron({ open }: { open: boolean }) {
+/** A standings row: a button that opens the team's form, or a plain line in a shared picture. */
+/**
+ * A standings row: tapping anywhere but the team's name opens its form; the ⌄ at the end is the
+ * real button (for keyboards and screen readers). In a shared picture, a plain line.
+ */
+function Row({ still, isOpen, panel, toggle, children }: { still: boolean; isOpen: boolean; panel: string; toggle: () => void; children: ReactNode }) {
+  if (still) return <div className="ladder-row">{children}</div>;
   return (
-    <svg className={`ladder-chev${open ? " up" : ""}`} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div className="ladder-row" onClick={(e) => { if (!(e.target as HTMLElement).closest("a, button")) toggle(); }}>
+      {children}
+      <button type="button" className="ladder-toggle" aria-expanded={isOpen} aria-controls={panel} aria-label={isOpen ? "Hide week by week" : "Show week by week"} onClick={toggle}>
+        <Chevron open={isOpen} />
+      </button>
+    </div>
   );
 }
 
@@ -178,76 +203,112 @@ const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0
  * standing records) first, then last week's hot darts in the same plain style, then the perfect
  * throws as tallies.
  */
-function Records({ division, throws, week }: { division: LeagueDivision; throws: PerfectThrow[]; week: number }) {
+function Records({ division, throws, week, season }: { division: LeagueDivision; throws: PerfectThrow[]; week: number; season: string }) {
   const kinds = [...new Set(throws.map((t) => t.kind))];
   // The same feat by several players reads as one line: "4 ASPs" and everyone who threw it.
   const feats = [...new Set(division.hotDarts.map((h) => h.feat))].map((feat) => ({ feat, who: division.hotDarts.filter((h) => h.feat === feat) }));
+  const d = division.division;
+  // Each board shares as its own picture (2026-11-20, owner).
+  const share = (board: string, slug: string, detail: string, body: ReactNode) => (
+    <ShareButtons title={`${d} Division ${board.toLowerCase()}`} filename={`rdl-${d.toLowerCase()}-${slug}.png`}
+      version={`${season}-${week}-${d}-${slug}`}
+      card={<><ShareHead title={`${d} Division ${board}`} detail={detail} />{body}</>} />
+  );
   return (
     <>
       {division.records.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-trophy-h">
-          <h2 id="rec-trophy-h" className="rec-head">Trophy Darts<span className="rec-head-note">Best this season</span></h2>
-          <ul className="rec-board rec-trophy">
-            {division.records.map((r) => (
-              <li key={r.category}>
-                <h3 className="rec-cat">{r.category}</h3>
-                <span className="rec-val">{r.holders.length ? r.value : "–"}</span>
-                <span className="rec-body">
-                  {r.holders.length ? r.holders.map((h, j) => (
-                    <span key={j} className="rec-holder">
-                      <span className="rec-name">{joinNames(h.players)}</span>{" "}
-                      <span className="rec-team-date"><span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
-                      {h.date && <span className="rec-date">, {shortDate(h.date, false)}</span>}</span>
-                    </span>
-                  )) : <span className="rec-holder muted">None reported yet</span>}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <div className="share-row rec-head-row">
+            <h2 id="rec-trophy-h" className="rec-head">Trophy Darts<span className="rec-head-note">Best this season</span></h2>
+            {share("Trophy Darts", "trophy-darts", `${seasonLabel(season)}, best this season`, <TrophyBoard division={division} />)}
+          </div>
+          <TrophyBoard division={division} />
         </section>
       )}
       {feats.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-hot-h">
-          <h2 id="rec-hot-h" className="rec-head">Hot Darts<span className="rec-head-note">Week {week}</span></h2>
-          <ul className="rec-board rec-hot">
-            {feats.map(({ feat, who }) => (
-              <li key={feat}>
-                <span className="rec-val">{titleFeat(feat)}</span>
-                <span className="rec-body">
-                  {who.map((h, j) => (
-                    <span key={j} className="rec-holder">
-                      <span className="rec-name">{joinNames(h.players)}</span>{" "}
-                      <span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
-                    </span>
-                  ))}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <div className="share-row rec-head-row">
+            <h2 id="rec-hot-h" className="rec-head">Hot Darts<span className="rec-head-note">Week {week}</span></h2>
+            {share("Hot Darts", `hot-darts-week-${week}`, `${seasonLabel(season)}, week ${week}`, <HotBoard feats={feats} />)}
+          </div>
+          <HotBoard feats={feats} />
         </section>
       )}
       {kinds.length > 0 && (
         <section className="rec-section" aria-labelledby="rec-perfect-h">
-          <h2 id="rec-perfect-h" className="rec-head">Perfect Throws<span className="rec-head-note">This season</span></h2>
-          {kinds.map((k) => {
-            const who = throws.filter((t) => t.kind === k);
-            const count = who.reduce((n, t) => n + Math.max(1, t.dates.length), 0);
-            return (
-              <div key={k} className="rec-kind-block">
-                <h3 className="rec-kind"><span>{k}</span><Tally n={count} /></h3>
-                <ul className="rec-throwers">
-                  {who.map((t) => (
-                    <li key={t.player + t.team}>
-                      <span><span className="rec-name">{t.player}</span>{t.dates.length > 1 && <span className="rec-times"> ×{t.dates.length}</span>}</span>{" "}
-                      <span className="rec-team" style={{ color: chalkFor(t.team) }}>{t.team}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+          <div className="share-row rec-head-row">
+            <h2 id="rec-perfect-h" className="rec-head">Perfect Throws<span className="rec-head-note">This season</span></h2>
+            {share("Perfect Throws", "perfect-throws", `${seasonLabel(season)}, this season`, <PerfectBoard throws={throws} kinds={kinds} />)}
+          </div>
+          <PerfectBoard throws={throws} kinds={kinds} />
         </section>
       )}
+    </>
+  );
+}
+
+function TrophyBoard({ division }: { division: LeagueDivision }) {
+  return (
+    <ul className="rec-board rec-trophy">
+      {division.records.map((r) => (
+        <li key={r.category}>
+          <h3 className="rec-cat">{r.category}</h3>
+          <span className="rec-val">{r.holders.length ? r.value : "–"}</span>
+          <span className="rec-body">
+            {r.holders.length ? r.holders.map((h, j) => (
+              <span key={j} className="rec-holder">
+                <span className="rec-name">{joinNames(h.players)}</span>{" "}
+                <span className="rec-team-date"><span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
+                {h.date && <span className="rec-date">, {shortDate(h.date, false)}</span>}</span>
+              </span>
+            )) : <span className="rec-holder muted">None reported yet</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function HotBoard({ feats }: { feats: { feat: string; who: LeagueDivision["hotDarts"] }[] }) {
+  return (
+    <ul className="rec-board rec-hot">
+      {feats.map(({ feat, who }) => (
+        <li key={feat}>
+          <span className="rec-val">{titleFeat(feat)}</span>
+          <span className="rec-body">
+            {who.map((h, j) => (
+              <span key={j} className="rec-holder">
+                <span className="rec-name">{joinNames(h.players)}</span>{" "}
+                <span className="rec-team" style={{ color: chalkFor(h.team) }}>{h.team}</span>
+              </span>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PerfectBoard({ throws, kinds }: { throws: PerfectThrow[]; kinds: string[] }) {
+  return (
+    <>
+      {kinds.map((k) => {
+        const who = throws.filter((t) => t.kind === k);
+        const count = who.reduce((n, t) => n + Math.max(1, t.dates.length), 0);
+        return (
+          <div key={k} className="rec-kind-block">
+            <h3 className="rec-kind"><span>{k}</span><Tally n={count} /></h3>
+            <ul className="rec-throwers">
+              {who.map((t) => (
+                <li key={t.player + t.team}>
+                  <span><span className="rec-name">{t.player}</span>{t.dates.length > 1 && <span className="rec-times"> ×{t.dates.length}</span>}</span>{" "}
+                  <span className="rec-team" style={{ color: chalkFor(t.team) }}>{t.team}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -351,22 +412,39 @@ function Matches({ rounds, now, division }: { rounds: DivisionRound[]; now: numb
         </label>
         <button type="button" aria-label="Next week" disabled={at === rounds.length - 1} onClick={() => go(rounds[at + 1].week)}><Arrow dir="right" /></button>
       </div>
-      <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
-      {/* --k lets the cards share out the screen's height on short phones (styles.css). */}
-      <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
-        {round.played
-          ? round.matches.map((m) => <ResultCard key={m.home.team} match={m} division={division} pick={pickFor(round, m.away.team, m.home.team)} />)
-          : round.matches.map((m) => (
-              <MatchCard key={m.home} division={division}
-                rows={[{ team: m.away }, { team: m.home }]}
-                status={shortDate(m.date ?? round.date)}
-                aside={m.venue}
-                pick={pickFor(round, m.away, m.home)} />
-            ))}
-        {round.byes.map((b) => <MatchCard key={b} division={division} rows={[{ team: b }]} status="Bye" />)}
-      </ul>
+      <div className="share-row">
+        <p className="tab-note matches-note">{shortDate(round.date)}: {round.played ? "final scores" : round.week === start ? "next match night" : "still to play"}</p>
+        <ShareButtons title={`${division.division} Division week ${round.week} ${round.played ? "results" : "matches"}`}
+          filename={`rdl-${division.division.toLowerCase()}-week-${round.week}-${round.played ? "results" : "matches"}.png`}
+          version={`${division.division}-${round.week}-${round.played}`}
+          card={<>
+            <ShareHead title={`${division.division} Division ${round.played ? "Results" : "Matches"}`} detail={`Week ${round.week}, ${shortDate(round.date)}`} />
+            <WeekCards round={round} division={division} still />
+            <p className="share-note">Home team second.{round.played ? " Out of 24 games." : ""}</p>
+          </>} />
+      </div>
+      <WeekCards round={round} division={division} />
       <p className="muted small cards-note">Home team second.{round.played ? " Out of 24 games." : ""} Places and records are from the current standings.</p>
     </section>
+  );
+}
+
+/** A week's match cards. `still`: for a shared picture, without Kilt's picks or "my team" marks. */
+function WeekCards({ round, division, still = false }: { round: DivisionRound; division: LeagueDivision; still?: boolean }) {
+  return (
+    /* --k lets the cards share out the screen's height on short phones (styles.css). */
+    <ul className="cards" style={{ "--k": round.matches.length + round.byes.length } as CSSProperties}>
+      {round.played
+        ? round.matches.map((m) => <ResultCard key={m.home.team} match={m} division={division} still={still} pick={still ? undefined : pickFor(round, m.away.team, m.home.team)} />)
+        : round.matches.map((m) => (
+            <MatchCard key={m.home} division={division} still={still}
+              rows={[{ team: m.away }, { team: m.home }]}
+              status={shortDate(m.date ?? round.date)}
+              aside={m.venue}
+              pick={still ? undefined : pickFor(round, m.away, m.home)} />
+          ))}
+      {round.byes.map((b) => <MatchCard key={b} division={division} still={still} rows={[{ team: b }]} status="Bye" />)}
+    </ul>
   );
 }
 
@@ -383,10 +461,11 @@ interface CardRow { team: string; score?: number | null; won?: boolean; lost?: b
  */
 const pickFor = (round: DivisionRound, away: string, home: string) => round.picks.find((p) => p.away === away && p.home === home);
 
-function MatchCard({ rows, status, aside, note, division, pick }: {
-  rows: CardRow[]; status: string; aside?: string; note?: string; division: LeagueDivision; pick?: Pick;
+function MatchCard({ rows, status, aside, note, division, pick, still = false }: {
+  rows: CardRow[]; status: string; aside?: string; note?: string; division: LeagueDivision; pick?: Pick; still?: boolean;
 }) {
-  const mine = useMine(division.division);
+  const picked = useMine(division.division);
+  const mine = still ? null : picked;
   return (
     <li className={`card${rows.some((r) => r.score != null) ? "" : " unplayed"}`}>
       <p className="card-head"><span className="card-status">{status}</span>{aside && <span className="card-aside">{aside}</span>}</p>
@@ -411,7 +490,7 @@ function MatchCard({ rows, status, aside, note, division, pick }: {
 }
 
 /** A played match: scores, the winner marked (a 12–12 goes to whoever won the 1001), any forfeit or missing-sheet note. */
-function ResultCard({ match, division, pick }: { match: Match; division: LeagueDivision; pick?: Pick }) {
+function ResultCard({ match, division, pick, still = false }: { match: Match; division: LeagueDivision; pick?: Pick; still?: boolean }) {
   const { away, home } = match;
   const scored = away.score !== null && home.score !== null;
   const winner = !scored ? null
@@ -420,7 +499,7 @@ function ResultCard({ match, division, pick }: { match: Match; division: LeagueD
   const row = (t: typeof away): CardRow => ({ team: t.team, score: t.score, won: t.team === winner, lost: !!winner && t.team !== winner });
   const status = !scored ? "No score yet" : "Final";
   const aside = scored && away.score === home.score ? "Won on the 1001" : undefined;
-  return <MatchCard rows={[row(away), row(home)]} status={status} aside={aside} note={match.note} division={division} pick={pick} />;
+  return <MatchCard rows={[row(away), row(home)]} status={status} aside={aside} note={match.note} division={division} pick={pick} still={still} />;
 }
 
 /**
@@ -450,10 +529,10 @@ export function Leaderboard({ week, division, players }: { week: number; divisio
   const teams = new Set(players.map((p) => p.code)).size;
   return (
     <section aria-labelledby="division">
-      <SectionHead id="division" title="Leaderboard" detail={`Through week ${week - 1}`} />
+      <SectionHead id="division" title="Leaderboard" detail={`Through week ${week - 1}. Tap a player for their whole season.`} />
       <Fold show="Show leaderboard" hide="Hide leaderboard"
         summary={<>All {players.length} players on {teams} teams, in any category: singles, doubles, all-star points per game and more.</>}>
-        <PlayerBoard division={division} players={players} mine={mine} />
+        <PlayerBoard division={division} players={players} mine={mine} week={week} />
       </Fold>
     </section>
   );

@@ -6,7 +6,8 @@
  * (light). <html data-theme> picks one; index.html sets it before first paint from the visitor's
  * choice, else the phone's setting. Every colour below comes from these tokens.
  */
-:root {
+/* .board-dark: the dark board inside a light page (shared pictures are always the chalkboard). */
+:root, .board-dark {
   color-scheme: dark;
   /* Colour channels, so any token can be used at any strength: rgb(var(--ink-rgb) / 0.3). */
   --ink-rgb: 236 232 220;     /* chalk */
@@ -699,7 +700,11 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
 .ladder-clear { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; margin-top: 2px; font-size: 0.85rem; line-height: 1.2; color: var(--chalk-2); }
 .ladder-clear .clinch { margin-left: 0; }
 .ladder-chev { color: var(--chalk-2); transition: transform 0.2s; }
+.ladder-name-link { display: block; min-width: 0; overflow: hidden; color: inherit; text-decoration: underline; text-decoration-color: rgb(var(--ink-rgb) / 0.35); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.ladder-name-link:hover { text-decoration-color: currentColor; }
+.ladder-toggle { display: grid; place-items: center; width: 44px; height: 44px; margin: -6px -12px -6px -14px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
 .ladder-chev.up { transform: rotate(180deg); }
+.pb-row .ladder-chev { justify-self: end; }
 /* A team's form, opened under its row: a week a card, scrolling sideways, newest at the right. */
 .ladder-form { padding: 8px 0 10px; border-bottom: 1px dashed var(--chalk-faint); }
 .form-strip { list-style: none; margin: 0; padding: 0 8px 4px; display: flex; gap: 6px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; }
@@ -729,13 +734,14 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
 .division-page .tabs, .team-page .tabs { margin-top: 8px; }
 .division-page .tab-panel > section:first-child { padding-top: 8px; }
 .division-page .tab-note { margin-bottom: 6px; font-size: 1rem; }
-.division-page .week-step { margin: 2px 0 10px; }
+.division-page .week-step { margin: 2px 0 2px; }
+.division-page .week-step + .share-row { margin-bottom: 6px; }
 /* A week's cards share the height left under the week picker, down to a 30px row. --k is the card count. */
 .division-page .cards {
-  /* 336px: site bar, title and week pill, tabs, week picker and the gap under it. 70px a card: its strip, its one-line pick and the gap.
+  /* 374px: site bar, title and week pill, tabs, week picker, the date and share line under it. 70px a card: its strip, its one-line pick and the gap.
      Then 80% of that, since the cards are drawn 20% smaller (below). */
-  --crow: calc(0.8 * clamp(30px, calc((100vh - 336px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
-  --crow: calc(0.8 * clamp(30px, calc((100svh - 336px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
+  --crow: calc(0.8 * clamp(30px, calc((100vh - 374px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
+  --crow: calc(0.8 * clamp(30px, calc((100svh - 374px - var(--k, 4) * 70px) / (var(--k, 4) * 2)), 48px));
   gap: 8px;
 }
 .division-page .card-row { min-height: var(--crow); }
@@ -755,7 +761,6 @@ abbr.captain[title] { text-decoration: none; border-bottom: 0; cursor: default; 
   /* Phones: a slimmer strip and tighter rows, so a week of cards with Kilt's picks fits the screen. */
   .division-page .card-name { padding: 0; }
   .division-page .card-head { padding: 2px 8px; }
-  .division-page .matches-note { display: none; }
   .division-page .cards { gap: 4px; }
 }
 
@@ -1034,7 +1039,7 @@ h1 { --grain: var(--streaks); }
  * glance. The pinned name column takes the same wash over its solid slate. Highlights (our row,
  * this week's fixture) sit on top.
  */
-:root { --stripe: rgb(var(--ink-rgb) / 0.055); }
+:root, .board-dark { --stripe: rgb(var(--ink-rgb) / 0.055); }
 section tbody tr:nth-child(even) td,
 section tbody tr:nth-child(even) th,
 .matches li:nth-child(even),
@@ -1287,7 +1292,7 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .pb-regulars input { width: 22px; height: 22px; accent-color: var(--yellow); flex: none; }
 .pb-regulars .muted { font-size: 0.85rem; }
 /* Rank | player and team | W–L | win % with a bar behind it. */
-.pb-head, .pb-row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.6rem 4.6rem; column-gap: 8px; align-items: center; }
+.pb-head, .pb-row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) 3.6rem 4.6rem 1.1rem; column-gap: 8px; align-items: center; }
 .pb-head { padding: 0 8px 4px; font-size: 0.85rem; color: var(--chalk-2); border-bottom: 1px solid var(--chalk-line); }
 .pb-head span:nth-child(3), .pb-head span:nth-child(4) { text-align: right; }
 .pb-list { list-style: none; margin: 0; padding: 0; }
@@ -1304,6 +1309,8 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 .pb-val { position: relative; display: flex; justify-content: flex-end; align-items: center; height: 28px; border-radius: 4px; overflow: hidden; background: rgb(var(--ink-rgb) / 0.06); }
 .pb-bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgb(var(--hi-rgb) / 0.28); }
 .pb-num { position: relative; padding: 0 6px; font: 700 1.05rem var(--sketch); font-variant-numeric: tabular-nums; }
+.pb-total { grid-template-columns: 2rem minmax(0, 1fr) auto 4.6rem 1.1rem; cursor: default; border-top: 1px solid var(--chalk-line); }
+.pb-total .pb-rec { white-space: nowrap; }
 .pb-item.open .pb-row { background: rgb(var(--hi-rgb) / 0.1); }
 /* The opened line: every category in a small grid, then games, matches and the team. */
 .pl { padding: 4px 10px 12px 2.8rem; }
@@ -1318,7 +1325,64 @@ a.b-line:hover .b-name { text-decoration: underline; text-underline-offset: 3px;
 @media (max-width: 380px) {
   .pl { padding-left: 10px; }
   /* Narrow phones: slimmer number columns, so names keep their room. */
-  .pb-head, .pb-row { grid-template-columns: 1.4rem minmax(0, 1fr) 3.1rem 3.9rem; column-gap: 6px; }
+  .pb-head, .pb-row { grid-template-columns: 1.4rem minmax(0, 1fr) 3.1rem 3.9rem 1rem; column-gap: 6px; }
+  .pb-row.pb-total { grid-template-columns: 1.4rem minmax(0, 1fr) auto 3.9rem 1rem; }
   .pb-head, .pb-row { padding-left: 6px; padding-right: 6px; }
   .pb-num { padding: 0 4px; font-size: 1rem; }
 }
+
+/* ---- Sharing a section as a picture (Share.tsx) ---- */
+.share-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.share-row > .tab-note { margin: 0; }
+.share-buttons { position: relative; display: flex; align-items: center; gap: 2px; margin-left: auto; margin-right: -8px; }
+.share-btn { display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--chalk-2); cursor: pointer; }
+.share-btn:hover { background: rgb(var(--ink-rgb) / 0.08); color: var(--chalk); }
+.share-status { position: absolute; right: 8px; top: 100%; z-index: 2; padding: 3px 8px; border-radius: 6px; background: var(--slate-hi); box-shadow: 0 2px 8px rgb(0 0 0 / 0.35); font-size: 0.9rem; color: var(--yellow); white-space: nowrap; }
+.share-status:empty { display: none; }
+.share-btn.done { color: var(--yellow); }
+/* Drawn off screen, at a fixed width, so the picture is the same from every phone. */
+.share-stage { position: fixed; left: -10000px; top: 0; pointer-events: none; }
+.share-card { width: 420px; padding: 18px 16px 12px; background: var(--board-black); color: var(--chalk); font-family: var(--hand); }
+.share-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.share-head img { display: block; width: 46px; height: 46px; }
+.share-title { margin: 0; font: 700 1.6rem/1.1 var(--sketch); color: var(--chalk); }
+.share-detail { margin: 2px 0 0; font-size: 1rem; color: var(--chalk-2); }
+.share-note { margin: 10px 0 0; font-size: 0.9rem; color: var(--chalk-2); }
+.share-card .cards { gap: 8px; }
+.share-foot { margin: 12px 0 0; text-align: right; font-size: 0.95rem; color: var(--chalk-2); }
+.share-card .ladder-head, .share-card .ladder-row { grid-template-columns: 2rem minmax(0, 1fr) 3.4rem 3rem; }
+.share-card .ladder-row { cursor: default; }
+.share-card .pb-head, .share-card .pb-row { grid-template-columns: 2rem minmax(0, 1fr) 3.6rem 4.6rem; }
+.share-card .pb-row { cursor: default; }
+.share-card .pb-row.pb-total { grid-template-columns: 2rem minmax(0, 1fr) auto 4.6rem; }
+.share-card .pl-grid { margin-top: 4px; }
+.pl-foot-row { margin-top: 4px; }
+.pl-foot-row .pl-foot { margin: 0; }
+.share-row > .pb-regulars { margin: 0; }
+.hero .share-row { align-items: flex-start; }
+.hero .share-row > h2 { margin-bottom: 0; }
+.rec-head-row { align-items: flex-start; margin-bottom: 10px; }
+.rec-head-row > .rec-head { margin: 0; }
+
+/* Team page header (2026-11-20): left-aligned, a plain way back to the division's standings above
+   the name, the division in the line under it underlined as a link; no arrows to other teams. */
+.back-link {
+  display: inline-flex; align-items: center; gap: 2px; min-height: 40px; margin: 2px 0 0 -6px; padding-right: 8px;
+  font: 400 1.05rem var(--hand); color: var(--chalk-2); text-decoration: none;
+}
+.back-link svg { width: 20px; height: 20px; }
+.back-link:hover { color: var(--chalk); }
+.team-page .page-head { justify-content: space-between; align-items: end; padding-top: 0; }
+.team-page .page-head .meta-link { color: inherit; text-decoration: underline; text-decoration-color: rgb(var(--ink-rgb) / 0.5); text-underline-offset: 3px; }
+/* The tournament round, on its own line between the heading and the opponent. */
+.hero-round { margin: 2px 0 0; font-size: 1rem; color: var(--chalk-2); }
+/* "Next match" and the date on one line beside the share buttons, the date shrinking on narrow phones. */
+.hero .share-row > h2 { min-width: 0; }
+.hero-when { display: inline-block; margin-left: 4px; white-space: nowrap; font: 400 1rem var(--hand); color: var(--chalk-2); }
+.hero .share-buttons { gap: 2px; }
+.hero .share-btn { width: 38px; height: 38px; }
+/* "Regulars only (50%+ of games)" stays on one line beside the share buttons (owner, 2026-11-21). */
+.share-row > .pb-regulars { min-width: 0; white-space: nowrap; gap: 8px; }
+@media (max-width: 359px) { .share-row > .pb-regulars .muted { display: none; } }
+.share-row > .pb-regulars { gap: 6px; }
+.share-row > .pb-regulars .muted { font-size: 0.78rem; }

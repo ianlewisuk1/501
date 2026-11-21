@@ -6,18 +6,20 @@ import { PerformanceChart } from "./Chart";
 import { Fold, SectionHead } from "./Fold";
 import { divisionWeeks, scheduleFor, tournamentMatch, type TournamentState } from "./league";
 import {
-  breakingNews, buildFixtures, findStanding, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, teamTotals, todayIso,
-  type FixtureRow, type ScoutRow,
+  breakingNews, buildFixtures, nextTournament, fmtPct, fmtWL, isIOS, mapsUrl, mapsUrls, pct, scoutReport, shortDate, readableMapsUrls, teamTotals, todayIso,
+  type DivisionPlayer, type FixtureRow, type ScoutRow,
 } from "./model";
-import { Link, teamPath } from "./route";
+import { divisionPath, Link, teamPath } from "./route";
 import type { SeasonData } from "./store";
 import { pickTeam, sameTeam, useMyTeams } from "./myTeam";
 import { resolveVenue, type Venue } from "../parser/venueMatch";
 import { Tabs } from "./Tabs";
+import { TextShareButtons } from "./Share";
+import { PlayerBoard } from "./PlayerBoard";
 import { TeamInfo } from "./TeamInfo";
 import { BarPhoto } from "./BarPhoto";
 import { PHOTOS_ON } from "../photos/core";
-import { Arrow, groupSpans, TeamName, GROUPS, NewsletterLink, ordinal, PageHead, Pin, PLAYER_COLUMNS, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
+import { Arrow, groupSpans, TeamName, NewsletterLink, ordinal, PageHead, Pin, pctCol, useBlackStatusBar, useSort, wlCol, type Column } from "./ui";
 
 export function TeamPage({ data, week, history }: { data: SeasonData; week: TeamWeek; history: TeamWeek[] }) {
   const division = week.team.division;
@@ -35,26 +37,22 @@ export function TeamPage({ data, week, history }: { data: SeasonData; week: Team
     .flatMap((m) => [[m.away.team, m.away.short], [m.home.team, m.home.short]] as [string, string][]) ?? [])), [data, division]);
   const cup = useMemo(() => tournamentMatch(data, division, week.team.name, today), [data, division, week, today]);
   useBlackStatusBar();
-  // The teams either side in the standings, wrapping round, for the arrows by the name.
-  const order = week.standings.map((s) => s.team);
-  const at = order.indexOf(week.team.name);
-  const prev = order[(at - 1 + order.length) % order.length];
-  const next = order[(at + 1) % order.length];
-  // Under the name: its place in the division ("2nd in C Division"), from the latest standings.
-  const place = week.standings[at];
+  // Under the name: its place in the division ("2nd in C Division"), the division a link back to it.
+  const place = week.standings.find((s) => s.team === week.team.name);
+  const standings = `${divisionPath(division)}?tab=standings`;
 
   return (
     <>
       {news && <ClinchBanner news={news} />}
       <main className={news ? "team-page under-banner" : "team-page"}>
-        <div className="div-head">
-          {order.length > 1 && <Link className="div-step" to={teamPath(division, prev)} aria-label={`Previous team: ${prev}`}><Arrow dir="left" /></Link>}
-          <PageHead team chalk title={week.team.name} meta={place ? `${ordinal(place.rank)} in ${division} Division` : `${division} Division`}>
-            <MyTeamButton team={week.team.name} division={division} />
-          </PageHead>
-          {order.length > 1 && <Link className="div-step" to={teamPath(division, next)} aria-label={`Next team: ${next}`}><Arrow dir="right" /></Link>}
-        </div>
-        {current ? <Tonight week={week} fixture={current} today={today} venues={data.venues} />
+        {/* Left-aligned, with the way back spelled out (owner, 2026-11-20: the ‹ › arrows to the
+            teams either side read as a back button). */}
+        <Link className="back-link" to={standings}><Arrow dir="left" />{division} Division standings</Link>
+        <PageHead team chalk title={week.team.name}
+          meta={<>{place && `${ordinal(place.rank)} in `}<Link className="meta-link" to={standings}>{division} Division</Link></>}>
+          <MyTeamButton team={week.team.name} division={division} />
+        </PageHead>
+        {current ? <Tonight week={week} fixture={current} today={today} venues={data.venues} seasonWeeks={teamSchedule?.weeks.length ?? null} />
           : <Tournament next={nextTournament(data.schedule?.season === week.season ? data.schedule : undefined, today)}
               game={cup} week={week} today={today} venues={data.venues} />}
         <Tabs label="Team sections" tabs={[
@@ -117,19 +115,31 @@ function ClinchBanner({ news }: { news: { headline: string; detail: string } }) 
   );
 }
 
-function Tonight({ week, fixture, today, venues }: { week: TeamWeek; fixture: FixtureRow | undefined; today: string; venues: Venue[] | undefined }) {
+/**
+ * The next match, laid out the same in the league and the tournament (owner, 2026-11-21): "Next match"
+ * with the date (and time, when known) and the share buttons, then what it is (week or round), the
+ * opponent, the bar, its address and the map links. The opponent's place is on the Opponent tab.
+ */
+/** "Dec 2": match nights are always Wednesdays, and the weekday won't fit beside "Next match" on a phone. */
+const dayMonth = (iso: string) => shortDate(iso).replace(/^\w+, /, "");
+
+function Tonight({ week, fixture, today, venues, seasonWeeks }: {
+  week: TeamWeek; fixture: FixtureRow | undefined; today: string; venues: Venue[] | undefined; seasonWeeks: number | null;
+}) {
   if (!fixture) return null;
-  const heading = fixture.date === today ? "Tonight" : fixture.date > today ? "Next match" : "This week";
+  const what = <p className="hero-round">Week {fixture.week}{seasonWeeks ? ` of ${seasonWeeks}` : ""}</p>;
   if (fixture.bye) {
-    return <section className="card hero"><h2>{heading}</h2><p className="big">Bye week</p></section>;
+    return <section className="card hero"><h2>Next match <span className="hero-when">{dayMonth(fixture.date)}</span></h2>{what}<p className="big">Bye week</p></section>;
   }
-  const opp = findStanding(fixture.opponent, week.standings);
-  // Compact: who, where and the two map buttons, so the tabs still show on the first screen.
   return (
     <section className="card hero" aria-labelledby="tonight">
-      <h2 id="tonight">{heading} <span className="muted">{shortDate(fixture.date)}</span></h2>
+      <div className="share-row">
+        <h2 id="tonight">Next match <span className="hero-when">{fixture.date === today ? "Tonight" : dayMonth(fixture.date)}</span></h2>
+        <MatchShare week={week} date={fixture.date} opponent={fixture.opponent} venue={fixture.venue} venues={venues}
+          where={`${fixture.home ? "Home" : "Away"} at ${fixture.venue}`} />
+      </div>
+      {what}
       <p className="big">vs <Link to={teamPath(week.team.division, fixture.opponent)}>{fixture.opponent}</Link></p>
-      {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {week.team.division}, {opp.wins}–{opp.losses}</p>}
       {/* The bar's photo sits beside the address; it opens (or its send form does) full width below. */}
       <div className="hero-venue">
         <div>
@@ -181,15 +191,20 @@ function Tournament({ next, game, week, today, venues }: {
     );
   }
   if (game) {
-    const opp = game.opponent ? findStanding(game.opponent, week.standings) : undefined;
     return (
       <section className="card hero" aria-labelledby="tonight">
-        <h2 id="tonight">{game.date === today ? "Tonight" : "Next match"} <span className="muted">{shortDate(game.date)}</span></h2>
+        <div className="share-row">
+          <h2 id="tonight">Next match <span className="hero-when">{game.date === today ? "Tonight" : dayMonth(game.date)}, 7:00 pm</span></h2>
+          {game.venue && (
+            <MatchShare week={week} date={game.date} venue={game.venue} venues={venues}
+              opponent={game.opponents.length ? game.opponents.join(" or ") : game.opponentText ?? "to be decided"}
+              where={`At ${game.venue}`} when={`7:00 pm, ${game.round.toLowerCase()}`} />
+          )}
+        </div>
+        <p className="hero-round">Tournament {game.round}</p>
         <p className="big">vs {game.opponents.length
           ? game.opponents.map((t, i) => <span key={t}>{i > 0 && (i === game.opponents.length - 1 ? " or " : ", ")}{link(t)}</span>)
           : game.opponentText ?? "to be decided"}</p>
-        {opp && <p className="hero-opp muted">{ordinal(opp.rank)} in {division}, {opp.wins}–{opp.losses}</p>}
-        <p className="hero-opp muted">{game.round}{game.seed && game.opponentSeed ? `, seed ${game.seed} v ${game.opponentSeed}` : ""}, 7:00 pm</p>
         {game.venue && (
           <div className="hero-venue">
             <div>
@@ -210,6 +225,26 @@ function Tournament({ next, game, week, today, venues }: {
       <p className="hero-opp muted">The regular season is over. Pairings and venues come from the league.</p>
     </section>
   );
+}
+
+/**
+ * Share the next match as a message (2026-11-20, owner): who, when, where, and both map links
+ * written readably, so the team's group chat can tap straight into directions.
+ */
+function MatchShare({ week, date, opponent, venue, venues, where, when }: {
+  week: TeamWeek; date: string; opponent: string; venue: string; venues: Venue[] | undefined; where: string; when?: string;
+}) {
+  const v = resolveVenue(venue, venues ?? []);
+  const urls = readableMapsUrls(venue, venues);
+  const us = week.team.name;
+  const text = [
+    `${us} vs ${opponent}`,
+    `${shortDate(date)}${when ? `, ${when}` : ""}`,
+    `${where}${v ? `, ${v.street}, ${v.area}` : ""}`,
+    "",
+    `Google Maps: ${urls.google}`,
+  ].join("\n");
+  return <TextShareButtons title={`${us} vs ${opponent}`} text={text} />;
 }
 
 /** The street address and the league's how-to-find-it note, so the map pin can be checked by eye. */
@@ -364,55 +399,15 @@ function Fixtures({ rows, maps, names, shorts, division, expanded = false }: {
 }
 
 function Players({ week }: { week: TeamWeek }) {
-  const { rows, sortKey, toggle, arrow, ariaSort } = useSort(week.players, PLAYER_COLUMNS, "totalPct");
   const team = teamTotals(week.players);
-  /** The newsletter always lists a team's captain first on page 10. */
-  const captain = week.players[0];
-  const start = (i: number) => PLAYER_COLUMNS[i - 1]?.group !== PLAYER_COLUMNS[i].group;
-
+  // The same list as the division's Players tab (2026-11-20, owner), for this team's players only.
+  const players = useMemo<DivisionPlayer[]>(() => week.players.map((p) => ({ ...p, team: week.team.name, code: week.team.code })), [week]);
   return (
     <section aria-labelledby="players">
-      <SectionHead id="players" title="Players" detail={`Through week ${week.week - 1}`} />
+      <SectionHead id="players" title="Players" detail={`Through week ${week.week - 1}. Tap a player for their whole season.`} />
       <Fold show="Show player stats" hide="Hide player stats"
         summary={<>{week.players.length} players. The team is {fmtWL(team.total)} in games, {fmtPct(pct(team.total))} won.</>}>
-        <div className="scroll-x" tabIndex={0} role="region" aria-label="Player stats, scrolls sideways">
-          <table className="players wide">
-            <thead>
-              <tr className="groups">
-                <th className="sticky" rowSpan={2} aria-sort={ariaSort("name")}>
-                  <button onClick={() => toggle("name")}>Player{arrow("name")}</button>
-                </th>
-                {GROUPS.map((g) => <th key={g.group} colSpan={g.span} className="group">{g.group}</th>)}
-              </tr>
-              <tr>
-                {PLAYER_COLUMNS.map((c, i) => (
-                  <th key={c.key} className={`num${start(i) ? " gstart" : ""}`} aria-sort={ariaSort(c.key)}>
-                    <button onClick={() => toggle(c.key)}>{c.label}{arrow(c.key)}</button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p) => (
-                <tr key={p.number}>
-                  <th scope="row" className="sticky">{p.name}{p === captain && <> <abbr className="captain" title="Captain">(C)</abbr></>}</th>
-                  {PLAYER_COLUMNS.map((c, i) => (
-                    <td key={c.key} className={`num${start(i) ? " gstart" : ""}${c.key === sortKey ? " sorted" : ""}`}>{c.show(p)}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row" className="sticky">Team total</th>
-                {PLAYER_COLUMNS.map((c, i) => (
-                  <td key={c.key} className={`num${start(i) ? " gstart" : ""}`}>{c.key === "matches" ? "" : c.show(team)}</td>
-                ))}
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <p className="muted small">Swipe sideways for every category. Tap a heading to sort.</p>
+        <PlayerBoard division={week.team.division} players={players} mine={null} week={week.week} team={week.team.name} />
       </Fold>
     </section>
   );
